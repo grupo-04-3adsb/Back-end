@@ -1,9 +1,11 @@
 package tcatelie.microservice.auth.mapper;
 
+import org.springframework.stereotype.Component;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.model.Produto;
 
+@Component
 public class ProdutoMapper {
 
     private final ProdutoMapper produtoMapper = new ProdutoMapper();
