@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 import tcatelie.microservice.auth.model.Produto;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Integer>{
+
 }

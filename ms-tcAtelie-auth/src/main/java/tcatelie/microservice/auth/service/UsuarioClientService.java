@@ -38,6 +38,7 @@ public class UsuarioClientService {
             if (optionalUsuario.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não encontrado");
             }
+
             UsuarioClient entity = optionalUsuario.get();
             UsuarioClientResponseDTO usuarioResponse = mapper.toDTO(entity);
 
