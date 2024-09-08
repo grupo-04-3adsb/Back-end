@@ -4,9 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import tcatelie.microservice.auth.dto.request.UsuarioClientRequestDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioClientResponseDTO;
 import tcatelie.microservice.auth.mapper.UsuarioClientMapper;
+import tcatelie.microservice.auth.model.Produto;
 import tcatelie.microservice.auth.model.UsuarioClient;
 import tcatelie.microservice.auth.repository.UsuarioClientRepository;
 import tcatelie.microservice.auth.security.AESUtil;
@@ -38,7 +40,6 @@ public class UsuarioClientService {
             if (optionalUsuario.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não encontrado");
             }
-
             UsuarioClient entity = optionalUsuario.get();
             UsuarioClientResponseDTO usuarioResponse = mapper.toDTO(entity);
 
@@ -53,7 +54,7 @@ public class UsuarioClientService {
         }
     }
 
-    public ResponseEntity<?> cadastrarUsuario(UsuarioClientRequestDTO usuarioRequest) {
+    public ResponseEntity<String> cadastrarUsuario(UsuarioClientRequestDTO usuarioRequest) {
         try {
             String encryptedEmail = AESUtil.encrypt(usuarioRequest.getEmail());
             Optional<UsuarioClient> existingUser = Optional.ofNullable(repository.findByEmail(encryptedEmail));
@@ -65,8 +66,10 @@ public class UsuarioClientService {
             UsuarioClient usuario = mapper.toEntity(usuarioRequest);
             String hashedSenha = passwordEncoder.encode(usuarioRequest.getSenha());
             usuario.setSenha(hashedSenha);
+            usuario.setEmail(encryptedEmail);
+            repository.save(usuario);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(usuario));
+            return ResponseEntity.status(HttpStatus.CREATED).body("Usuário cadastrado com sucesso.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Ocorreu um erro durante o cadastro do usuário.");
@@ -95,19 +98,19 @@ public class UsuarioClientService {
         }
     }
 
-    public ResponseEntity<String> deletarUsuario(UsuarioClientRequestDTO usuarioRequest) {
-        try {
-            Optional<UsuarioClient> userId = repository.findById(usuarioRequest.getIdUsuario());
+    public ResponseEntity<String> deletarUsuario(@RequestParam int id){
+        try{
+            Optional<UsuarioClient> userId = repository.findById(id);
 
-            if (userId.isPresent()) {
-                repository.deleteById(usuarioRequest.getIdUsuario());
+            if(userId.isPresent()){
+                repository.deleteById(id);
                 return ResponseEntity.status(HttpStatus.ACCEPTED)
-                        .body("Delete de usuário feito com sucesso.");
-            } else {
+                        .body("Usuário deletado com sucesso.");
+            }else{
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Usuário não encontrado.");
             }
-        } catch (Exception e) {
+        } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Ocorreu um erro durante o delete do usuário.");
         }
