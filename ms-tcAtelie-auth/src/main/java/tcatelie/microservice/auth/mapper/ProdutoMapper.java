@@ -8,8 +8,6 @@ import tcatelie.microservice.auth.model.Produto;
 @Component
 public class ProdutoMapper {
 
-    private final ProdutoMapper produtoMapper = new ProdutoMapper();
-
     public Produto toEntity(ProdutoRequestDTO requestDTO) throws Exception {
         Produto produto = new Produto();
         produto.setNome(requestDTO.getNome());
