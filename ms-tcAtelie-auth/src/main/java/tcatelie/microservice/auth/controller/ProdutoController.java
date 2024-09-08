@@ -9,7 +9,7 @@ import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.service.ProdutoService;
 
 @RestController
-@RequestMapping("/produto")
+@RequestMapping("/produtos")
 public class ProdutoController {
 
     @Autowired
@@ -25,7 +25,7 @@ public class ProdutoController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/listar")
     public ResponseEntity<?> listarProdutos(){
         try{
             return service.listarProduto();
@@ -35,7 +35,7 @@ public class ProdutoController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/atualizar")
     public ResponseEntity<String> atualizarProduto(@RequestBody ProdutoRequestDTO produto, @RequestParam Integer id){
         try{
             service.atualizarProduto(produto, id);
@@ -46,7 +46,7 @@ public class ProdutoController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscar/{id}")
     public ResponseEntity<?> buscarProduto(@RequestBody ProdutoResponseDTO produto){
         try{
             return service.buscarProduto(produto);
@@ -56,7 +56,7 @@ public class ProdutoController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deletar/{id}")
     public ResponseEntity<String> deletarProduto(@PathVariable int id){
         try{
             service.deletarProduto(id);

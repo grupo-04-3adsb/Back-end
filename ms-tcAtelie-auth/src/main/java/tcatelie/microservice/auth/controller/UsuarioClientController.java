@@ -9,7 +9,7 @@ import tcatelie.microservice.auth.service.UsuarioClientService;
 
 
 @RestController
-@RequestMapping("/cliente")
+@RequestMapping("/clientes")
 public class UsuarioClientController {
 
     @Autowired
@@ -46,11 +46,11 @@ public class UsuarioClientController {
         }
     }
 
-    @DeleteMapping("/deletar")
-    public ResponseEntity<String> deletarUsuario(@RequestBody UsuarioClientRequestDTO usuario){
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<String> deletarUsuario(@PathVariable int id){
         try{
-            service.deletarUsuario(usuario);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuário atualizado com sucesso.");
+            service.deletarUsuario(id);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuário deletado com sucesso.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Ocorreu um erro durante o delete do usuário.");
