@@ -15,7 +15,7 @@ public class ProdutoController {
     @Autowired
     private ProdutoService service;
 
-    @PostMapping("/cadastrar")
+    @PostMapping()
     public ResponseEntity<?> cadastrarProduto(@RequestBody ProdutoRequestDTO produto){
         try{
             return service.cadastrarProduto(produto);
@@ -25,7 +25,7 @@ public class ProdutoController {
         }
     }
 
-    @GetMapping("/listar")
+    @GetMapping()
     public ResponseEntity<?> listarProdutos(){
         try{
             return service.listarProduto();
@@ -35,8 +35,8 @@ public class ProdutoController {
         }
     }
 
-    @PostMapping("/atualizar")
-    public ResponseEntity<String> atualizarProduto(@RequestBody ProdutoRequestDTO produto, @RequestParam Integer id){
+    @PutMapping("/{id}")
+    public ResponseEntity<String> atualizarProduto(@RequestBody ProdutoRequestDTO produto, @PathVariable Integer id){
         try{
             service.atualizarProduto(produto, id);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Produto atualizado com sucesso.");
@@ -46,17 +46,17 @@ public class ProdutoController {
         }
     }
 
-    @GetMapping("/buscar/{id}")
-    public ResponseEntity<?> buscarProduto(@RequestBody ProdutoResponseDTO produto){
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarProduto(@PathVariable int id){
         try{
-            return service.buscarProduto(produto);
+            return service.buscarProduto(id);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Ocorreu um erro durante a busca do produto.");
         }
     }
 
-    @DeleteMapping("/deletar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deletarProduto(@PathVariable int id){
         try{
             service.deletarProduto(id);

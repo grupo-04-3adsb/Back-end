@@ -48,9 +48,9 @@ public class ProdutoService {
         }
     }
 
-    public ResponseEntity<Produto> buscarProduto(ProdutoResponseDTO produtoResponse){
+    public ResponseEntity<Produto> buscarProduto(int id){
         try{
-            Optional<Produto> produtoById = repository.findById(produtoResponse.getId());
+            Optional<Produto> produtoById = repository.findById(id);
 
             return produtoById.map(produto -> ResponseEntity.status(HttpStatus.ACCEPTED)
                     .body(produto)).orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).build());

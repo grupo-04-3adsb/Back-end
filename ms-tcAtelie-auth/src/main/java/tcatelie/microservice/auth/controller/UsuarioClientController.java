@@ -25,7 +25,7 @@ public class UsuarioClientController {
         }
     }
 
-    @PostMapping("/cadastrar")
+    @PostMapping("/cadastro")
     public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioClientRequestDTO usuario) {
         try {
             return service.cadastrarUsuario(usuario);
@@ -35,7 +35,7 @@ public class UsuarioClientController {
         }
     }
 
-    @PutMapping("/atualizar")
+    @PutMapping("/")
     public ResponseEntity<String> atualizarUsuario(@RequestBody UsuarioClientRequestDTO usuario){
         try {
             service.atualizarUsuario(usuario);
@@ -46,7 +46,7 @@ public class UsuarioClientController {
         }
     }
 
-    @DeleteMapping("/deletar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deletarUsuario(@PathVariable int id){
         try{
             service.deletarUsuario(id);

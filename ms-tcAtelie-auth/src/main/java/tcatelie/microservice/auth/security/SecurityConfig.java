@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .csrf().disable() // Desabilitar CSRF temporariamente para testes
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/clientes/*", "/h2-console/*", "/produtos/*").permitAll() // Permitir acesso público à rota de cadastro
-                        .anyRequest().authenticated() // Requer autenticação para todas as outras rotas
+                        .anyRequest().not().authenticated() // Requer autenticação para todas as outras rotas
                 );
 
         return http.build();
