@@ -52,6 +52,7 @@ public class EnderecoMapper {
         return dto;
     }
 
+
     public String formatarCep(String numero) {
         String numeroStr = String.format("%08d", numero);
         return numeroStr.replaceAll("(\\d{5})(\\d{3})", "$1-$2");
