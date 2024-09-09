@@ -25,7 +25,7 @@ public class UsuarioClientController {
         }
     }
 
-    @PostMapping("/cadastrar")
+    @PostMapping()
     public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioClientRequestDTO usuario) {
         try {
             return service.cadastrarUsuario(usuario);
@@ -35,10 +35,10 @@ public class UsuarioClientController {
         }
     }
 
-    @PutMapping("/atualizar")
-    public ResponseEntity<String> atualizarUsuario(@RequestBody UsuarioClientRequestDTO usuario){
+    @PutMapping("/{id}")
+    public ResponseEntity<String> atualizarUsuario(@PathVariable int id, @RequestBody UsuarioClientRequestDTO usuario){
         try {
-            service.atualizarUsuario(usuario);
+            service.atualizarUsuario(id, usuario);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuário atualizado com sucesso.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -46,7 +46,7 @@ public class UsuarioClientController {
         }
     }
 
-    @DeleteMapping("/deletar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deletarUsuario(@PathVariable int id){
         try{
             service.deletarUsuario(id);
