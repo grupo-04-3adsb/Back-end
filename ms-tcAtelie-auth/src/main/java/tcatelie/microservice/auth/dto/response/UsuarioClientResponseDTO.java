@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class UsuarioClientResponseDTO {
-    private UUID idUser;
+    private Integer idUser;
     private String nome;
     private String nomeCompleto;
     private String email;

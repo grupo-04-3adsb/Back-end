@@ -76,9 +76,9 @@ public class UsuarioClientService {
         }
     }
 
-    public ResponseEntity<String> atualizarUsuario(UsuarioClientRequestDTO usuarioRequest) {
+    public ResponseEntity<String> atualizarUsuario(int id, UsuarioClientRequestDTO usuarioRequest) {
         try {
-            Optional<UsuarioClient> userId = repository.findById(usuarioRequest.getIdUsuario());
+            Optional<UsuarioClient> userId = repository.findById(id);
 
             if (userId.isPresent()) {
                 UsuarioClient existingUser = userId.get();
@@ -98,7 +98,7 @@ public class UsuarioClientService {
         }
     }
 
-    public ResponseEntity<String> deletarUsuario(@RequestParam int id){
+    public ResponseEntity<String> deletarUsuario(int id){
         try{
             Optional<UsuarioClient> userId = repository.findById(id);
 

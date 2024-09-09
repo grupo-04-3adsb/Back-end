@@ -22,7 +22,7 @@ public class UsuarioClient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO) // Gerar UUID manualmente
     @Column(name = "id_usuario")
-    private UUID idUsuario;
+    private Integer id;
 
     @Column(name = "nome")
     private String nome;
