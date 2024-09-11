@@ -38,7 +38,7 @@ public class UsuarioClientMapper {
 
     public UsuarioClientResponseDTO toDTO(UsuarioClient entity) throws Exception {
         UsuarioClientResponseDTO dto = new UsuarioClientResponseDTO();
-        dto.setIdUser(entity.getIdUsuario());
+        dto.setIdUser(entity.getId());
         dto.setCpf(formatarCpf(AESUtil.decrypt(entity.getCpf())));
         dto.setGenero(entity.getGenero().getDescricao());
         dto.setNome(entity.getNome());
