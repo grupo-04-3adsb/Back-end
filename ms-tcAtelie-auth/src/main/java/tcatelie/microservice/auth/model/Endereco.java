@@ -11,13 +11,13 @@ import tcatelie.microservice.auth.util.converters.LogradouroConverter;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "endereco") // Nome da tabela
+@Table(name = "endereco")
 public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id; // Usar Integer para ID
+    private Integer id;
 
     @Column(name = "rua")
     private String rua;
@@ -63,6 +63,6 @@ public class Endereco {
     private Logradouro tipo;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_client_id") // Nome da coluna estrangeira
-    private UsuarioClient usuarioClient;
+    @JoinColumn(name = "usuario_client_id")
+    private Usuario usuario;
 }
