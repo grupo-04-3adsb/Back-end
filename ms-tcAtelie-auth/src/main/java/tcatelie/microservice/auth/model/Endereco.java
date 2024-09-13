@@ -7,62 +7,73 @@ import lombok.NoArgsConstructor;
 import tcatelie.microservice.auth.enums.Logradouro;
 import tcatelie.microservice.auth.util.converters.LogradouroConverter;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "endereco") // Nome da tabela
+@Table(name = "ENDERECO")
 public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id; // Usar Integer para ID
+    @Column(name = "ID_ENDERECO")
+    private Integer id;
 
-    @Column(name = "rua")
+    @Column(name = "RUA")
     private String rua;
 
-    @Column(name = "numero")
+    @Column(name = "NUMERO")
     private String numero;
 
-    @Column(name = "complemento")
+    @Column(name = "COMPLEMENTO")
     private String complemento;
 
-    @Column(name = "bairro")
+    @Column(name = "BAIRRO")
     private String bairro;
 
-    @Column(name = "cidade")
+    @Column(name = "CIDADE")
     private String cidade;
 
-    @Column(name = "estado")
+    @Column(name = "ESTADO")
     private String estado;
 
-    @Column(name = "cep")
+    @Column(name = "CEP")
     private String cep;
 
-    @Column(name = "pais")
+    @Column(name = "PAIS")
     private String pais;
 
-    @Column(name = "nome_contato")
-    private String nomeContato;
+    @Column(name = "INSTRUCAO_ENTREGA")
+    private String instrucaoEntrega;
 
-    @Column(name = "telefone_contato")
-    private String telefoneContato;
-
-    @Column(name = "email_contato")
-    private String emailContato;
-
-    @Column(name = "instrucoes_entrega")
-    private String instrucoesEntrega;
-
-    @Column(name = "endereco_padrao")
+    @Column(name = "ENDERECO_PADRAO")
     private boolean enderecoPadrao;
 
     @Convert(converter = LogradouroConverter.class)
-    @Column(name = "tipo")
-    private Logradouro tipo;
+    @Column(name = "LOGRADOURO")
+    private Logradouro logradouro;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_client_id") // Nome da coluna estrangeira
-    private UsuarioClient usuarioClient;
+    @JoinColumn(name = "USUARIO_ID")
+    private Usuario usuario;
+
+    @Column(name = "DATA_CADASTRO_ENDERECO")
+    private LocalDateTime dthrCadastro;
+
+    @Column(name = "DATA_ATUALIZACAO_USUARIO")
+    private LocalDateTime dthrAtualizacao;
+
+    @PrePersist
+    protected void onCreate() {
+        this.dthrCadastro = LocalDateTime.now();
+        this.dthrAtualizacao = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.dthrAtualizacao = LocalDateTime.now();
+    }
+
 }

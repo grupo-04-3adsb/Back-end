@@ -3,12 +3,16 @@ package tcatelie.microservice.auth.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tcatelie.microservice.auth.enums.Logradouro;
 
+import java.time.LocalDateTime;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class EnderecoResponseDTO {
 
+    private Integer id;
     private String rua;
     private String numero;
     private String complemento;
@@ -17,10 +21,10 @@ public class EnderecoResponseDTO {
     private String estado;
     private String cep;
     private String pais;
-    private String nomeContato;
-    private String telefoneContato;
-    private String emailContato;
-    private String instrucoesEntrega;
-    private boolean enderecoPadrao;
-    private String tipo;
+    private String instrucaoEntrega;
+    private Boolean enderecoPadrao;
+    private Logradouro logradouro;
+    private LocalDateTime dthrCadastro;
+    private LocalDateTime dthrAtualizacao;
+
 }

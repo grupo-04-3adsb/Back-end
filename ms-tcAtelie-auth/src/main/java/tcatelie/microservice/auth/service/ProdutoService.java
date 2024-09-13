@@ -5,12 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
-import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.mapper.ProdutoMapper;
 import tcatelie.microservice.auth.model.Produto;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service

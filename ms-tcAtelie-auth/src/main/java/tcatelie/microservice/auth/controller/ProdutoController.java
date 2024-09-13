@@ -3,6 +3,7 @@ package tcatelie.microservice.auth.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
@@ -16,6 +17,7 @@ public class ProdutoController {
     private ProdutoService service;
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> cadastrarProduto(@RequestBody ProdutoRequestDTO produto){
         try{
             return service.cadastrarProduto(produto);
@@ -26,6 +28,7 @@ public class ProdutoController {
     }
 
     @GetMapping()
+    @PreAuthorize("permitAll()")
     public ResponseEntity<?> listarProdutos(){
         try{
             return service.listarProduto();
@@ -47,6 +50,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<?> buscarProduto(@PathVariable int id){
         try{
             return service.buscarProduto(id);
@@ -57,6 +61,7 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deletarProduto(@PathVariable int id){
         try{
             service.deletarProduto(id);
