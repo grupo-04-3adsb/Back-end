@@ -23,7 +23,7 @@ public class UsuarioResponseDTO {
     private String senha;
     private String imgUrl;
     private String status;
-
+    private List<EnderecoResponseDTO> enderecos;
 
     private String cargo;
 

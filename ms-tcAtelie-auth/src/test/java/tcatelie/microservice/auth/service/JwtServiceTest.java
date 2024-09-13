@@ -1,4 +1,5 @@
 package tcatelie.microservice.auth.service;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -16,6 +17,7 @@ import tcatelie.microservice.auth.service.JwtService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,54 +25,47 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
 
-    private JwtService jwtService;
+	private JwtService jwtService;
 
-    @Value("${api.security.token.secret}")
-    private String secret = "secret";
+	@Value("${api.security.token.secret}")
+	private String secret = "secret";
 
-    @BeforeEach
-    void setUp() {
-        jwtService = new JwtService();
-        jwtService.secret = secret;
-    }
+	@BeforeEach
+	void setUp() {
+		jwtService = new JwtService();
+		jwtService.secret = secret;
+	}
 
-    @Test
-    void generateToken_deveGerarTokenValido_quandoUsuarioForValido() {
-        Usuario usuario = new Usuario(
-                1, "Cláudio Araújo", "claudio@gmail.com", "#Gf1234567",
-                UserRole.ADMIN, "(11) 94463-6705", Status.HABILITADO,
-                LocalDateTime.now(), LocalDateTime.now(), "123.456.789-09",
-                Genero.MASCULINO, "img.png", LocalDate.now()
-        );
+	@Test
+	void generateToken_deveGerarTokenValido_quandoUsuarioForValido() {
+		Usuario usuario = new Usuario(1, "Cláudio Araújo", "claudio@gmail.com", "#Gf1234567", UserRole.ADMIN,
+				"(11) 94463-6705", Status.HABILITADO, LocalDateTime.now(), LocalDateTime.now(), "123.456.789-09",
+				Genero.MASCULINO, "img.png", LocalDate.now());
 
-        String token = jwtService.generateToken(usuario);
+		String token = jwtService.generateToken(usuario);
 
-        assertNotNull(token);
-        assertTrue(token.startsWith("eyJ"));
-    }
+		assertNotNull(token);
+		assertTrue(token.startsWith("eyJ"));
+	}
 
-    @Test
-    void validateToken_deveRetornarEmail_quandoTokenForValido() {
-        String email = "claudio@gmail.com";
-        String token = JWT.create()
-                .withIssuer("auth-api")
-                .withSubject(email)
-                .withExpiresAt(jwtService.genExpirationDate())
-                .sign(Algorithm.HMAC256(secret));
+	@Test
+	void validateToken_deveRetornarEmail_quandoTokenForValido() {
+		String email = "claudio@gmail.com";
+		String token = JWT.create().withIssuer("auth-api").withSubject(email)
+				.withExpiresAt(jwtService.genExpirationDate()).sign(Algorithm.HMAC256(secret));
 
-        String result = jwtService.validateToken(token);
+		String result = jwtService.validateToken(token);
 
-        assertEquals(email, result);
-    }
+		assertEquals(email, result);
+	}
 
-    @Test
-    void validateToken_deveRetornarStringVazia_quandoTokenForInvalido() {
-        String invalidToken = "invalidToken";
+	@Test
+	void validateToken_deveRetornarStringVazia_quandoTokenForInvalido() {
+		String invalidToken = "invalidToken";
 
-        String result = jwtService.validateToken(invalidToken);
+		String result = jwtService.validateToken(invalidToken);
 
-        assertEquals("", result);
-    }
+		assertEquals("", result);
+	}
 
 }
-

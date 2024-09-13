@@ -14,31 +14,26 @@ import tcatelie.microservice.auth.service.UsuarioService;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService service;
+	@Autowired
+	private UsuarioService service;
 
-    @PostMapping
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity buscaUsuarioPorEmailSenha(@RequestBody @Valid AuthenticationDTO dto){
-        return service.buscarUsuarioEmailSenha(dto);
-    }
+	@PostMapping
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity buscaUsuarioPorEmailSenha(@RequestBody @Valid AuthenticationDTO dto) {
+		return service.buscarUsuarioEmailSenha(dto);
+	}
 
-    @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity atualizarUsuario(
-            @PathVariable Integer id,
-            @RequestBody @Valid RegisterDTO dto,
-            Authentication authentication) {
+	@PutMapping("/{id}")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity atualizarUsuario(@PathVariable Integer id, @RequestBody @Valid RegisterDTO dto,
+			Authentication authentication) {
 
-        return service.atualizarUsuario(id, dto, authentication);
-    }
+		return service.atualizarUsuario(id, dto, authentication);
+	}
 
-    @DeleteMapping("{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity deletarUsuario(
-            @PathVariable Integer id,
-            Authentication authentication
-    ){
-        return service.deletarUsuario(id, authentication);
-    }
+	@DeleteMapping("{id}")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity deletarUsuario(@PathVariable Integer id, Authentication authentication) {
+		return service.deletarUsuario(id, authentication);
+	}
 }

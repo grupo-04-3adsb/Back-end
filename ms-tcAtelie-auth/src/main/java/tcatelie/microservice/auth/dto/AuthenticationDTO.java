@@ -7,13 +7,13 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class AuthenticationDTO{
+public class AuthenticationDTO {
 
-    @NotBlank
-    private String email;
+	@NotBlank
+	private String email;
 
-    @NotBlank
-    @Size(min = 8)
-    private String senha;
+	@NotBlank
+	@Size(min = 8)
+	private String senha;
 
 }

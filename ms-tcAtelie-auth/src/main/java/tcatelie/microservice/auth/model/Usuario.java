@@ -48,10 +48,10 @@ public class Usuario implements UserDetails {
     @Column(name = "STATUS_USUARIO")
     private Status status;
 
-    @Column(name = "DATA_CADASTRO")
+    @Column(name = "DATA_CADASTRO_USUARIO")
     private LocalDateTime dthrCadastro;
 
-    @Column(name = "DATA_ATUALIZACAO")
+    @Column(name = "DATA_ATUALIZACAO_USUARIO")
     private LocalDateTime dthrAtualizacao;
 
     @Column(name = "CPF_USUARIO", unique = true)
@@ -66,6 +66,9 @@ public class Usuario implements UserDetails {
     @Column(name = "DATA_NASCIMENTO_USUARIO")
     private LocalDate dataNascimento;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Endereco> enderecos;
+
     public Usuario(String telefone, UserRole role, String senha, String email, String nome, String cpf, Genero genero, String urlImgUsuario, LocalDate dataNascimento) {
         this.telefone = telefone;
         this.role = role;
@@ -74,6 +77,22 @@ public class Usuario implements UserDetails {
         this.nome = nome;
         this.cpf = cpf;
         this.status = Status.HABILITADO;
+        this.genero = genero;
+        this.urlImgUsuario = urlImgUsuario;
+        this.dataNascimento = dataNascimento;
+    }
+
+    public Usuario(Integer idUsuario, String nome, String email, String senha, UserRole role, String telefone, Status status, LocalDateTime dthrCadastro, LocalDateTime dthrAtualizacao, String cpf, Genero genero, String urlImgUsuario, LocalDate dataNascimento) {
+        this.idUsuario = idUsuario;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.role = role;
+        this.telefone = telefone;
+        this.status = status;
+        this.dthrCadastro = dthrCadastro;
+        this.dthrAtualizacao = dthrAtualizacao;
+        this.cpf = cpf;
         this.genero = genero;
         this.urlImgUsuario = urlImgUsuario;
         this.dataNascimento = dataNascimento;
