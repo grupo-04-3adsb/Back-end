@@ -84,18 +84,15 @@ public class AuthenticationController {
 		return ResponseEntity.ok(new LoginResponseDTO((UsuarioResponseDTO) response.getBody(), token));
 	}
 
-
-
 	@PostMapping("/register")
-	public ResponseEntity<?> cadastrarProduto(@RequestBody @Valid RegisterDTO data) {
+	public ResponseEntity<?> cadastrarUsuario(@RequestBody @Valid RegisterDTO data) {
 		try {
 			service.cadastrarUsuario(data);
 			return ResponseEntity.status(201).build();
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		} catch (Exception e) {
-			return ResponseEntity.status(400).body("Ocorreu um erro durante o cadastro do produto.");
+			return ResponseEntity.status(400).body("Ocorreu um erro durante o cadastro do usuário.");
 		}
 	}
-
 }
