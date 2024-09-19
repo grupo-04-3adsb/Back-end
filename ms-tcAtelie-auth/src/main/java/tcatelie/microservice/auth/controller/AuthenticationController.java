@@ -88,7 +88,7 @@ public class AuthenticationController {
 	public ResponseEntity<?> cadastrarUsuario(@RequestBody @Valid RegisterDTO data) {
 		try {
 			service.cadastrarUsuario(data);
-			return ResponseEntity.status(201).build();
+			return ResponseEntity.status(201).body("Cadastro realizado com sucesso.");
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		} catch (Exception e) {
