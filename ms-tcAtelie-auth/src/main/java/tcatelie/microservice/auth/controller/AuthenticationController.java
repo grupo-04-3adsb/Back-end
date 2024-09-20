@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
+import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
 import tcatelie.microservice.auth.dto.response.LoginResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.model.Usuario;
@@ -94,5 +95,11 @@ public class AuthenticationController {
 		} catch (Exception e) {
 			return ResponseEntity.status(400).body("Ocorreu um erro durante o cadastro do usuário.");
 		}
+	}
+
+	@PostMapping("/google")
+	@PreAuthorize("permitAll()")
+	public ResponseEntity<?> autenticacaoGoogle(@RequestBody @Valid GoogleAuthDTO googleAuthDTO) {
+		return service.autenticacaoGoogle(googleAuthDTO, authenticationManager);
 	}
 }

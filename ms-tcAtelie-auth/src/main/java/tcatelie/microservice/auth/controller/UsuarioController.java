@@ -36,4 +36,5 @@ public class UsuarioController {
 	public ResponseEntity deletarUsuario(@PathVariable Integer id, Authentication authentication) {
 		return service.deletarUsuario(id, authentication);
 	}
+
 }
