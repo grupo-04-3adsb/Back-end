@@ -66,6 +66,9 @@ public class Usuario implements UserDetails {
     @Column(name = "DATA_NASCIMENTO_USUARIO")
     private LocalDate dataNascimento;
 
+    @Column(name = "ID_GOOGLE")
+    private String idGoogle;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> enderecos;
 
