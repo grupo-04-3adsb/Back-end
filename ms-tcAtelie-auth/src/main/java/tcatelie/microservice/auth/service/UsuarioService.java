@@ -1,5 +1,6 @@
 package tcatelie.microservice.auth.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
 import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
@@ -31,15 +33,15 @@ public class UsuarioService implements UserDetailsService {
     private final UserRepository repository;
 
     private final UsuarioMapper usuarioMapper;
-	private final PasswordEncoder passwordEncoder;
-	private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-	public UsuarioService(UserRepository repository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public UsuarioService(UserRepository repository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.repository = repository;
         this.usuarioMapper = usuarioMapper;
-		this.passwordEncoder = passwordEncoder;
-		this.jwtService = jwtService;
-	}
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -47,15 +49,36 @@ public class UsuarioService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + username));
     }
 
-    public void cadastrarUsuario(RegisterDTO dto) {
+    public ResponseEntity<String> buscarPorEmailECPF(String email, String cpf) {
+        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(cpf)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ambos os campos devem ser preenchidos.");
+        }
+
+        if (repository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
+        }
+
+        if (repository.existsByCpf(cpf)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("Usuário liberado para cadastro");
+    }
+
+    public ResponseEntity<?> cadastrarUsuario(RegisterDTO dto) {
         if (!dto.isMaiorDeIdade()) {
-            throw new IllegalArgumentException("O usuário deve ser maior de idade");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário deve ser maior de idade");
         }
 
         dto.setStatus(Status.HABILITADO);
 
         if (repository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Email já cadastrado");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
+
+        }
+
+        if (repository.existsByCpf(dto.getCpf())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF em uso");
         }
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -65,6 +88,10 @@ public class UsuarioService implements UserDetailsService {
         usuario.setSenha(encryptedPassword);
 
         repository.save(usuario);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Usuário cadastrado com sucesso");
     }
 
     public ResponseEntity buscarUsuarioEmailSenha(AuthenticationDTO dto) {
@@ -151,8 +178,8 @@ public class UsuarioService implements UserDetailsService {
 
     public ResponseEntity<?> autenticacaoGoogle(GoogleAuthDTO googleAuthDTO, AuthenticationManager authenticationManager) {
         Optional<UserDetails> usuarioExistente = repository.findByEmail(googleAuthDTO.getEmail());
-
         Usuario usuario;
+
         if (usuarioExistente.isEmpty()) {
             usuario = new Usuario();
             usuario.setNome(googleAuthDTO.getName());
@@ -170,18 +197,19 @@ public class UsuarioService implements UserDetailsService {
             usuario = repository.save(usuario);
         } else {
             usuario = (Usuario) usuarioExistente.get();
+            if (usuario.getIdGoogle() == null) {
+                usuario.setIdGoogle(googleAuthDTO.getSub());
+                usuario.setUrlImgUsuario(googleAuthDTO.getPicture());
+                repository.save(usuario);
+            }
         }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(googleAuthDTO.getEmail(), "senhaAleatoriaGoogle")
-        );
+        String token = jwtService.generateToken(usuario);
 
-        String token = jwtService.generateToken((Usuario) authentication.getPrincipal());
+        UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);
 
-		UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
-
-		LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);
-
-        return ResponseEntity.status(200).body(loginResponseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
     }
+
 }
