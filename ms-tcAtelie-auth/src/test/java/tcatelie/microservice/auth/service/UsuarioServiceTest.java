@@ -325,21 +325,36 @@ class UsuarioServiceTest {
 	@Test
 	void autenticacaoGoogle_deveRetornarUsuarioExistente_quandoUsuarioExistirComIdGoogle() {
 		GoogleAuthDTO googleAuthDTO = new GoogleAuthDTO();
-		googleAuthDTO.setSub("ExistingGoogleId");
+		googleAuthDTO.setSub("123456");
+		googleAuthDTO.setEmail("claudio@gmail.com");
+		googleAuthDTO.setName("Cláudio Araújo");
+		googleAuthDTO.setPicture("img.png");
+
+		Usuario usuario = new Usuario();
+		usuario.setNome("Cláudio Araújo");
+		usuario.setEmail("claudio@gmail.com");
+		usuario.setIdGoogle("Cláudio Araújo");
+		usuario.setUrlImgUsuario("img.png");
+		usuario.setStatus(Status.HABILITADO);
+		usuario.setRole(UserRole.USER);
+		usuario.setDthrCadastro(LocalDateTime.now());
+		usuario.setDthrAtualizacao(LocalDateTime.now());
+
+		UsuarioResponseDTO usuarioResponseDTO = new UsuarioResponseDTO();
+		usuarioResponseDTO.setNome("Cláudio Araújo");
+		usuarioResponseDTO.setEmail("claudio@gmail.com");
 
 		when(repository.findByEmail(googleAuthDTO.getEmail())).thenReturn(Optional.of(usuario));
-
 		when(jwtService.generateToken(any(Usuario.class))).thenReturn("token");
+		when(usuarioMapper.toUsuarioResponseDTO(any(Usuario.class))).thenReturn(usuarioResponseDTO);
 
 		ResponseEntity<?> response = usuarioService.autenticacaoGoogle(googleAuthDTO, authenticationManager);
-
-		when(passwordEncoder.encode("senhaAleatoriaGoogle")).thenReturn("encodedSenhaAleatoriaGoogle");
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertTrue(response.getBody() instanceof LoginResponseDTO);
 		LoginResponseDTO loginResponseDTO = (LoginResponseDTO) response.getBody();
 		assertNotNull(loginResponseDTO.getToken());
-		assertEquals(usuarioMapper.toUsuarioResponseDTO(usuario), loginResponseDTO.getUsuario());
+		assertEquals(usuarioResponseDTO, loginResponseDTO.getUsuario());
 	}
 
 
