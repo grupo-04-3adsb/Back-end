@@ -24,11 +24,10 @@ public class RegisterDTO {
 	private String nome;
 
 	@NotBlank
-	@CPF
+	@CPF(message = "CPF Inválido")
 	private String cpf;
 
 	@NotBlank
-	@Pattern(regexp = "\\(\\d{2}\\) \\d{4,5}-\\d{4}")
 	private String telefone;
 
 	@NotBlank

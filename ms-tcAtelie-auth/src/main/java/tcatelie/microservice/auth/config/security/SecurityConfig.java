@@ -27,16 +27,13 @@ public class SecurityConfig {
 	@Autowired
 	private SecurityFilter securityFilter;
 
-	@Value("${cors.allowed.origins}")
-	private String[] allowedOrigins;
-
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		return httpSecurity
 				.csrf(csrf -> csrf.disable())
 				.cors(cors -> cors.configurationSource(request -> {
 					var corsConfig = new CorsConfiguration();
-					corsConfig.setAllowedOrigins(Arrays.asList(allowedOrigins));
+					corsConfig.setAllowedOriginPatterns(Arrays.asList("*"));
 					corsConfig.setAllowedMethods(Arrays.asList("*"));
 					corsConfig.setAllowedHeaders(Arrays.asList("*"));
 					corsConfig.setAllowCredentials(true);
@@ -48,10 +45,12 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 						.requestMatchers(HttpMethod.POST, "/auth/google").permitAll()
 						.requestMatchers(HttpMethod.POST, "/auth/admin/login").permitAll()
+						.requestMatchers(HttpMethod.POST, "/auth/validar").permitAll()
 						.anyRequest().authenticated())
 				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
+
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
