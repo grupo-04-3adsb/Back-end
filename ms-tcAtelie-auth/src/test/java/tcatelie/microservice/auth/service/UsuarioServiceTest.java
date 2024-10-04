@@ -6,13 +6,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
+import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
+import tcatelie.microservice.auth.dto.response.LoginResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.enums.Genero;
 import tcatelie.microservice.auth.enums.Status;
@@ -26,8 +31,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -49,6 +53,13 @@ class UsuarioServiceTest {
 	@Mock
 	private UserDetails userDetails;
 
+	@Mock
+	private AuthenticationManager authenticationManager;
+
+	@Mock
+	private JwtService jwtService;
+
+	@Mock
 	private BCryptPasswordEncoder passwordEncoder;
 
 	private RegisterDTO registerDTO;
@@ -110,11 +121,11 @@ class UsuarioServiceTest {
 
 		registerDTO.setDataNascimento(LocalDate.now().minusYears(1));
 
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+		ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
 			usuarioService.cadastrarUsuario(registerDTO);
 		});
-
-		assertEquals("O usuário deve ser maior de idade", exception.getMessage());
+		assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+		assertEquals("O usuário deve ser maior de idade", exception.getReason());
 	}
 
 	@Test
@@ -122,11 +133,13 @@ class UsuarioServiceTest {
 
 		when(repository.existsByEmail(registerDTO.getEmail())).thenReturn(true);
 
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+		ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
 			usuarioService.cadastrarUsuario(registerDTO);
 		});
 
-		assertEquals("Email já cadastrado", exception.getMessage());
+		assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+
+		assertEquals("Email já cadastrado", exception.getReason());
 	}
 
 	@Test
@@ -257,4 +270,138 @@ class UsuarioServiceTest {
 		assertEquals(200, response.getStatusCodeValue());
 		assertEquals(new UsuarioResponseDTO(), response.getBody());
 	}
+
+	@Test
+	void autenticacaoGoogle_deveCriarNovoUsuario_quandoUsuarioNaoExistir() {
+		GoogleAuthDTO googleAuthDTO = new GoogleAuthDTO();
+		googleAuthDTO.setEmail("claudio@gmail.com");
+		googleAuthDTO.setSub("123456");
+		googleAuthDTO.setName("Cláudio");
+		googleAuthDTO.setPicture("img.png");
+		googleAuthDTO.setFamilyName("Cláudio da Silva Araújo Filho");
+		googleAuthDTO.setGivenName("Araújo");
+
+		when(repository.findByEmail(googleAuthDTO.getEmail())).thenReturn(Optional.empty());
+		when(jwtService.generateToken(any(Usuario.class))).thenReturn("token");
+		when(usuarioMapper.toUsuarioResponseDTO(any(Usuario.class))).thenReturn(new UsuarioResponseDTO());
+		when(repository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
+
+		ResponseEntity<?> response = usuarioService.autenticacaoGoogle(googleAuthDTO, authenticationManager);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertTrue(response.getBody() instanceof LoginResponseDTO);
+		LoginResponseDTO loginResponseDTO = (LoginResponseDTO) response.getBody();
+		assertNotNull(loginResponseDTO.getToken());
+		assertEquals(new UsuarioResponseDTO(), loginResponseDTO.getUsuario());
+
+		verify(repository).save(any(Usuario.class));
+	}
+
+	@Test
+	void autenticacaoGoogle_deveAtualizarUsuarioExistente_quandoUsuarioExistirSemIdGoogle() {
+		Usuario usuarioExistente = new Usuario();
+		usuarioExistente.setEmail("claudio@gmail.com");
+		when(repository.findByEmail(usuarioExistente.getEmail())).thenReturn(Optional.of(usuarioExistente));
+		when(repository.save(any(Usuario.class))).thenReturn(usuarioExistente);
+		when(jwtService.generateToken(any(Usuario.class))).thenReturn("token");
+
+		GoogleAuthDTO googleAuthDTO = new GoogleAuthDTO();
+		googleAuthDTO.setEmail("claudio@gmail.com");
+		googleAuthDTO.setSub("123456");
+		googleAuthDTO.setName("Cláudio");
+		googleAuthDTO.setPicture("img.png");
+		googleAuthDTO.setFamilyName("Cláudio da Silva Araújo Filho");
+		googleAuthDTO.setGivenName("Araújo");
+
+		ResponseEntity<?> response = usuarioService.autenticacaoGoogle(googleAuthDTO, authenticationManager);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertTrue(response.getBody() instanceof LoginResponseDTO);
+		LoginResponseDTO loginResponseDTO = (LoginResponseDTO) response.getBody();
+		assertNotNull(loginResponseDTO.getToken());
+		assertEquals(usuarioMapper.toUsuarioResponseDTO(usuarioExistente), loginResponseDTO.getUsuario());
+	}
+
+	@Test
+	void autenticacaoGoogle_deveRetornarUsuarioExistente_quandoUsuarioExistirComIdGoogle() {
+		GoogleAuthDTO googleAuthDTO = new GoogleAuthDTO();
+		googleAuthDTO.setSub("123456");
+		googleAuthDTO.setEmail("claudio@gmail.com");
+		googleAuthDTO.setName("Cláudio Araújo");
+		googleAuthDTO.setPicture("img.png");
+
+		Usuario usuario = new Usuario();
+		usuario.setNome("Cláudio Araújo");
+		usuario.setEmail("claudio@gmail.com");
+		usuario.setIdGoogle("Cláudio Araújo");
+		usuario.setUrlImgUsuario("img.png");
+		usuario.setStatus(Status.HABILITADO);
+		usuario.setRole(UserRole.USER);
+		usuario.setDthrCadastro(LocalDateTime.now());
+		usuario.setDthrAtualizacao(LocalDateTime.now());
+
+		UsuarioResponseDTO usuarioResponseDTO = new UsuarioResponseDTO();
+		usuarioResponseDTO.setNome("Cláudio Araújo");
+		usuarioResponseDTO.setEmail("claudio@gmail.com");
+
+		when(repository.findByEmail(googleAuthDTO.getEmail())).thenReturn(Optional.of(usuario));
+		when(jwtService.generateToken(any(Usuario.class))).thenReturn("token");
+		when(usuarioMapper.toUsuarioResponseDTO(any(Usuario.class))).thenReturn(usuarioResponseDTO);
+
+		ResponseEntity<?> response = usuarioService.autenticacaoGoogle(googleAuthDTO, authenticationManager);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertTrue(response.getBody() instanceof LoginResponseDTO);
+		LoginResponseDTO loginResponseDTO = (LoginResponseDTO) response.getBody();
+		assertNotNull(loginResponseDTO.getToken());
+		assertEquals(usuarioResponseDTO, loginResponseDTO.getUsuario());
+	}
+
+
+	@Test
+	void buscarPorEmailECPF_deveLancarBadRequest_quandoEmailOuCpfEstiverVazio() {
+		ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+			usuarioService.buscarPorEmailECPF("", "123.456.789-09");
+		});
+
+		assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+		assertEquals("Ambos os campos devem ser preenchidos.", exception.getReason());
+	}
+
+	@Test
+	void buscarPorEmailECPF_deveLancarConflict_quandoEmailJaCadastrado() {
+		when(repository.existsByEmail("claudio@gmail.com")).thenReturn(true);
+
+		ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+			usuarioService.buscarPorEmailECPF("claudio@gmail.com", "123.456.789-09");
+		});
+
+		assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+		assertEquals("Email já cadastrado", exception.getReason());
+	}
+
+	@Test
+	void buscarPorEmailECPF_deveLancarConflict_quandoCpfJaCadastrado() {
+		when(repository.existsByEmail("claudio@gmail.com")).thenReturn(false);
+		when(repository.existsByCpf("123.456.789-09")).thenReturn(true);
+
+		ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+			usuarioService.buscarPorEmailECPF("claudio@gmail.com", "123.456.789-09");
+		});
+
+		assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+		assertEquals("CPF já cadastrado", exception.getReason());
+	}
+
+	@Test
+	void buscarPorEmailECPF_deveRetornarOk_quandoEmailECpfDisponiveis() {
+		when(repository.existsByEmail("claudio@gmail.com")).thenReturn(false);
+		when(repository.existsByCpf("123.456.789-09")).thenReturn(false);
+
+		ResponseEntity<String> response = usuarioService.buscarPorEmailECPF("claudio@gmail.com", "123.456.789-09");
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals("Usuário liberado para cadastro", response.getBody());
+	}
+
 }

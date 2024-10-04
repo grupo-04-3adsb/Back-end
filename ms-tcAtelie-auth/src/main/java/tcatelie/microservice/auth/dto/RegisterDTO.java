@@ -24,11 +24,10 @@ public class RegisterDTO {
 	private String nome;
 
 	@NotBlank
-	@CPF
+	@CPF(message = "CPF Inválido")
 	private String cpf;
 
 	@NotBlank
-	@Pattern(regexp = "\\(\\d{2}\\) \\d{4,5}-\\d{4}")
 	private String telefone;
 
 	@NotBlank
@@ -37,7 +36,7 @@ public class RegisterDTO {
 
 	@NotBlank
 	@Size(min = 8)
-	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")
+	@Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$")
 	private String senha;
 
 	@NotNull
