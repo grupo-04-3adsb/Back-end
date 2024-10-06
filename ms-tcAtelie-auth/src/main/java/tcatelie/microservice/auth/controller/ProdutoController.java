@@ -1,74 +1,70 @@
 package tcatelie.microservice.auth.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
+import tcatelie.microservice.auth.model.Produto;
 import tcatelie.microservice.auth.service.ProdutoService;
-
 @RestController
-@RequestMapping("/produtos")
+@RequiredArgsConstructor
+@RequestMapping("produtos")
+@Tag(name = "Produtos", description = "Operações relacionadas a produtos.")
 public class ProdutoController {
 
-    @Autowired
-    private ProdutoService service;
+    private final ProdutoService service;
 
-    @PostMapping()
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> cadastrarProduto(@RequestBody ProdutoRequestDTO produto){
-        try{
-            return service.cadastrarProduto(produto);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Ocorreu um erro durante o cadastro do produto");
+    @Operation(
+            summary = "Cadastro de produtos",
+            description = "Este endpoint permite cadastrar um novo produto.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Produto cadastrado com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos."),
+                    @ApiResponse(responseCode = "409", description = "Conflito: já existe um produto com esse nome."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @PostMapping
+    public ResponseEntity cadastrarProduto(@RequestBody @Valid ProdutoRequestDTO requestDTO) {
+        try {
+            ProdutoResponseDTO produtoResponse = service.cadastrarProduto(requestDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(produtoResponse);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 
-    @GetMapping()
-    @PreAuthorize("permitAll()")
-    public ResponseEntity<?> listarProdutos(){
-        try{
-            return service.listarProduto();
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Ocorreu um erro na listagem de produtos");
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarProduto(@RequestBody ProdutoRequestDTO produto, @PathVariable Integer id){
-        try{
-            service.atualizarProduto(produto, id);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Produto atualizado com sucesso.");
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Ocorreu um erro durante a atulização do produto.");
-        }
-    }
-
-    @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
-    public ResponseEntity<?> buscarProduto(@PathVariable int id){
-        try{
-            return service.buscarProduto(id);
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Ocorreu um erro durante a busca do produto.");
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deletarProduto(@PathVariable int id){
-        try{
-            service.deletarProduto(id);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Produto deletado com sucesso.");
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Ocorreu um erro durante a deleção do produto.");
+    @Operation(summary = "Buscar produto por ID", description = "Este endpoint retorna um produto com base no seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProdutoResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado.",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+    })
+    @GetMapping("/{idProduto}")
+    public ResponseEntity buscarProdutoPorId(@PathVariable Integer idProduto) {
+        try {
+            ProdutoResponseDTO produtoResponse = service.buscarProdutoPorId(idProduto);
+            return ResponseEntity.ok(produtoResponse);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }

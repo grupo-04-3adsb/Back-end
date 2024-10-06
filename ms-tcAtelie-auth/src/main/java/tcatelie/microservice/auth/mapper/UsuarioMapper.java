@@ -18,7 +18,8 @@ public interface UsuarioMapper {
 			@Mapping(source = "dthrAtualizacao", target = "dataAtualizacao"),
 			@Mapping(source = "role", target = "cargo"), 
 			@Mapping(source = "urlImgUsuario", target = "imgUrl"),
-			@Mapping(source = "enderecos", target = "enderecos") })
+			@Mapping(source = "enderecos", target = "enderecos")
+	})
 	UsuarioResponseDTO toUsuarioResponseDTO(Usuario usuario);
 
 	@Mapping(target = "dthrCadastro", ignore = true)

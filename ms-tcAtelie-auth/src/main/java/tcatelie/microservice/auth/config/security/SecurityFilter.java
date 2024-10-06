@@ -4,6 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,8 +20,12 @@ import java.util.Optional;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
+
+	private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
+
 	@Autowired
 	private JwtService jwtService;
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -28,18 +34,23 @@ public class SecurityFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		var token = this.recoverToken(request);
 		if (token != null) {
+			logger.info("Token recuperado: {}", token);
 			var login = jwtService.validateToken(token);
+			logger.info("Login após validação do token: {}", login);
 			Optional<UserDetails> user = userRepository.findByEmail(login);
 
 			if (user.isPresent()) {
 				var authentication = new UsernamePasswordAuthenticationToken(user.get(), null,
 						user.get().getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(authentication);
+				logger.info("Usuário autenticado: {}", login);
 			} else {
+				logger.warn("Usuário não encontrado: {}", login);
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				return;
 			}
-
+		} else {
+			logger.warn("Nenhum token encontrado no cabeçalho Authorization");
 		}
 		filterChain.doFilter(request, response);
 	}
@@ -50,5 +61,4 @@ public class SecurityFilter extends OncePerRequestFilter {
 			return null;
 		return authHeader.replace("Bearer ", "");
 	}
-
 }
