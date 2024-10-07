@@ -87,11 +87,16 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuario = usuarioMapper.toUsuario(dto);
         usuario.setSenha(encryptedPassword);
 
-        repository.save(usuario);
+        usuario = repository.save(usuario);
+
+        String token = jwtService.generateToken(usuario);
+
+        UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("Usuário cadastrado com sucesso");
+                .body(loginResponseDTO);
     }
 
     public ResponseEntity buscarUsuarioEmailSenha(AuthenticationDTO dto) {
