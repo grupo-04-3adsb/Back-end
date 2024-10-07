@@ -11,12 +11,12 @@ VALUES ('Cadernos', 'Cadernos personalizados para todas as idades', 1),
        ('Balões', 'Balões de diferentes formatos e cores para festas', 3),
        ('Faixas Personalizadas', 'Faixas com mensagens personalizadas para eventos', 3);
 
-INSERT INTO material (id_material, nome_material, preco_unitario, estoque)
-VALUES (1, 'Papel', 0.20, 5),
-       (2, 'Cartolina', 0.50, 10),
-       (3, 'Tecido', 1.00, 3),
-       (4, 'Fita', 0.75, 4),
-       (5, 'Plástico', 0.30, 2);
+INSERT INTO material (nome_material, preco_unitario, estoque)
+VALUES ('Papel', 0.20, 5),
+       ('Cartolina', 0.50, 10),
+       ('Tecido', 1.00, 3),
+       ('Fita', 0.75, 4),
+       ('Plástico', 0.30, 2);
 
 INSERT INTO produto (nome, preco_venda, descricao, dimensao, desconto, margem_lucro, sku, url_imagem_principal,
                      personalizavel, personalizacao_obrigatoria, fk_categoria, fk_subcategoria)
