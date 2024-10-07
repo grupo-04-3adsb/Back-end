@@ -13,9 +13,9 @@ public class MaterialMapper {
             return null;
         }
         return Material.builder()
-                .nome(dto.getNome())
-                .quantidade(dto.getQuantidade())
-                .preco(dto.getPreco())
+                .nomeMaterial(dto.getNome())
+                .estoque(dto.getQuantidade())
+                .precoUnitario(dto.getPreco())
                 .build();
     }
 
@@ -25,8 +25,8 @@ public class MaterialMapper {
             return null;
         }
         return MaterialResponseDTO.builder()
-                .id(entidade.getId())
-                .nome(entidade.getNome())
+                .id(entidade.getIdMaterial())
+                .nome(entidade.getNomeMaterial())
                 .build();
     }
 
@@ -35,10 +35,10 @@ public class MaterialMapper {
             return null;
         }
         return MaterialDetalhadoResponseDTO.builder()
-                .id(entidade.getId())
-                .nome(entidade.getNome())
-                .quantidade(entidade.getQuantidade())
-                .preco(entidade.getPreco())
+                .id(entidade.getIdMaterial())
+                .nome(entidade.getNomeMaterial())
+                .quantidade(entidade.getEstoque())
+                .preco(entidade.getPrecoUnitario())
                 .build();
     }
 

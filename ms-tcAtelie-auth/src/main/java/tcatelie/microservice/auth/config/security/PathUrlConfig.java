@@ -16,7 +16,11 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/{idProduto}", "GET")};
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
-            new AntPathRequestMatcher("/enderecos", "GET"), new AntPathRequestMatcher("/enderecos/{id}", "PUT"), new AntPathRequestMatcher("/produtos", "POST")};
+            new AntPathRequestMatcher("/enderecos", "GET"),
+            new AntPathRequestMatcher("/enderecos/{id}", "PUT"),
+            new AntPathRequestMatcher("/produtos", "POST"),
+            new AntPathRequestMatcher("/materiais/{id}", "PUT"),
+    };
 
     public static final AntPathRequestMatcher[] USER_URLS = {
 

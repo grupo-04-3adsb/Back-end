@@ -1,16 +1,14 @@
 package tcatelie.microservice.auth.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Getter
 @Setter
