@@ -12,6 +12,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/auth/validar"),
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/v3/api-docs/**"),
+            new AntPathRequestMatcher("/h2-console"),
             new AntPathRequestMatcher("/enderecos/usuario/{usuarioId}", "GET"),
             new AntPathRequestMatcher("/produtos/{idProduto}", "GET")};
 

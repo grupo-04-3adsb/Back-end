@@ -74,12 +74,17 @@ public class MaterialService {
      * */
     public MaterialDetalhadoResponseDTO atualizar(MaterialRequestDTO dto, Integer id){
 
+        Optional<Material> materialBuscado = materialRepository.findById(id);
+
         try{
-            if(materialRepository.findById(id).isEmpty()){
+            if(materialBuscado.isEmpty()){
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
-            Material materialEntidade = MaterialMapper.toEntity(dto);
-            materialEntidade.setIdMaterial(id);
+            Material materialEntidade = materialBuscado.get();
+            materialEntidade.setNomeMaterial(dto.getNome());
+            materialEntidade.setEstoque(dto.getQuantidade());
+            materialEntidade.setPrecoUnitario(dto.getPreco());
+
             Material materialSalvo = materialRepository.save(materialEntidade);
 
             return MaterialMapper.toMaterialDetalhadoResponseDTO(materialSalvo);
