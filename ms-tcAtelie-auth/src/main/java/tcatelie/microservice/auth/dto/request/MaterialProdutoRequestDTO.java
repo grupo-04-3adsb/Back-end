@@ -31,4 +31,9 @@ public class MaterialProdutoRequestDTO {
     @Positive(message = "O preço unitário deve ser maior que zero")
     @NotNull(message = "O preço unitário não pode ser nulo")
     public Double precoUnitario;
+
+    public MaterialProdutoRequestDTO(Integer idMaterial, Integer qtdMaterialNecessario) {
+        this.idMaterial = idMaterial;
+        this.qtdMaterialNecessaria = qtdMaterialNecessario;
+    }
 }

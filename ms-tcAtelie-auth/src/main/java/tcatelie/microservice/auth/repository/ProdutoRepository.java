@@ -6,4 +6,5 @@ import tcatelie.microservice.auth.model.Produto;
 public interface ProdutoRepository extends JpaRepository<Produto, Integer>{
 
     Boolean existsByNome(String nome);
+    Boolean existsBySku(String nome);
 }

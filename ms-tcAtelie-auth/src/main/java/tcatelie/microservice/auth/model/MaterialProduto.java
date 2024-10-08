@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 public class MaterialProduto {
 
     @Id
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_material")
     private Material material;
 
     @Id
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_produto")
     private Produto produto;
 

@@ -8,14 +8,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
-import tcatelie.microservice.auth.model.Produto;
 import tcatelie.microservice.auth.service.ProdutoService;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("produtos")
@@ -38,14 +40,9 @@ public class ProdutoController {
     )
     @PostMapping
     public ResponseEntity cadastrarProduto(@RequestBody @Valid ProdutoRequestDTO requestDTO) {
-        try {
-            ProdutoResponseDTO produtoResponse = service.cadastrarProduto(requestDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(produtoResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        }
+        ProdutoResponseDTO produtoResponse = service.cadastrarProduto(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(produtoResponse);
+
     }
 
     @Operation(summary = "Buscar produto por ID", description = "Este endpoint retorna um produto com base no seu ID.")
@@ -58,13 +55,26 @@ public class ProdutoController {
     })
     @GetMapping("/{idProduto}")
     public ResponseEntity buscarProdutoPorId(@PathVariable Integer idProduto) {
-        try {
-            ProdutoResponseDTO produtoResponse = service.buscarProdutoPorId(idProduto);
-            return ResponseEntity.ok(produtoResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        ProdutoResponseDTO produtoResponse = service.buscarProdutoPorId(idProduto);
+        return ResponseEntity.ok(produtoResponse);
+
     }
+
+    @Operation(
+            summary = "Listar todos os produtos com paginação",
+            description = "Este endpoint retorna uma lista paginada de produtos cadastrados. " +
+                    "É possível especificar o número da página, o tamanho da página e a ordenação dos resultados."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Página de produtos retornada com sucesso.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProdutoResponseDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+    })
+    @GetMapping
+    public ResponseEntity buscarTodosProdutosComPaginacao(
+            @PageableDefault(size = 10) Pageable pageable) {
+        Page<ProdutoResponseDTO> produtosPaginados = service.buscarTodosProdutosPaginados(pageable);
+        return ResponseEntity.ok(produtosPaginados);
+    }
+
 }

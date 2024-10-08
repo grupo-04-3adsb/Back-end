@@ -28,7 +28,7 @@ public class ImageUploadController {
 
     private final GoogleDriveApiService googleDriveService;
 
-    @Operation(summary = "Upload de imagem", description = "Faz upload de uma imagem para o Google Drive e retorna a URL pública da imagem.")
+    @Operation(summary = "Upload de imagem", description = "Faz upload de uma imagem para o Google Drive e atualiza a url na imagem e retorna a URL pública da imagem.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Upload bem-sucedido",
                     content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))),
@@ -41,7 +41,8 @@ public class ImageUploadController {
     public ResponseEntity<String> uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("tipo") String tipo,
-            @RequestParam("nomeProduto") String nomeProduto) throws IOException {
+            @RequestParam("nomeProduto") String nomeProduto,
+            @RequestParam("idEntidade") Integer idEntidade) throws IOException {
 
         File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename());
         try (FileOutputStream fos = new FileOutputStream(convFile)) {
@@ -50,11 +51,11 @@ public class ImageUploadController {
 
         String folderId = null;
         if (tipo.equals("usuario")) {
-            folderId = organizeUserImages();
-        } else if (tipo.equals("produto")) {
-            folderId = organizeProductImages(nomeProduto);
+            folderId = googleDriveService.organizeUserImages();
+        } else if (tipo.equals("produto") || tipo.equals("imagem-adicional")) {
+            folderId = googleDriveService.organizeProductImages(nomeProduto);
         } else if (tipo.equals("opcaoPersonalizacao")) {
-            folderId = organizeOptionImages(nomeProduto);
+            folderId = googleDriveService.organizeOptionImages(nomeProduto);
         }
 
         if (folderId != null) {
@@ -62,6 +63,8 @@ public class ImageUploadController {
             convFile.delete();
 
             String publicUrl = googleDriveService.getPublicUrl(fileId);
+
+            googleDriveService.salvarUrlEntidade(tipo, idEntidade, publicUrl);
 
             return ResponseEntity.ok(publicUrl);
         }
@@ -115,43 +118,4 @@ public class ImageUploadController {
         }
     }
 
-    private String organizeUserImages() throws IOException {
-        String rootFolderId = googleDriveService.getRootFolderId();
-        String usersFolderId = googleDriveService.findFolderByName("usuarios", rootFolderId);
-
-        if (usersFolderId == null) {
-            usersFolderId = googleDriveService.createFolder("usuarios", rootFolderId);
-        }
-
-        return usersFolderId;
-    }
-
-    private String organizeProductImages(String nomeProduto) throws IOException {
-        String rootFolderId = googleDriveService.getRootFolderId();
-        String productsFolderId = googleDriveService.findFolderByName("produtos", rootFolderId);
-
-        if (productsFolderId == null) {
-            productsFolderId = googleDriveService.createFolder("produtos", rootFolderId);
-        }
-
-        String productFolderId = googleDriveService.findFolderByName(nomeProduto, productsFolderId);
-
-        if (productFolderId == null) {
-            productFolderId = googleDriveService.createFolder(nomeProduto, productsFolderId);
-        }
-
-        return productFolderId;
-    }
-
-    private String organizeOptionImages(String nomeProduto) throws IOException {
-        String productsFolderId = organizeProductImages(nomeProduto);  // Reutiliza a função anterior
-
-        String optionsFolderId = googleDriveService.findFolderByName("opcoes", productsFolderId);
-
-        if (optionsFolderId == null) {
-            optionsFolderId = googleDriveService.createFolder("opcoes", productsFolderId);
-        }
-
-        return optionsFolderId;
-    }
 }
