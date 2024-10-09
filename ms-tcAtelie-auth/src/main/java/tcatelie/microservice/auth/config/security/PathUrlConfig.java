@@ -14,12 +14,13 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/h2-console"),
             new AntPathRequestMatcher("/enderecos/usuario/{usuarioId}", "GET"),
+            new AntPathRequestMatcher("/produtos", "GET"),
             new AntPathRequestMatcher("/produtos/{idProduto}", "GET")};
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
             new AntPathRequestMatcher("/enderecos", "GET"),
             new AntPathRequestMatcher("/enderecos/{id}", "PUT"),
-            new AntPathRequestMatcher("/produtos", "POST"),
+            new AntPathRequestMatcher("/produtos", "GET"),
             new AntPathRequestMatcher("/materiais/{id}", "PUT"),
     };
 
