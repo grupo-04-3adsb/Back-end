@@ -1,14 +1,18 @@
 package tcatelie.microservice.auth.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import tcatelie.microservice.auth.dto.request.CategoriaRequestDTO;
 import tcatelie.microservice.auth.dto.response.CategoriaResponseDTO;
 import tcatelie.microservice.auth.mapper.CategoriaMapper;
 import tcatelie.microservice.auth.model.Categoria;
 import tcatelie.microservice.auth.repository.CategoriaRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +39,17 @@ public class CategoriaService {
 
     public Page<CategoriaResponseDTO> pesquisarPorNome(String nome, Pageable pageable) {
         return repository.findByNomeCategoriaContainingIgnoreCase(nome, pageable).map(c -> mapper.toCategoriaResponse(c));
+    }
+
+    public List<CategoriaResponseDTO> listarCategoria() {
+    }
+
+    public CategoriaResponseDTO cadastrarCategoria(@Valid CategoriaRequestDTO requestDTO) {
+    }
+
+    public CategoriaResponseDTO atualizar(@Valid CategoriaRequestDTO categoriaRequestDTO, Integer id) {
+    }
+
+    public void deletar(Integer id) {
     }
 }
