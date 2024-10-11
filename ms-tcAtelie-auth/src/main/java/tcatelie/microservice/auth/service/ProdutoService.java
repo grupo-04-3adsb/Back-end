@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.MaterialProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.MaterialProdutoResponseDTO;
@@ -18,6 +19,7 @@ import tcatelie.microservice.auth.repository.ImagensProdutoRepository;
 import tcatelie.microservice.auth.repository.OpcaoPersonalizacaoRepository;
 import tcatelie.microservice.auth.repository.PersonalizacaoRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
+import tcatelie.microservice.auth.specification.ProdutoSpecification;
 
 import java.io.IOException;
 import java.util.List;
@@ -140,8 +142,8 @@ public class ProdutoService {
                 .collect(Collectors.toList()));
     }
 
-    public Page<ProdutoResponseDTO> buscarTodosProdutosPaginados(Pageable pageable) {
-        Page<Produto> produtos = repository.findAll(pageable);
+    public Page<ProdutoResponseDTO> buscarTodosProdutosPaginados(Pageable pageable, ProdutoFiltroDTO produtoFiltroDTO) {
+        Page<Produto> produtos = repository.findAll(ProdutoSpecification.filtrar(produtoFiltroDTO), pageable);
 
         return produtos.map(produto ->
                 montarProdutoResponseDTO(produto, produto.getMateriaisProduto().stream()

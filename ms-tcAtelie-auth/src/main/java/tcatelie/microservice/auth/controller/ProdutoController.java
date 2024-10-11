@@ -14,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.service.ProdutoService;
@@ -72,8 +73,8 @@ public class ProdutoController {
     })
     @GetMapping
     public ResponseEntity buscarTodosProdutosComPaginacao(
-            @PageableDefault(size = 10) Pageable pageable) {
-        Page<ProdutoResponseDTO> produtosPaginados = service.buscarTodosProdutosPaginados(pageable);
+            @PageableDefault(size = 10) Pageable pageable, @RequestBody ProdutoFiltroDTO filtroProduto) {
+        Page<ProdutoResponseDTO> produtosPaginados = service.buscarTodosProdutosPaginados(pageable, filtroProduto);
         return ResponseEntity.ok(produtosPaginados);
     }
 
