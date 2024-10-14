@@ -8,11 +8,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class OpcaoPersonalizacao {
 
     @Id
@@ -32,10 +32,12 @@ public class OpcaoPersonalizacao {
     @Column(name = "url_img_opcao")
     private String urlImagemOpcao;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column(name = "id_img_drive")
+    private String idImgDrive;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_personalizacao")
     private Personalizacao personalizacao;
-
 
     @Column(name = "data_hora_cadastro")
     private LocalDateTime dthrCadastro;
@@ -54,3 +56,4 @@ public class OpcaoPersonalizacao {
         this.dthrAtualizacao = LocalDateTime.now();
     }
 }
+

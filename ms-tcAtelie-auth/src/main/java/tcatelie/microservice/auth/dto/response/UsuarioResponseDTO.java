@@ -37,6 +37,9 @@ public class UsuarioResponseDTO {
     @Schema(description = "URL da imagem do perfil do usuário.", example = "http://img.png")
     private String imgUrl;
 
+    @Schema(description = "ID da imagem do perfil do usuário no Google Drive.", example = "123456")
+    private String idImgDrive;
+
     @Schema(description = "Status do usuário (ex: ATIVO, INATIVO).", example = "ATIVO")
     private String status;
 

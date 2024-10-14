@@ -3,6 +3,7 @@ package tcatelie.microservice.auth.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PersonalizacaoRequestDTO {
+
+    @Schema(description = "ID da personalização", example = "1")
+    @NotNull
+    private Integer idPersonalizacao;
 
     @Schema(description = "Nome da personalização", example = "Cor")
     @NotBlank(message = "O nome da personalização é obrigatório.")

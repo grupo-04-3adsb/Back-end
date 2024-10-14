@@ -64,9 +64,9 @@ public class ImageUploadController {
 
             String publicUrl = googleDriveService.getPublicUrl(fileId);
 
-            googleDriveService.salvarUrlEntidade(tipo, idEntidade, publicUrl);
+            googleDriveService.salvarUrlEntidade(tipo, idEntidade, publicUrl, fileId);
 
-            return ResponseEntity.ok(publicUrl);
+            return ResponseEntity.ok(fileId);
         }
 
         return ResponseEntity.badRequest().body("Tipo de arquivo não suportado");

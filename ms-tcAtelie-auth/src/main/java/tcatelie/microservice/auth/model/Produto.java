@@ -46,6 +46,9 @@ public class Produto {
     @Column(name = "url_imagem_principal")
     private String urlImagemPrincipal;
 
+    @Column(name = "id_img_drive")
+    private String idImgDrive;
+
     @Column(name = "personalizavel")
     private boolean personalizavel;
 
@@ -58,6 +61,8 @@ public class Produto {
     @Column(name = "data_hora_atualizacao")
     private LocalDateTime dthrAtualizacao;
 
+    @Column(name = "produto_ativo")
+    private Boolean produtoAtivo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_categoria", nullable = false)
@@ -67,7 +72,7 @@ public class Produto {
     @JoinColumn(name = "fk_subcategoria", nullable = false)
     private Subcategoria subcategoria;
 
-    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "produto", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<ImagensProduto> imagensAdicionais = new ArrayList<>();
 
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)

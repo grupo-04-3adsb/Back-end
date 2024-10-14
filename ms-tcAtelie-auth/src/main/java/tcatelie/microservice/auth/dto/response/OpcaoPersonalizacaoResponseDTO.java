@@ -27,6 +27,9 @@ public class OpcaoPersonalizacaoResponseDTO {
     @Schema(description = "URL da imagem da opção", example = "https://drive.google.com/file/d/abc123456")
     private String urlImagemOpcao;
 
+    @Schema(description = "ID da imagem da opção no Google Drive", example = "abc123456")
+    private String idImgDrive;
+
     @Schema(description = "Data e hora de criação da opção", example = "2024-10-06T10:15:30")
     private LocalDateTime dthrCriacao;
 

@@ -77,6 +77,9 @@ public class ProdutoRequestDTO {
     @NotEmpty(message = "O produto precisa ter pelo menos 1 imagem adicional")
     private List<ImagemProdutoRequestDTO> imagensAdicionais;
 
+    @Schema(description = "ID da imagem no drive ao qual o produto pertence", example = "1")
+    private Integer idDrive;
+
     @Override
     public String toString() {
         return "ProdutoRequestDTO{" + "nome='" + nome + '\'' + ", sku='" + sku + '\'' + ", margemLucro=" + margemLucro + ", precoVenda=" + precoVenda + ", descricao='" + descricao + '\'' + ", dimensao='" + dimensao + '\'' + ", urlProduto='" + urlProduto + '\'' + ", desconto=" + desconto + ", categoria=" + categoria + ", subcategoria=" + subcategoria + ", isPersonalizavel=" + isPersonalizavel + ", isPersonalizacaoObrigatoria=" + isPersonalizacaoObrigatoria + ", materiais=" + materiais + ", personalizacoes=" + personalizacoes + ", imagensAdicionais=" + imagensAdicionais + '}';

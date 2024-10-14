@@ -65,9 +65,8 @@ public class GoogleDriveApiService {
         return folder.getId();
     }
 
-
     public String getPublicUrl(String fileId) {
-        return "https://drive.google.com/uc?id=" + fileId;
+        return "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w1000";
     }
 
     public void makeFilePublic(String fileId) throws IOException {
@@ -112,6 +111,20 @@ public class GoogleDriveApiService {
         deleteFileOrFolder(folderId);
     }
 
+    public void removerImagemPorUrl(String urlImagem) throws IOException {
+        String fileId = extrairIdDaUrl(urlImagem);
+
+        deleteFileOrFolder(fileId);
+    }
+
+    private String extrairIdDaUrl(String url) {
+        String[] parts = url.split("id=");
+        if (parts.length < 2) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "URL da imagem inválida.");
+        }
+        return parts[1];
+    }
+
     public String organizeUserImages() throws IOException {
         String rootFolderId = getRootFolderId();
         String usersFolderId = findFolderByName("usuarios", rootFolderId);
@@ -152,30 +165,34 @@ public class GoogleDriveApiService {
         return optionsFolderId;
     }
 
-    public void salvarUrlEntidade(String tipo, Integer idEntidade, String urlAcesso) {
+    public void salvarUrlEntidade(String tipo, Integer idEntidade, String urlAcesso, String idImagemDrive) {
         if (tipo.equals("usuario")) {
             Usuario usuario = userRepository.findById(idEntidade).orElseThrow(
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado com id %d".formatted(idEntidade))
             );
             usuario.setUrlImgUsuario(urlAcesso);
+            usuario.setIdImgDrive(idImagemDrive);
             userRepository.save(usuario);
         } else if (tipo.equals("produto")) {
             Produto produto = produtoRepository.findById(idEntidade).orElseThrow(
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com id %d".formatted(idEntidade))
             );
             produto.setUrlImagemPrincipal(urlAcesso);
+            produto.setIdImgDrive(idImagemDrive);
             produtoRepository.save(produto);
         } else if (tipo.equals("opcaoPersonalizacao")) {
             OpcaoPersonalizacao opcao = opcaoPersonalizacaoRepository.findById(idEntidade).orElseThrow(
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Opção não encontrada com id %d".formatted(idEntidade))
             );
             opcao.setUrlImagemOpcao(urlAcesso);
+            opcao.setIdImgDrive(idImagemDrive);
             opcaoPersonalizacaoRepository.save(opcao);
         } else if (tipo.equals("imagem-adicional")) {
             ImagensProduto imgProduto = imagensProdutoRepository.findById(idEntidade).orElseThrow(
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Imagem adicional não encontrada com id %d".formatted(idEntidade))
             );
             imgProduto.setUrlImgAdicional(urlAcesso);
+            imgProduto.setIdImgDrive(idImagemDrive);
             imagensProdutoRepository.save(imgProduto);
         }
     }

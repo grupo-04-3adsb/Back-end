@@ -19,6 +19,8 @@ import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.service.ProdutoService;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("produtos")
@@ -76,6 +78,43 @@ public class ProdutoController {
             @PageableDefault(size = 10) Pageable pageable, @RequestBody ProdutoFiltroDTO filtroProduto) {
         Page<ProdutoResponseDTO> produtosPaginados = service.buscarTodosProdutosPaginados(pageable, filtroProduto);
         return ResponseEntity.ok(produtosPaginados);
+    }
+
+    @Operation(
+            summary = "Atualizar produto",
+            description = "Este endpoint permite atualizar um produto existente baseado no seu ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos."),
+                    @ApiResponse(responseCode = "404", description = "Produto não encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @PutMapping("/{idProduto}")
+    public ResponseEntity atualizarProduto(
+            @PathVariable Integer idProduto,
+            @RequestBody @Valid ProdutoRequestDTO requestDTO) throws IOException {
+        ProdutoResponseDTO produtoAtualizado = service.atualizarProduto(idProduto, requestDTO);
+        return ResponseEntity.ok(produtoAtualizado);
+    }
+
+    @Operation(
+            summary = "Desativar produto",
+            description = "Este endpoint permite desativar um produto existente baseado no seu ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto desativado com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Produto não encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @PutMapping("desativar/{idProduto}")
+    public ResponseEntity desativarProduto(@PathVariable Integer idProduto) {
+        ProdutoResponseDTO produtoDesativado = service.desativarProduto(idProduto);
+        return ResponseEntity.ok(produtoDesativado);
     }
 
 }

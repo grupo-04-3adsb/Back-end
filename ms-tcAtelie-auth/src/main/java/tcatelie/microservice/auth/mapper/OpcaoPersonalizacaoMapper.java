@@ -14,16 +14,19 @@ public interface OpcaoPersonalizacaoMapper {
 
     OpcaoPersonalizacaoMapper INSTANCE = Mappers.getMapper(OpcaoPersonalizacaoMapper.class);
 
-    @Mapping(target = "personalizacao", ignore = true)
     @Mapping(target = "urlImagemOpcao", source = "urlImagemOpcao")
     @Mapping(target = "acrescimoOpcao", source = "acrescimoOpcao")
     @Mapping(target = "descricao", source = "descricaoProduto")
+    @Mapping(target = "idImgDrive", source = "idDrive")
+    @Mapping(target = "personalizacao", ignore = true)
+    @Mapping(target = "idOpcaoPersonalizacao", source = "idOpcao")
     OpcaoPersonalizacao toOpcaoPersonalizacao(OpcaoPersonalizacaoRequestDTO opcaoRequestDTO);
 
     @Mapping(target = "acrescimo", source = "acrescimoOpcao")
     @Mapping(target = "descricaoOpcao", source = "descricao")
     @Mapping(target = "dthrCriacao", source = "dthrCadastro")
     @Mapping(target = "dthrAtualizacao", source = "dthrAtualizacao")
-    @Mapping(target = "idOpcao", source = "idOpcaoPersonalizacao")
+    @Mapping(source = "idImgDrive", target = "idImgDrive")
+    @Mapping(source = "idOpcaoPersonalizacao", target = "idOpcao")
     OpcaoPersonalizacaoResponseDTO toOpcaoPersonalizacaoResponseDTO(OpcaoPersonalizacao opcaoPersonalizacao);
 }
