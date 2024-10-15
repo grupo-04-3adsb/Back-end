@@ -1,6 +1,8 @@
 package tcatelie.microservice.auth.specification;
 
 import jakarta.persistence.criteria.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProdutoSpecification {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProdutoSpecification.class);
 
     public static Specification<Produto> filtrar(ProdutoFiltroDTO filtro) {
         return (root, query, criteriaBuilder) -> {
@@ -52,16 +56,22 @@ public class ProdutoSpecification {
                 );
             }
 
-            if (filtro.getIdCategoria() != null) {
-                predicates.add(
-                        criteriaBuilder.equal(root.get("categoria").get("id"), filtro.getIdCategoria())
+            List<Predicate> categoriaSubcategoriaPredicates = new ArrayList<>();
+
+            if (StringUtils.hasText(filtro.getNomeCategoria())) {
+                categoriaSubcategoriaPredicates.add(
+                        criteriaBuilder.equal(root.get("categoria").get("nomeCategoria"), filtro.getNomeCategoria())
                 );
             }
 
-            if (filtro.getIdSubcategoria() != null) {
-                predicates.add(
-                        criteriaBuilder.equal(root.get("subcategoria").get("id"), filtro.getIdSubcategoria())
+            if (StringUtils.hasText(filtro.getNomeSubcategoria())) {
+                categoriaSubcategoriaPredicates.add(
+                        criteriaBuilder.equal(root.get("subcategoria").get("nomeSubcategoria"), filtro.getNomeSubcategoria())
                 );
+            }
+
+            if (!categoriaSubcategoriaPredicates.isEmpty()) {
+                predicates.add(criteriaBuilder.or(categoriaSubcategoriaPredicates.toArray(new Predicate[0])));
             }
 
             if (filtro.getIsPersonalizavel() != null) {
@@ -69,6 +79,12 @@ public class ProdutoSpecification {
                         criteriaBuilder.equal(root.get("personalizavel"), filtro.getIsPersonalizavel())
                 );
             }
+
+            predicates.add(
+                    criteriaBuilder.equal(root.get("produtoAtivo"), true)
+            );
+
+            logger.info("Predicates: {}", predicates);
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
