@@ -18,6 +18,9 @@ import tcatelie.microservice.auth.mapper.OpcaoPersonalizacaoMapper;
 import tcatelie.microservice.auth.mapper.PersonalizacaoMapper;
 import tcatelie.microservice.auth.mapper.ProdutoMapper;
 import tcatelie.microservice.auth.model.*;
+import tcatelie.microservice.auth.observer.EmailNotificacao;
+import tcatelie.microservice.auth.observer.Observer;
+import tcatelie.microservice.auth.observer.ProdutoObserver;
 import tcatelie.microservice.auth.repository.ImagensProdutoRepository;
 import tcatelie.microservice.auth.repository.OpcaoPersonalizacaoRepository;
 import tcatelie.microservice.auth.repository.PersonalizacaoRepository;
@@ -46,6 +49,8 @@ public class ProdutoService {
     private final PersonalizacaoRepository personalizacaoRepository;
     private final OpcaoPersonalizacaoRepository opcaoPersonalizacaoRepository;
     private final GoogleDriveApiService googleDriveApiService;
+    private final ProdutoObserver produtoObserver;
+    private final EmailService emailService;
     private static final Logger logger = LoggerFactory.getLogger(ProdutoService.class);
 
     public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO requestDTO) {
@@ -55,6 +60,13 @@ public class ProdutoService {
 
         Produto produto = criarProdutoComRelacoes(requestDTO);
         Produto produtoSalvo = repository.save(produto);
+
+
+        Observer emailNotificacao = new EmailNotificacao("claudio.araujofo@sptech.school", emailService);
+        produtoObserver.addObserver(emailNotificacao);
+
+        produtoObserver.cadastrarProduto("Um novo produto foi cadastrado com sucesso.");
+
         return montarProdutoResponseDTO(produtoSalvo, requestDTO.getMateriais());
     }
 
@@ -183,7 +195,7 @@ public class ProdutoService {
         produtoExistente.setPersonalizavel(requestDTO.getIsPersonalizavel());
         produtoExistente.setDimensao(requestDTO.getDimensao());
 
-        if(!produtoExistente.getUrlImagemPrincipal().equals(requestDTO.getUrlProduto())) {
+        if (!produtoExistente.getUrlImagemPrincipal().equals(requestDTO.getUrlProduto())) {
             filesIds.add(produtoExistente.getIdImgDrive());
             produtoExistente.setUrlImagemPrincipal(requestDTO.getUrlProduto());
         }
@@ -314,7 +326,7 @@ public class ProdutoService {
         }
     }
 
-    public ProdutoResponseDTO desativarProduto(Integer idProduto){
+    public ProdutoResponseDTO desativarProduto(Integer idProduto) {
         Produto produto = repository.findById(idProduto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com o ID: " + idProduto));
         produto.setProdutoAtivo(false);
