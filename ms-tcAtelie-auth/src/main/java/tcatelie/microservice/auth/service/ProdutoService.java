@@ -82,10 +82,16 @@ public class ProdutoService {
                 .map(img -> new ImagensProduto(img.getUrl())).collect(Collectors.toList()));
         produto.setMateriaisProduto(montarMateriaisProduto(requestDTO.getMateriais(), materiais, produto));
 
-        produto.getPersonalizacoes().forEach(p -> {
+        List<Personalizacao> listaPersonalizacoes = requestDTO.getPersonalizacoes().stream()
+                .map(personalizacaoMapper::toPersonalizacaoWithOpcoes)
+                .collect(Collectors.toList());
+
+        listaPersonalizacoes.forEach(p -> {
             p.setProduto(produto);
             p.getOpcoes().forEach(o -> o.setPersonalizacao(p));
         });
+
+        produto.setPersonalizacoes(listaPersonalizacoes);
 
         produto.getImagensAdicionais().forEach(img -> img.setProduto(produto));
         return produto;
