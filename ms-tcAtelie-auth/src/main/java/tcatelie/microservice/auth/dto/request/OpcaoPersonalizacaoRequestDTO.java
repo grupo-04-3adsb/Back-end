@@ -23,7 +23,7 @@ public class OpcaoPersonalizacaoRequestDTO {
     private String nomeOpcao;
 
     @Schema(description = "Descrição do produto para essa opção", example = "Produto na cor azul.")
-    @NotBlank(message = "A descrição do produto é obrigatória.")
+    @NotBlank(message = "A descrição da opção é obrigatória.")
     private String descricaoProduto;
 
     @Schema(description = "ID da imagem no drive ao qual a opcao pertence", example = "1")
