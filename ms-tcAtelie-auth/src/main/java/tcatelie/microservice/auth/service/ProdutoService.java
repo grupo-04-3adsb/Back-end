@@ -65,7 +65,7 @@ public class ProdutoService {
         Observer emailNotificacao = new EmailNotificacao("claudio.araujofo@sptech.school", emailService);
         produtoObserver.addObserver(emailNotificacao);
 
-        produtoObserver.cadastrarProduto("Um novo produto foi cadastrado com sucesso.");
+        produtoObserver.cadastrarProduto("Um novo produto foi cadastrado com sucesso.", produtoSalvo);
 
         return montarProdutoResponseDTO(produtoSalvo, requestDTO.getMateriais());
     }

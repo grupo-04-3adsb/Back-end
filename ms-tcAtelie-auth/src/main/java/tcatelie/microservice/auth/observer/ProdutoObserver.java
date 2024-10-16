@@ -1,17 +1,14 @@
 package tcatelie.microservice.auth.observer;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import tcatelie.microservice.auth.model.Produto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@Component
 @RequiredArgsConstructor
+@Component
 public class ProdutoObserver {
 
     private final List<Observer> observers = new ArrayList<>();
@@ -26,16 +23,15 @@ public class ProdutoObserver {
         observers.remove(observer);
     }
 
-    private void notifyObservers(String message) {
-        observers.forEach(observer -> observer.update(message));
+    private void notifyObservers(String message, Produto produto) {
+        observers.forEach(observer -> observer.update(message, produto));
     }
 
-    public void cadastrarProduto(String message) {
-        notifyObservers(message);
+    public void cadastrarProduto(String message, Produto produto) {
+        notifyObservers(message, produto);
     }
 
-    public void removerProduto(String message) {
-        notifyObservers(message);
+    public void removerProduto(String message, Produto produto) {
+        notifyObservers(message, produto);
     }
-
 }

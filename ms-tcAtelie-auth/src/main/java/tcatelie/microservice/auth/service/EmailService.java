@@ -3,7 +3,6 @@ package tcatelie.microservice.auth.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import java.util.Map;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-
     private final TemplateEngine templateEngine;
 
     public void sendEmail(String to, String subject, Map<String, Object> variables) throws MessagingException {
