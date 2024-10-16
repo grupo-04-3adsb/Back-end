@@ -18,6 +18,8 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/categorias/pesquisar"),
             new AntPathRequestMatcher("/subcategorias/pesquisar/**"),
             new AntPathRequestMatcher("/materiais/pesquisar/**"),
+            new AntPathRequestMatcher("/produtos/mercado-livre"),
+            new AntPathRequestMatcher("/produtos/produtos/exportar-csv"),
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {

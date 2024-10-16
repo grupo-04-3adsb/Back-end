@@ -25,7 +25,7 @@ import tcatelie.microservice.auth.service.UsuarioService;
 @RestController
 @RequestMapping("auth")
 @RequiredArgsConstructor
-@Tag(name = "Autenticação")
+@Tag(name = "Autenticação", description = "Operações relacionadas a autenticação de usuários.")
 public class AuthenticationController {
 
 	private final AuthenticationManager authenticationManager;

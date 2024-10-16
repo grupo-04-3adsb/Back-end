@@ -2,6 +2,7 @@ package tcatelie.microservice.auth.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,11 +19,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("enderecos")
+@RequiredArgsConstructor
 @Tag(name = "Endereços", description = "Gerenciamento de endereços de usuários")
 public class EnderecoController {
 
-	@Autowired
-	private EnderecoService enderecoService;
+	private final EnderecoService enderecoService;
 
 	@Operation(summary = "Cadastra um novo endereço para um usuário", description = "Este endpoint permite que um usuário cadastrado adicione um novo endereço ao seu perfil, utilizando seu ID. O endereço deve ser único por CEP.", responses = {
 			@ApiResponse(responseCode = "201", description = "Endereço cadastrado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoResponseDTO.class))),
