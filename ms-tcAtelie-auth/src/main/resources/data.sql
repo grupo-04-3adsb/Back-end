@@ -126,20 +126,53 @@ VALUES (1, 'Papel', 0.20, 5),
        (31, 'Protetor auricular', 2.00, 10);
 
 INSERT INTO produto (nome, preco_venda, descricao, dimensao, desconto, margem_lucro, sku, url_imagem_principal,
-                     personalizavel, personalizacao_obrigatoria, fk_categoria, fk_subcategoria, id_img_drive)
+                     personalizavel, personalizacao_obrigatoria, fk_categoria, fk_subcategoria, id_img_drive,
+                     produto_Ativo)
 VALUES ('Caderno Personalizado', 29.90, 'Caderno com capa personalizada e folhas pautadas.', 'A5', 0.10, 0.30,
         'CADERNO-001', 'https://drive.google.com/uc?export=view&id=1WFbmLk-VFJJ0uYa8W5KdRC20gGGEXTSx', true, true, 1,
-        1, '1OosCxJEq0zdIUuuzpNhzluX72qRldmRx'),
-       ('Agenda Semanal', 39.90, 'Agenda personalizada com divisões semanais.', 'A5', 0.15, 0.25, 'AGENDA-001',
-        'url/imagem/agenda_semanal.jpg', true, false, 1, 2, '1OosCxJEq'),
-       ('Topo de Bolo Personalizado', 49.90, 'Topo de bolo com nome e data do evento.', '30cm', 0.20, 0.35, 'TOPO-001',
-        'url/imagem/topo_bolo_personalizado.jpg', true, true, 2, 3, '1OosCxJEq'),
-       ('Topo de Bolo Casamento', 69.90, 'Topo de bolo elegante para casamentos.', '30cm', 0.25, 0.40, 'TOPO-002',
-        'url/imagem/topo_bolo_casamento.jpg', true, true, 2, 4, '1OosCxJEq'),
-       ('Balão de Festa', 9.90, 'Balão de festa de 30cm, disponível em várias cores.', '30cm', 0.05, 0.10, 'BALAO-001',
-        'url/imagem/balao_festa.jpg', false, false, 3, 5, '1OosCxJEq'),
-       ('Faixa Personalizada', 19.90, 'Faixa personalizada com mensagem para festas.', '2m', 0.10, 0.20, 'FAIXA-001',
-        'url/imagem/faixa_personalizada.jpg', true, false, 3, 6, '1OosCxJEq');
+        1, '1OosCxJEq0zdIUuuzpNhzRafG3N6eEyG5', true),
+
+       ('Canetas Coloridas', 15.90, 'Conjunto de 12 canetas coloridas para desenho.', '15cm', 0.05, 0.20,
+        'CANETA-001', 'https://drive.google.com/uc?export=view&id=1D_BU0u82gGPrqQm-8SftT-C6f8CrZ5R9', false, false, 1,
+        1, '1bXl8JQW_FQ8i9-OeMcC_2KYss5_3TeWB', true),
+
+       ('Decoração de Mesa para Aniversário', 49.90, 'Conjunto de itens para decoração de mesa de aniversário.',
+        '50x50cm', 0.15, 0.25,
+        'DECORACAO-001', 'https://drive.google.com/uc?export=view&id=1Tiw35nll3jApD0I6TKHGfUqA2bFGBLJm', false, false,
+        2,
+        6, '1bJ4H3RLbY8w2I8Gth7_yTVPrbNYgDnv', false),
+
+       ('Bolsa de Tecido', 79.90, 'Bolsa de tecido personalizada, ideal para eventos.', '40x30cm', 0.20, 0.35,
+        'BOLSA-001', 'https://drive.google.com/uc?export=view&id=1uEy4tKtFq64H6XGqMyyP6g0l92zTe8-K', true, true, 1,
+        1, '1bmT3tK8ImTYHUEUB3J8kl5JHqfZ_4d8', true),
+
+       ('Papel de Presente', 9.90, 'Papel de presente decorado, 5 metros.', '5m', 0.00, 0.15,
+        'PAPEL-001', 'https://drive.google.com/uc?export=view&id=1A1CUE9_O_P-14Us2PN8dxze2kBLV8sYl', false, false, 1,
+        1, '1yLh7kLo0lFWxndjET_vZcOa9h3uTqPI', true),
+
+       ('Brinde Corporativo', 12.90, 'Brinde personalizado para eventos corporativos.', '10x10cm', 0.10, 0.25,
+        'BRINDE-001', 'https://drive.google.com/uc?export=view&id=1AQgD7gv1LBK-PmpWrTFGRReXj2Le3FhU', true, true, 5,
+        9, '1jW2nqf9hZUyJ3p7Qah4D2azP-HM7sG5', true),
+
+       ('Kit de Festa', 99.90, 'Kit completo para festa infantil com decoração e lembrancinhas.', '1,5m', 0.20, 0.30,
+        'KITFESTA-001', 'https://drive.google.com/uc?export=view&id=1EF8lP3RUD8UuGhKpyA4v-6e74gw5DEHE', true, true, 2,
+        10, '1iXYHyacDGmqDa_Oz9n_NTAzI66AzXib', true),
+
+       ('Convite de Casamento', 39.90, 'Convite personalizado para casamentos.', 'A5', 0.10, 0.20,
+        'CONVITE-001', 'https://drive.google.com/uc?export=view&id=1UwhS_yr6imWSwDJb5APFM2jRMsi8ZmOK', true, true, 11,
+        13, '1_CIkSOZoyKyb8Yo_E1GUL4TjINu2i0g', true),
+
+       ('Arranjo Floral', 59.90, 'Arranjo floral para decoração de eventos.', '30cm', 0.15, 0.25,
+        'ARRANJO-001', 'https://drive.google.com/uc?export=view&id=1H0Oa2cGhbhbdWiTyw3tDBSHQ5EJjBgfl', false, false, 13,
+        14, '1zM10FnC2DNbZfSwqIpOCq-nFZlFk6ZY', true),
+
+       ('Tinta Acrílica', 10.90, 'Tinta acrílica em diversas cores, 250ml.', '250ml', 0.05, 0.15,
+        'TINTA-001', 'https://drive.google.com/uc?export=view&id=1YEk08rMZRVnBRERHZjxh9ImuD0wnq5D1', false, false, 28,
+        28, '1yI3d4MMQfRuXY85iw2ZKXxTC2aqh-70', true),
+
+       ('Camiseta Personalizada', 29.90, 'Camiseta com estampa personalizada.', 'M', 0.10, 0.30,
+        'CAMISETA-001', 'https://drive.google.com/uc?export=view&id=1uB4AAdKivizZ24oeo1k4t32Hk1eBlJh', true, true, 1,
+        1, '1xq_dAKhsz4BxDB9d3gK7G8W0Wzk3MrP', true);
 
 INSERT INTO imagens_produto (url_img_adicional, fk_produto, id_img_drive)
 VALUES ('https://drive.google.com/uc?export=view&id=1DqrBxh7YyKSdbCNVPExhxdGLZFJR-xSH', 1,

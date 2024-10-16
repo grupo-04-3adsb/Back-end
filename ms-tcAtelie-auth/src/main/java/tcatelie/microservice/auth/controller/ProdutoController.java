@@ -70,12 +70,36 @@ public class ProdutoController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Página de produtos retornada com sucesso.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                    content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
     })
     @GetMapping
     public ResponseEntity buscarTodosProdutosComPaginacao(
-            @PageableDefault(size = 10) Pageable pageable, @RequestBody ProdutoFiltroDTO filtroProduto) {
+            @PageableDefault(size = 10) Pageable pageable,
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "sku", required = false) String sku,
+            @RequestParam(value = "margemLucroMinima", required = false) Double margemLucroMinima,
+            @RequestParam(value = "margemLucroMaxima", required = false) Double margemLucroMaxima,
+            @RequestParam(value = "precoMinimo", required = false) Double precoMinimo,
+            @RequestParam(value = "precoMaximo", required = false) Double precoMaximo,
+            @RequestParam(value = "nomeCategoria", required = false) String nomeCategoria,
+            @RequestParam(value = "nomeSubcategoria", required = false) String nomeSubcategoria,
+            @RequestParam(value = "isPersonalizavel", required = false) Boolean isPersonalizavel,
+            @RequestParam(value = "isPersonalizacaoObrigatoria", required = false) Boolean isPersonalizacaoObrigatoria) {
+
+        ProdutoFiltroDTO filtroProduto = new ProdutoFiltroDTO(
+                nome,
+                sku,
+                margemLucroMinima,
+                margemLucroMaxima,
+                precoMinimo,
+                precoMaximo,
+                nomeCategoria,
+                nomeSubcategoria,
+                isPersonalizavel,
+                isPersonalizacaoObrigatoria
+        );
+
         Page<ProdutoResponseDTO> produtosPaginados = service.buscarTodosProdutosPaginados(pageable, filtroProduto);
         return ResponseEntity.ok(produtosPaginados);
     }
