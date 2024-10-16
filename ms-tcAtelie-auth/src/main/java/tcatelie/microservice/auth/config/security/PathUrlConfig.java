@@ -15,7 +15,8 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/enderecos/usuario/{usuarioId}", "GET"),
             new AntPathRequestMatcher("/produtos", "GET"),
             new AntPathRequestMatcher("/produtos/{idProduto}", "GET"),
-            new AntPathRequestMatcher("/categorias/pesquisar"),
+            new AntPathRequestMatcher("/categorias", "GET"),
+            new AntPathRequestMatcher("/categorias/{id}", "GET"),
             new AntPathRequestMatcher("/subcategorias/pesquisar/**")
     };
 
@@ -24,6 +25,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/enderecos/{id}", "PUT"),
             new AntPathRequestMatcher("/produtos", "POST"),
             new AntPathRequestMatcher("/materiais/{id}", "PUT"),
+            new AntPathRequestMatcher("/categorias", "POST"),
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {

@@ -3,6 +3,7 @@ package tcatelie.microservice.auth.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import tcatelie.microservice.auth.dto.request.CategoriaRequestDTO;
 import tcatelie.microservice.auth.dto.response.CategoriaResponseDTO;
 import tcatelie.microservice.auth.model.Categoria;
 
@@ -14,4 +15,8 @@ public interface CategoriaMapper {
     @Mapping(target = "subcategorias", source = "subcategorias")
     CategoriaResponseDTO toCategoriaResponse(Categoria categoria);
 
+    @Mapping(target = "idCategoria", ignore = true)
+    @Mapping(target = "dthrCadastro", ignore = true)
+    @Mapping(target = "dthrAtualizacao", ignore = true)
+    Categoria toCategoria(CategoriaRequestDTO categoriaRequestDTO);
 }
