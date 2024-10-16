@@ -1,35 +1,40 @@
 package tcatelie.microservice.auth.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.model.Produto;
 
+@Mapper(componentModel = "spring", uses = {
+        ImagensAdicionaisMapper.class,
+        PersonalizacaoMapper.class
+})
 @Component
-public class ProdutoMapper {
+public interface ProdutoMapper {
 
-    public Produto toEntity(ProdutoRequestDTO requestDTO) throws Exception {
-        Produto produto = new Produto();
-        produto.setNome(requestDTO.getNome());
-        produto.setPreco(requestDTO.getPreco());
-        produto.setDescricao(requestDTO.getDescricao());
-        produto.setMaterial(requestDTO.getMaterial());
-        produto.setDimensao(requestDTO.getDimensao());
-        produto.setUrl_produto(requestDTO.getUrl_produto());
+    ProdutoMapper INSTANCE = Mappers.getMapper(ProdutoMapper.class);
 
-        return produto;
-    }
+    @Mapping(source = "precoVenda", target = "preco")
+    @Mapping(source = "urlProduto", target = "urlImagemPrincipal")
+    @Mapping(source = "categoria", target = "categoria")
+    @Mapping(source = "subcategoria", target = "subcategoria")
+    @Mapping(source = "isPersonalizavel", target = "personalizavel")
+    @Mapping(source = "isPersonalizacaoObrigatoria", target = "personalizacaoObrigatoria")
+    @Mapping(source = "desconto", target = "desconto")
+    @Mapping(source = "margemLucro", target = "margemLucro")
+    Produto toProduto(ProdutoRequestDTO requestDTO);
 
-    public ProdutoResponseDTO toDTO(Produto entity) throws Exception {
-        ProdutoResponseDTO dto = new ProdutoResponseDTO();
-        dto.setId(entity.getId());
-        dto.setNome(entity.getNome());
-        dto.setPreco(entity.getPreco());
-        dto.setDescricao(entity.getDescricao());
-        dto.setMaterial(entity.getMaterial());
-        dto.setUrl_produto(entity.getUrl_produto());
-
-        return dto;
-    }
-
+    @Mapping(source = "urlImagemPrincipal", target = "urlProduto")
+    @Mapping(source = "categoria", target = "categoria")
+    @Mapping(source = "subcategoria", target = "subcategoria")
+    @Mapping(source = "personalizavel", target = "isPersonalizavel")
+    @Mapping(source = "personalizacaoObrigatoria", target = "isPersonalizacaoObrigatoria")
+    @Mapping(source = "margemLucro", target = "margemLucro")
+    @Mapping(source = "dthrCadastro", target = "dthrCriacao")
+    @Mapping(source = "idImgDrive", target = "idImgDrive")
+    @Mapping(source = "produtoAtivo", target = "produtoAtivo")
+    ProdutoResponseDTO toResponseDTO(Produto produto);
 }

@@ -1,9 +1,7 @@
 package tcatelie.microservice.auth.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +17,8 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "USUARIO")
 public class Usuario implements UserDetails {
 
@@ -68,6 +67,9 @@ public class Usuario implements UserDetails {
 
     @Column(name = "ID_GOOGLE")
     private String idGoogle;
+
+    @Column(name = "id_img_drive")
+    private String idImgDrive;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> enderecos;
