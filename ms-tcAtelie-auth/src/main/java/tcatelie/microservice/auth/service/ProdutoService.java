@@ -54,6 +54,7 @@ public class ProdutoService {
         logger.info(requestDTO.toString());
 
         Produto produto = criarProdutoComRelacoes(requestDTO);
+        produto.setProdutoAtivo(true);
         Produto produtoSalvo = repository.save(produto);
         return montarProdutoResponseDTO(produtoSalvo, requestDTO.getMateriais());
     }
