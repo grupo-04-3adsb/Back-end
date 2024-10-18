@@ -129,61 +129,61 @@ INSERT INTO produto (nome, preco_venda, descricao, dimensao, desconto, margem_lu
                      personalizavel, personalizacao_obrigatoria, fk_categoria, fk_subcategoria, id_img_drive,
                      produto_Ativo)
 VALUES ('Caderno Personalizado', 29.90, 'Caderno com capa personalizada e folhas pautadas.', 'A5', 0.10, 0.30,
-        'CADERNO-001', 'https://drive.google.com/uc?export=view&id=1WFbmLk-VFJJ0uYa8W5KdRC20gGGEXTSx', true, true, 1,
+        'CADERNO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 1,
         1, '1OosCxJEq0zdIUuuzpNhzRafG3N6eEyG5', true),
 
        ('Canetas Coloridas', 15.90, 'Conjunto de 12 canetas coloridas para desenho.', '15cm', 0.05, 0.20,
-        'CANETA-001', 'https://drive.google.com/uc?export=view&id=1D_BU0u82gGPrqQm-8SftT-C6f8CrZ5R9', false, false, 1,
+        'CANETA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false, 1,
         1, '1bXl8JQW_FQ8i9-OeMcC_2KYss5_3TeWB', true),
 
        ('Decoração de Mesa para Aniversário', 49.90, 'Conjunto de itens para decoração de mesa de aniversário.',
         '50x50cm', 0.15, 0.25,
-        'DECORACAO-001', 'https://drive.google.com/uc?export=view&id=1Tiw35nll3jApD0I6TKHGfUqA2bFGBLJm', false, false,
+        'DECORACAO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false,
         2,
         6, '1bJ4H3RLbY8w2I8Gth7_yTVPrbNYgDnv', false),
 
        ('Bolsa de Tecido', 79.90, 'Bolsa de tecido personalizada, ideal para eventos.', '40x30cm', 0.20, 0.35,
-        'BOLSA-001', 'https://drive.google.com/uc?export=view&id=1uEy4tKtFq64H6XGqMyyP6g0l92zTe8-K', true, true, 1,
+        'BOLSA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 1,
         1, '1bmT3tK8ImTYHUEUB3J8kl5JHqfZ_4d8', true),
 
        ('Papel de Presente', 9.90, 'Papel de presente decorado, 5 metros.', '5m', 0.00, 0.15,
-        'PAPEL-001', 'https://drive.google.com/uc?export=view&id=1A1CUE9_O_P-14Us2PN8dxze2kBLV8sYl', false, false, 1,
+        'PAPEL-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false, 1,
         1, '1yLh7kLo0lFWxndjET_vZcOa9h3uTqPI', true),
 
        ('Brinde Corporativo', 12.90, 'Brinde personalizado para eventos corporativos.', '10x10cm', 0.10, 0.25,
-        'BRINDE-001', 'https://drive.google.com/uc?export=view&id=1AQgD7gv1LBK-PmpWrTFGRReXj2Le3FhU', true, true, 5,
+        'BRINDE-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 5,
         9, '1jW2nqf9hZUyJ3p7Qah4D2azP-HM7sG5', true),
 
        ('Kit de Festa', 99.90, 'Kit completo para festa infantil com decoração e lembrancinhas.', '1,5m', 0.20, 0.30,
-        'KITFESTA-001', 'https://drive.google.com/uc?export=view&id=1EF8lP3RUD8UuGhKpyA4v-6e74gw5DEHE', true, true, 2,
+        'KITFESTA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 2,
         10, '1iXYHyacDGmqDa_Oz9n_NTAzI66AzXib', true),
 
        ('Convite de Casamento', 39.90, 'Convite personalizado para casamentos.', 'A5', 0.10, 0.20,
-        'CONVITE-001', 'https://drive.google.com/uc?export=view&id=1UwhS_yr6imWSwDJb5APFM2jRMsi8ZmOK', true, true, 11,
+        'CONVITE-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 11,
         13, '1_CIkSOZoyKyb8Yo_E1GUL4TjINu2i0g', true),
 
        ('Arranjo Floral', 59.90, 'Arranjo floral para decoração de eventos.', '30cm', 0.15, 0.25,
-        'ARRANJO-001', 'https://drive.google.com/uc?export=view&id=1H0Oa2cGhbhbdWiTyw3tDBSHQ5EJjBgfl', false, false, 13,
+        'ARRANJO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false, 13,
         14, '1zM10FnC2DNbZfSwqIpOCq-nFZlFk6ZY', true),
 
        ('Tinta Acrílica', 10.90, 'Tinta acrílica em diversas cores, 250ml.', '250ml', 0.05, 0.15,
-        'TINTA-001', 'https://drive.google.com/uc?export=view&id=1YEk08rMZRVnBRERHZjxh9ImuD0wnq5D1', false, false, 28,
+        'TINTA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false, 28,
         28, '1yI3d4MMQfRuXY85iw2ZKXxTC2aqh-70', true),
 
        ('Camiseta Personalizada', 29.90, 'Camiseta com estampa personalizada.', 'M', 0.10, 0.30,
-        'CAMISETA-001', 'https://drive.google.com/uc?export=view&id=1uB4AAdKivizZ24oeo1k4t32Hk1eBlJh', true, true, 1,
+        'CAMISETA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 1,
         1, '1xq_dAKhsz4BxDB9d3gK7G8W0Wzk3MrP', true);
 
 INSERT INTO imagens_produto (url_img_adicional, fk_produto, id_img_drive)
-VALUES ('https://drive.google.com/uc?export=view&id=1DqrBxh7YyKSdbCNVPExhxdGLZFJR-xSH', 1,
+VALUES ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
         '1kJUI8FDa3Z4qVDxRvS0wYzeZwGrt55r2'),
-       ('https://drive.google.com/uc?export=view&id=1DqrBxh7YyKSdbCNVPExhxdGLZFJR-xSH', 1,
+       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
         '1kJUI8FDa3Z4qVDxRvS0wYzeZwGrt55r2'),
-       ('url/imagem/adicional_agenda.jpg', 2, 'abc123'),
-       ('url/imagem/adicional_topo_bolo.jpg', 3, 'abc123'),
-       ('url/imagem/adicional_topo_bolo_casamento.jpg', 4, 'abc123'),
-       ('url/imagem/adicional_balao.jpg', 5, 'abc123'),
-       ('url/imagem/adicional_faixa.jpg', 6, 'abc123');
+       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 2, 'abc123'),
+       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 3, 'abc123'),
+       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 4, 'abc123'),
+       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 6, 'abc123');
 
 INSERT INTO personalizacao (nome_personalizacao, tipo_personalizacao, fk_produto)
 VALUES ('Personalização de Capa', 'Texto', 1),
@@ -195,23 +195,23 @@ VALUES ('Personalização de Capa', 'Texto', 1),
 INSERT INTO opcao_personalizacao (nome_opcao, descricao, acrescimo_opcao, url_img_opcao, fk_personalizacao,
                                   id_img_drive)
 VALUES ('Texto em Ouro', 'Texto na capa em efeito dourado', 5.00,
-        'https://drive.google.com/uc?export=view&id=1JXubzQ5UKB_DMHWcLOI-5MFoqDBNRPvc', 1,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
         '1cCAa5y637fsJ4VZ96Lqz5Utz_ZcZKo49'),
        ('Texto em Prata', 'Texto na capa em efeito prateado', 4.00,
-        'https://drive.google.com/uc?export=view&id=1XXV-Pbr_gQ9SbBK1WOA6IEPictR14Ik-', 1,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
         '1OLxbmeet0tTxCn5BOIas0LmB7Y4G7pbf'),
-       ('Data em Dourado', 'Datas em efeito dourado', 3.00, 'url/imagem/data_dourada.jpg', 3, 'abc123'),
-       ('Data em Prata', 'Datas em efeito prateado', 2.00, 'url/imagem/data_prateada.jpg', 3, 'abc123'),
-       ('Design Floral', 'Design floral para casamentos', 8.00, 'url/imagem/design_floral.jpg', 4, 'abc123'),
-       ('Design Minimalista', 'Design minimalista para casamentos', 6.00, 'url/imagem/design_minimalista.jpg', 4,
+       ('Data em Dourado', 'Datas em efeito dourado', 3.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 3, 'abc123'),
+       ('Data em Prata', 'Datas em efeito prateado', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 3, 'abc123'),
+       ('Design Floral', 'Design floral para casamentos', 8.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 4, 'abc123'),
+       ('Design Minimalista', 'Design minimalista para casamentos', 6.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 4,
         'abc123'),
-       ('Mensagem em Dourado', 'Mensagem em efeito dourado', 4.00, 'url/imagem/mensagem_dourada.jpg', 5, 'abc123'),
-       ('Mensagem em Prata', 'Mensagem em efeito prateado', 3.00, 'url/imagem/mensagem_prateada.jpg', 5, 'abc123'),
-       ('Mensagem em Vermelho', 'Mensagem em efeito vermelho', 2.00, 'url/imagem/mensagem_vermelha.jpg', 5, 'abc123'),
-       ('Mensagem em Azul', 'Mensagem em efeito azul', 2.00, 'url/imagem/mensagem_azul.jpg', 5, 'abc123'),
-       ('Mensagem em Verde', 'Mensagem em efeito verde', 2.00, 'url/imagem/mensagem_verde.jpg', 5, 'abc123'),
-       ('Mensagem em Amarelo', 'Mensagem em efeito amarelo', 2.00, 'url/imagem/mensagem_amarela.jpg', 5, 'abc123'),
-       ('Mensagem em Rosa', 'Mensagem em efeito rosa', 2.00, 'url/imagem/m', 5, 'abc123');
+       ('Mensagem em Dourado', 'Mensagem em efeito dourado', 4.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Prata', 'Mensagem em efeito prateado', 3.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Vermelho', 'Mensagem em efeito vermelho', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Azul', 'Mensagem em efeito azul', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Verde', 'Mensagem em efeito verde', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Amarelo', 'Mensagem em efeito amarelo', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Rosa', 'Mensagem em efeito rosa', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123');
 
 INSERT INTO material_produto (fk_material, fk_produto, qtd_material_necessario)
 VALUES (1, 1, 2),
@@ -229,5 +229,5 @@ INSERT INTO USUARIO
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
 VALUES ('Cláudio Araújo', 'claudio@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
         '(11) 98765-4321', 'HABILITADO',
-        NOW(), NOW(), '123.456.789-09', 1, 'http://img.png', '2005-01-07', NULL);
+        NOW(), NOW(), '123.456.789-09', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL);
 
