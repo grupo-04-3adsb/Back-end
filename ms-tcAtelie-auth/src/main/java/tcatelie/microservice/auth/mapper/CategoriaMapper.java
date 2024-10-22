@@ -16,7 +16,5 @@ public interface CategoriaMapper {
     CategoriaResponseDTO toCategoriaResponse(Categoria categoria);
 
     @Mapping(target = "idCategoria", ignore = true)
-    @Mapping(target = "dthrCadastro", ignore = true)
-    @Mapping(target = "dthrAtualizacao", ignore = true)
     Categoria toCategoria(CategoriaRequestDTO categoriaRequestDTO);
 }
