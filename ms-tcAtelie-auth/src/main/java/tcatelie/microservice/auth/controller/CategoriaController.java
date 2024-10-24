@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import tcatelie.microservice.auth.dto.request.CategoriaRequestDTO;
 import tcatelie.microservice.auth.dto.response.CategoriaResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
+import tcatelie.microservice.auth.mapper.CategoriaMapper;
 import tcatelie.microservice.auth.service.CategoriaService;
 import tcatelie.microservice.auth.model.Categoria;
 
@@ -29,6 +30,7 @@ import java.util.List;
 public class CategoriaController {
 
     private final CategoriaService service;
+    private final CategoriaMapper mapper;
 
     @Operation(
             summary = "Cadastro de categorias",
@@ -81,7 +83,7 @@ public class CategoriaController {
     @GetMapping("/{id}")
     public ResponseEntity buscarPorId(@PathVariable Integer id){
         Categoria categoriaBuscada = service.findById(id);
-        return ResponseEntity.ok(categoriaBuscada);
+        return ResponseEntity.ok(mapper.toCategoriaResponse(categoriaBuscada));
     }
 
     @Operation(summary = "Pesquisa categorias pelo nome", description = "Este endpoint permite pesquisar categorias pelo nome fornecido. A busca é realizada de forma paginada, retornando 10 resultados por vez.")
