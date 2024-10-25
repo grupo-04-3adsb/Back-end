@@ -1,10 +1,17 @@
 package tcatelie.microservice.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.request.MaterialRequestDTO;
+import tcatelie.microservice.auth.dto.response.CategoriaResponseDTO;
 import tcatelie.microservice.auth.dto.response.material.MaterialDetalhadoResponseDTO;
 import tcatelie.microservice.auth.dto.response.material.MaterialResponseDTO;
 import tcatelie.microservice.auth.model.Material;
@@ -57,4 +64,18 @@ public class MaterialController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Pesquisa material pelo nome", description = "Este endpoint permite pesquisar materiais pelo nome fornecido. A busca é realizada de forma paginada, retornando 10 resultados por vez.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Materiais encontradas com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos"),
+            @ApiResponse(responseCode = "404", description = "Materiais não encontradas")
+    })
+    @GetMapping("/pesquisar")
+    public Page<MaterialDetalhadoResponseDTO> pesquisarMaterial(
+            @Parameter(description = "Nome do material a ser pesquisada", required = false)
+            @RequestParam String nome,
+            @Parameter(description = "Número da página para paginar os resultados", required = false, example = "0")
+            @RequestParam(defaultValue = "0") int pagina) {
+        return materialService.pesquisarPorNome(nome, PageRequest.of(pagina, 10));
+    }
 }

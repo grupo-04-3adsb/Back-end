@@ -29,11 +29,11 @@ public class ProdutoFiltroDTO {
     @Schema(description = "Preço de venda máximo do produto", example = "100.00")
     private Double precoMaximo;
 
-    @Schema(description = "ID da categoria para filtragem", example = "1")
-    private Integer idCategoria;
+    @Schema(description = "nome da categoria para filtragem", example = "1")
+    private String nomeCategoria;
 
-    @Schema(description = "ID da subcategoria para filtragem", example = "2")
-    private Integer idSubcategoria;
+    @Schema(description = "nome da subcategoria para filtragem", example = "2")
+    private String nomeSubcategoria;
 
     @Schema(description = "Indica se o produto é personalizável", example = "true")
     private Boolean isPersonalizavel;

@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ImagemProdutoResponseDTO {
     private Integer idImagemAdicional;
+    private String idImgDrive;
     private String url;
 }

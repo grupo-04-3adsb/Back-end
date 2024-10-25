@@ -68,6 +68,9 @@ public class Usuario implements UserDetails {
     @Column(name = "ID_GOOGLE")
     private String idGoogle;
 
+    @Column(name = "id_img_drive")
+    private String idImgDrive;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> enderecos;
 
