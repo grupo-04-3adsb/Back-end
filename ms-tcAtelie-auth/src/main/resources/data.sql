@@ -129,16 +129,19 @@ INSERT INTO produto (nome, preco_venda, descricao, dimensao, desconto, margem_lu
                      personalizavel, personalizacao_obrigatoria, fk_categoria, fk_subcategoria, id_img_drive,
                      produto_Ativo)
 VALUES ('Caderno Personalizado', 29.90, 'Caderno com capa personalizada e folhas pautadas.', 'A5', 0.10, 0.30,
-        'CADERNO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 1,
+        'CADERNO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true,
+        1,
         1, '1OosCxJEq0zdIUuuzpNhzRafG3N6eEyG5', true),
 
        ('Canetas Coloridas', 15.90, 'Conjunto de 12 canetas coloridas para desenho.', '15cm', 0.05, 0.20,
-        'CANETA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false, 1,
+        'CANETA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false,
+        1,
         1, '1bXl8JQW_FQ8i9-OeMcC_2KYss5_3TeWB', true),
 
        ('Decoração de Mesa para Aniversário', 49.90, 'Conjunto de itens para decoração de mesa de aniversário.',
         '50x50cm', 0.15, 0.25,
-        'DECORACAO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false,
+        'DECORACAO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false,
+        false,
         2,
         6, '1bJ4H3RLbY8w2I8Gth7_yTVPrbNYgDnv', false),
 
@@ -147,7 +150,8 @@ VALUES ('Caderno Personalizado', 29.90, 'Caderno com capa personalizada e folhas
         1, '1bmT3tK8ImTYHUEUB3J8kl5JHqfZ_4d8', true),
 
        ('Papel de Presente', 9.90, 'Papel de presente decorado, 5 metros.', '5m', 0.00, 0.15,
-        'PAPEL-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false, 1,
+        'PAPEL-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false,
+        1,
         1, '1yLh7kLo0lFWxndjET_vZcOa9h3uTqPI', true),
 
        ('Brinde Corporativo', 12.90, 'Brinde personalizado para eventos corporativos.', '10x10cm', 0.10, 0.25,
@@ -155,23 +159,28 @@ VALUES ('Caderno Personalizado', 29.90, 'Caderno com capa personalizada e folhas
         9, '1jW2nqf9hZUyJ3p7Qah4D2azP-HM7sG5', true),
 
        ('Kit de Festa', 99.90, 'Kit completo para festa infantil com decoração e lembrancinhas.', '1,5m', 0.20, 0.30,
-        'KITFESTA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 2,
+        'KITFESTA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true,
+        2,
         10, '1iXYHyacDGmqDa_Oz9n_NTAzI66AzXib', true),
 
        ('Convite de Casamento', 39.90, 'Convite personalizado para casamentos.', 'A5', 0.10, 0.20,
-        'CONVITE-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 11,
+        'CONVITE-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true,
+        11,
         13, '1_CIkSOZoyKyb8Yo_E1GUL4TjINu2i0g', true),
 
        ('Arranjo Floral', 59.90, 'Arranjo floral para decoração de eventos.', '30cm', 0.15, 0.25,
-        'ARRANJO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false, 13,
+        'ARRANJO-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false,
+        13,
         14, '1zM10FnC2DNbZfSwqIpOCq-nFZlFk6ZY', true),
 
        ('Tinta Acrílica', 10.90, 'Tinta acrílica em diversas cores, 250ml.', '250ml', 0.05, 0.15,
-        'TINTA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false, 28,
+        'TINTA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', false, false,
+        28,
         28, '1yI3d4MMQfRuXY85iw2ZKXxTC2aqh-70', true),
 
        ('Camiseta Personalizada', 29.90, 'Camiseta com estampa personalizada.', 'M', 0.10, 0.30,
-        'CAMISETA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true, 1,
+        'CAMISETA-001', 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', true, true,
+        1,
         1, '1xq_dAKhsz4BxDB9d3gK7G8W0Wzk3MrP', true);
 
 INSERT INTO imagens_produto (url_img_adicional, fk_produto, id_img_drive)
@@ -200,18 +209,29 @@ VALUES ('Texto em Ouro', 'Texto na capa em efeito dourado', 5.00,
        ('Texto em Prata', 'Texto na capa em efeito prateado', 4.00,
         'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
         '1OLxbmeet0tTxCn5BOIas0LmB7Y4G7pbf'),
-       ('Data em Dourado', 'Datas em efeito dourado', 3.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 3, 'abc123'),
-       ('Data em Prata', 'Datas em efeito prateado', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 3, 'abc123'),
-       ('Design Floral', 'Design floral para casamentos', 8.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 4, 'abc123'),
-       ('Design Minimalista', 'Design minimalista para casamentos', 6.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 4,
+       ('Data em Dourado', 'Datas em efeito dourado', 3.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 3, 'abc123'),
+       ('Data em Prata', 'Datas em efeito prateado', 2.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 3, 'abc123'),
+       ('Design Floral', 'Design floral para casamentos', 8.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 4, 'abc123'),
+       ('Design Minimalista', 'Design minimalista para casamentos', 6.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 4,
         'abc123'),
-       ('Mensagem em Dourado', 'Mensagem em efeito dourado', 4.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
-       ('Mensagem em Prata', 'Mensagem em efeito prateado', 3.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
-       ('Mensagem em Vermelho', 'Mensagem em efeito vermelho', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
-       ('Mensagem em Azul', 'Mensagem em efeito azul', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
-       ('Mensagem em Verde', 'Mensagem em efeito verde', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
-       ('Mensagem em Amarelo', 'Mensagem em efeito amarelo', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
-       ('Mensagem em Rosa', 'Mensagem em efeito rosa', 2.00, 'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123');
+       ('Mensagem em Dourado', 'Mensagem em efeito dourado', 4.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Prata', 'Mensagem em efeito prateado', 3.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Vermelho', 'Mensagem em efeito vermelho', 2.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Azul', 'Mensagem em efeito azul', 2.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Verde', 'Mensagem em efeito verde', 2.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Amarelo', 'Mensagem em efeito amarelo', 2.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Mensagem em Rosa', 'Mensagem em efeito rosa', 2.00,
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123');
 
 INSERT INTO material_produto (fk_material, fk_produto, qtd_material_necessario)
 VALUES (1, 1, 2),
@@ -229,5 +249,122 @@ INSERT INTO USUARIO
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
 VALUES ('Cláudio Araújo', 'claudio@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
         '(11) 98765-4321', 'HABILITADO',
-        NOW(), NOW(), '123.456.789-09', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL);
+        NOW(), NOW(), '123.456.789-08', 1,
+        'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL);
 
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil', 'Aperte a campainha',
+        TRUE, 'CASA', 1);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Cláudio Araújo', 'claudio_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4322', 'HABILITADO',
+        NOW(), NOW(), '123.456.789-09', 1,
+        'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil', 'Aperte a campainha',
+        TRUE, 'CASA', 2);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Matheus Munari', 'matheus_munari_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4323',
+        'HABILITADO',
+        NOW(), NOW(), '321.654.987-01', 1, 'https://drive.google.com/thumbnail?id=img2', '1990-05-10', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua B', '456', 'Casa', 'Bairro Norte', 'São Paulo', 'SP', '02002-000', 'Brasil', 'Tocar a campainha', TRUE,
+        'RUA', 3);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Matheus Munari', 'matheus_munari_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4324', 'HABILITADO',
+        NOW(), NOW(), '321.654.987-02', 1, 'https://drive.google.com/thumbnail?id=img2', '1990-05-10', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua B', '789', 'Apto 202', 'Bairro Norte', 'São Paulo', 'SP', '02003-000', 'Brasil',
+        'Deixar na caixa de correio', TRUE, 'RUA', 4);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Matheus Kikuti', 'matheus_kikuti_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4325',
+        'HABILITADO',
+        NOW(), NOW(), '456.789.123-03', 1, 'https://drive.google.com/thumbnail?id=img3', '1992-08-15', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua C', '101', 'Casa 3', 'Bairro Leste', 'São Paulo', 'SP', '03004-000', 'Brasil', 'Tocar duas vezes', TRUE,
+        'RUA', 5);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Matheus Kikuti', 'matheus_kikuti_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4326', 'HABILITADO',
+        NOW(), NOW(), '456.789.123-04', 1, 'https://drive.google.com/thumbnail?id=img3', '1992-08-15', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua C', '102', 'Apto 303', 'Bairro Leste', 'São Paulo', 'SP', '03005-000', 'Brasil', 'Deixar com o porteiro',
+        TRUE, 'RUA', 6);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Guilherme Santiago', 'guilherme_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4327', 'HABILITADO',
+        NOW(), NOW(), '654.321.987-05', 1, 'https://drive.google.com/thumbnail?id=img4', '1995-12-20', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua D', '123', 'Casa 1', 'Bairro Sul', 'São Paulo', 'SP', '04006-000', 'Brasil', 'Deixar na garagem', TRUE,
+        'RUA', 7);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Guilherme Santiago', 'guilherme_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4328', 'HABILITADO',
+        NOW(), NOW(), '654.321.987-06', 1, 'https://drive.google.com/thumbnail?id=img4', '1995-12-20', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua D', '124', 'Apto 404', 'Bairro Sul', 'São Paulo', 'SP', '04007-000', 'Brasil',
+        'Deixar na caixa de correio', TRUE, 'RUA', 8);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Kauã Nunes', 'kaua_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4329', 'HABILITADO',
+        NOW(), NOW(), '789.654.321-07', 1, 'https://drive.google.com/thumbnail?id=img5', '2000-02-05', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua E', '125', 'Casa 2', 'Bairro Oeste', 'São Paulo', 'SP', '05008-000', 'Brasil', 'Deixar na garagem', TRUE,
+        'RUA', 9);
+
+INSERT INTO USUARIO
+(NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
+ DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
+VALUES ('Kauã Nunes', 'kaua_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4330', 'HABILITADO',
+        NOW(), NOW(), '789.654.321-08', 1, 'https://drive.google.com/thumbnail?id=img5', '2000-02-05', NULL);
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua E', '126', 'Apto 505', 'Bairro Oeste', 'São Paulo', 'SP', '05009-000', 'Brasil',
+        'Deixar na caixa de correio', TRUE, 'RUA', 10);
