@@ -19,6 +19,7 @@ public class ProdutoResponseDTO {
     private String sku;
     private String dimensao;
     private String urlProduto;
+    private String idImgDrive;
     private LocalDateTime dthrCriacao;
     private LocalDateTime dthrAtualizacao;
     private List<ImagemProdutoResponseDTO> imagensAdicionais;
@@ -28,6 +29,7 @@ public class ProdutoResponseDTO {
     private Boolean isPersonalizavel;
     private Boolean isPersonalizacaoObrigatoria;
     private CategoriaResponseDTO categoria;
+    private Boolean produtoAtivo;
     private SubcategoriaResponseDTO subcategoria;
     private List<MaterialProdutoResponseDTO> materiais;
     private List<PersonalizacaoResponseDTO> personalizacoes;

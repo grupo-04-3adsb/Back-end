@@ -7,7 +7,7 @@ import tcatelie.microservice.auth.dto.request.CategoriaRequestDTO;
 import tcatelie.microservice.auth.dto.response.CategoriaResponseDTO;
 import tcatelie.microservice.auth.model.Categoria;
 
-@Mapper(componentModel = "spring", uses = { CategoriaMapper.class })
+@Mapper(componentModel = "spring", uses = {CategoriaMapper.class})
 public interface CategoriaMapper {
 
     CategoriaMapper INSTANCE = Mappers.getMapper(CategoriaMapper.class);

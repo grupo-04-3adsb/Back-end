@@ -22,7 +22,10 @@ public class ImagensProduto {
     @Column(name = "url_img_adicional")
     private String urlImgAdicional;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column(name = "id_img_drive")
+    private String idImgDrive;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_produto")
     private Produto produto;
 
