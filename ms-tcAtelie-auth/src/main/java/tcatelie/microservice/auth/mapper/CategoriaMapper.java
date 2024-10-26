@@ -12,12 +12,12 @@ public interface CategoriaMapper {
 
     CategoriaMapper INSTANCE = Mappers.getMapper(CategoriaMapper.class);
 
-    @Mapping(source = "idCategoria", target = "id")
-    @Mapping(source = "nomeCategoria", target = "nome")
+    @Mapping(source = "idCategoria", target = "idCategoria")
+    @Mapping(source = "nomeCategoria", target = "nomeCategoria")
     @Mapping(source = "subcategorias", target = "subcategorias")
     CategoriaResponseDTO toCategoriaResponse(Categoria categoria);
 
     @Mapping(target = "idCategoria", ignore = true)
-    @Mapping(target = "subcategorias", source = "subcategorias")
+    @Mapping(target = "subcategorias", ignore = true)
     Categoria toCategoria(CategoriaRequestDTO categoriaRequestDTO);
 }

@@ -11,10 +11,10 @@ import tcatelie.microservice.auth.model.Subcategoria;
 public interface SubcategoriaMapper {
     SubcategoriaMapper INSTANCE = Mappers.getMapper(SubcategoriaMapper.class);
 
-    @Mapping(source = "nomeSubcategoria", target = "nome")
+    @Mapping(source = "nomeSubcategoria", target = "nomeSubcategoria")
     Subcategoria toSubcategoria(SubcategoriaRequestDTO dto);
 
-    @Mapping(source = "id", target = "idSubcategoria")
-    @Mapping(source = "nome", target = "nomeSubcategoria")
+    @Mapping(source = "idSubcategoria", target = "idSubcategoria")
+    @Mapping(source = "nomeSubcategoria", target = "nomeSubcategoria")
     SubcategoriaResponseDTO toSubcategoriaResponse(Subcategoria subcategoria);
 }

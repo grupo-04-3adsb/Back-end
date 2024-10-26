@@ -50,24 +50,6 @@ public class CategoriaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O corpo da requisição não foi informado");
     }
 
-    public CategoriaResponseDTO cadastrarCategoria(CategoriaRequestDTO requestDTO) {
-        validarRequest(requestDTO);
-        Categoria categoriaEntidade = mapper.toCategoria(requestDTO);
-
-        Optional<Categoria> categoriaBuscada = repository.findByNomeCategoria(requestDTO.getNome());
-        if(categoriaBuscada.isPresent()){
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-
-        Categoria categoriaSalva = repository.save(categoriaEntidade);
-        return mapper.toCategoriaResponse(categoriaSalva);
-    }
-
-    private void validarRequest(CategoriaRequestDTO requestDTO) {
-        if (requestDTO == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O corpo da requisição não foi informado");
-    }
-
     public Categoria findByNome(String nome) throws IllegalArgumentException {
         if (StringUtils.isBlank(nome)) {
             throw new IllegalArgumentException("Nome da categoria não informado");
@@ -99,11 +81,6 @@ public class CategoriaService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        Categoria categoriaEntidade = mapper.toCategoria(categoriaRequestDTO);
-        categoriaEntidade.setIdCategoria(id);
-        categoriaEntidade.setNomeCategoria(categoriaRequestDTO.getNome());
-        Categoria categoriaSalva = repository.save(categoriaEntidade);
-
         Categoria categoriaEntidade = findById(id);
         categoriaEntidade.setNomeCategoria(categoriaRequestDTO.getNome());
         Categoria categoriaSalva = repository.save(categoriaEntidade);
@@ -114,13 +91,14 @@ public class CategoriaService {
         if(repository.findById(id).isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        repository.deleteById(id);
-        List<Produto> listaProdutos = produtoRepository.findAll(ProdutoSpecification.filtrar(ProdutoFiltroDTO.builder().idCategoria(id).build()));
+
+        Categoria categoria = findById(id);
+
+        List<Produto> listaProdutos = produtoRepository.findAll(ProdutoSpecification.filtrar(ProdutoFiltroDTO.builder().nomeCategoria(categoria.getNomeCategoria()).build()));
 
         if(listaProdutos.isEmpty()){
             repository.deleteById(id);
         }
-
 
     }
 }
