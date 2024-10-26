@@ -18,6 +18,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/categorias/pesquisar"),
             new AntPathRequestMatcher("/subcategorias/pesquisar/**"),
             new AntPathRequestMatcher("/materiais/pesquisar/**"),
+            new AntPathRequestMatcher("/api/v1/mercadopago/criar-preferencia"),
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
