@@ -86,6 +86,60 @@ public class CategoriaController {
         return ResponseEntity.ok(mapper.toCategoriaResponse(categoriaBuscada));
     }
 
+    @Operation(
+            summary = "Cadastro de categorias",
+            description = "Este endpoint permite cadastrar uma nova categoria.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Categoria cadastrada com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos."),
+                    @ApiResponse(responseCode = "409", description = "Conflito: já existe uma categoria com esse nome."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @PostMapping
+    public ResponseEntity cadastrarCategoria(@RequestBody @Valid CategoriaRequestDTO requestDTO){
+        CategoriaResponseDTO categoriaResponse = service.cadastrarCategoria(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaResponse);
+    }
+
+    @Operation(
+            summary = "Listagem de categorias",
+            description = "Este endpoint permite listar todas as categorias cadastradas.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Categorias listadas com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CategoriaResponseDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping
+    public ResponseEntity listarCategoria(){
+        List<CategoriaResponseDTO> categoriasBuscadas = service.listarCategoria();
+        return categoriasBuscadas.isEmpty() ? ResponseEntity.noContent().build() :
+                ResponseEntity.ok(categoriasBuscadas);
+    }
+
+    @Operation(
+            summary = "Buscar categoria por ID",
+            description = "Este endpoint permite buscar uma categoria específica pelo seu ID.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Categoria encontrada com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CategoriaResponseDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "ID inválido fornecido."),
+                    @ApiResponse(responseCode = "404", description = "Categoria não encontrada."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity buscarPorId(@PathVariable Integer id){
+        Categoria categoriaBuscada = service.findById(id);
+        return ResponseEntity.ok(categoriaBuscada);
+    }
+
     @Operation(summary = "Pesquisa categorias pelo nome", description = "Este endpoint permite pesquisar categorias pelo nome fornecido. A busca é realizada de forma paginada, retornando 10 resultados por vez.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Categorias encontradas com sucesso"),

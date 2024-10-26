@@ -17,6 +17,7 @@ public interface CategoriaMapper {
     @Mapping(source = "subcategorias", target = "subcategorias")
     CategoriaResponseDTO toCategoriaResponse(Categoria categoria);
 
+    @Mapping(target = "idCategoria", ignore = true)
     @Mapping(target = "subcategorias", source = "subcategorias")
     Categoria toCategoria(CategoriaRequestDTO categoriaRequestDTO);
 }
