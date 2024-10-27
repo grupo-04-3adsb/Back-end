@@ -16,6 +16,4 @@ public class SubcategoriaResponseDTO {
     @Schema(description = "Nome da subcategoria", example = "Caderno inteligente")
     private String nomeSubcategoria;
 
-    @Schema(description = "Descrição da subcategoria", example = "Cadernos para organizar suas ideias mais inovadoras.")
-    private String descricaoSubcategoria;
 }
