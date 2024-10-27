@@ -11,9 +11,12 @@ import tcatelie.microservice.auth.model.ImagensProduto;
 @Component
 public interface ImagensAdicionaisMapper {
 
-    ImagensProduto toModel(ImagemProdutoRequestDTO requestDTO);
-
     @Mapping(target = "url", source = "urlImgAdicional")
     @Mapping(target = "idImagemAdicional", source = "idImagem")
+    @Mapping(source = "idImgDrive", target = "idImgDrive")
     ImagemProdutoResponseDTO toResponse(ImagensProduto imagensProduto);
+
+    @Mapping(target = "urlImgAdicional", source = "url")
+    @Mapping(target = "idImagem", source = "id")
+    ImagensProduto toModel(ImagemProdutoRequestDTO requestDTO);
 }

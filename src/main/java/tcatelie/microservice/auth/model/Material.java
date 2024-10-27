@@ -28,9 +28,8 @@ public class Material {
     @Column(name = "estoque")
     private Integer estoque;
 
-    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "material", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<MaterialProduto> produtos;
-
 
     @Column(name = "data_hora_cadastro")
     private LocalDateTime dthrCadastro;

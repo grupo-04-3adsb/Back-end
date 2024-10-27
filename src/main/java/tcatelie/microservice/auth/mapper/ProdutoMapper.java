@@ -34,5 +34,7 @@ public interface ProdutoMapper {
     @Mapping(source = "personalizacaoObrigatoria", target = "isPersonalizacaoObrigatoria")
     @Mapping(source = "margemLucro", target = "margemLucro")
     @Mapping(source = "dthrCadastro", target = "dthrCriacao")
+    @Mapping(source = "idImgDrive", target = "idImgDrive")
+    @Mapping(source = "produtoAtivo", target = "produtoAtivo")
     ProdutoResponseDTO toResponseDTO(Produto produto);
 }

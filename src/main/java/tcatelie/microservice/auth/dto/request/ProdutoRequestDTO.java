@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Schema(description = "Request DTO para o cadastro de um novo produto")
 public class ProdutoRequestDTO {
 
@@ -77,4 +79,11 @@ public class ProdutoRequestDTO {
     @NotEmpty(message = "O produto precisa ter pelo menos 1 imagem adicional")
     private List<ImagemProdutoRequestDTO> imagensAdicionais;
 
+    @Schema(description = "ID da imagem no drive ao qual o produto pertence", example = "1")
+    private Integer idDrive;
+
+    @Override
+    public String toString() {
+        return "ProdutoRequestDTO{" + "nome='" + nome + '\'' + ", sku='" + sku + '\'' + ", margemLucro=" + margemLucro + ", precoVenda=" + precoVenda + ", descricao='" + descricao + '\'' + ", dimensao='" + dimensao + '\'' + ", urlProduto='" + urlProduto + '\'' + ", desconto=" + desconto + ", categoria=" + categoria + ", subcategoria=" + subcategoria + ", isPersonalizavel=" + isPersonalizavel + ", isPersonalizacaoObrigatoria=" + isPersonalizacaoObrigatoria + ", materiais=" + materiais + ", personalizacoes=" + personalizacoes + ", imagensAdicionais=" + imagensAdicionais + '}';
+    }
 }

@@ -1,6 +1,9 @@
 package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,80 +41,81 @@ public class MaterialService {
         }
     }
 
-    public List<MaterialResponseDTO> buscar(){
+    public List<MaterialResponseDTO> buscar() {
 
-        try{
+        try {
             List<Material> materiais = materialRepository.findAll();
 
             return materiais.stream().map(MaterialMapper::toMaterialResponseDTO).toList();
-        }catch (ServerErrorException e){
+        } catch (ServerErrorException e) {
             throw e;
         }
     }
 
-    public MaterialDetalhadoResponseDTO buscarPorId(Integer id){
+    public MaterialDetalhadoResponseDTO buscarPorId(Integer id) {
 
-        try{
+        try {
             Optional<Material> materialBuscado = materialRepository.findById(id);
 
-            if(materialBuscado.isEmpty()){
+            if (materialBuscado.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
             return MaterialMapper.toMaterialDetalhadoResponseDTO(materialBuscado.get());
-        }catch (ServerErrorException e){
+        } catch (ServerErrorException e) {
             throw e;
         }
 
     }
 
     /*
-    * Este método de PUT está sobrescrevendo as entidades no banco,
-    * você está gerando uma nova entidade a partir do DTO, porém no DTO
-    * não tem todos os campos na entidade como o de relacionamento, desta
-    * forma quando você for salvar ira remover os relacionamentos com outras entidades,
-    * minha sugestão Munas é você no material entidade ser igual a entidade no findById,
-    * depois você só altera os campos necessários com base no DTO sem interferir nos outros
+     * Este método de PUT está sobrescrevendo as entidades no banco,
+     * você está gerando uma nova entidade a partir do DTO, porém no DTO
+     * não tem todos os campos na entidade como o de relacionamento, desta
+     * forma quando você for salvar ira remover os relacionamentos com outras entidades,
+     * minha sugestão Munas é você no material entidade ser igual a entidade no findById,
+     * depois você só altera os campos necessários com base no DTO sem interferir nos outros
      * */
-    public MaterialDetalhadoResponseDTO atualizar(MaterialRequestDTO dto, Integer id){
+    public MaterialDetalhadoResponseDTO atualizar(MaterialRequestDTO dto, Integer id) {
 
-        Optional<Material> materialBuscado = materialRepository.findById(id);
-
-        try{
-            if(materialBuscado.isEmpty()){
+        try {
+            if (materialRepository.findById(id).isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
-            Material materialEntidade = materialBuscado.get();
-            materialEntidade.setNomeMaterial(dto.getNome());
-            materialEntidade.setEstoque(dto.getQuantidade());
-            materialEntidade.setPrecoUnitario(dto.getPreco());
-
+            Material materialEntidade = MaterialMapper.toEntity(dto);
+            materialEntidade.setIdMaterial(id);
             Material materialSalvo = materialRepository.save(materialEntidade);
 
             return MaterialMapper.toMaterialDetalhadoResponseDTO(materialSalvo);
-        }catch (ServerErrorException e){
+        } catch (ServerErrorException e) {
             throw e;
         }
     }
 
-    public void deletar(Integer id){
+    public void deletar(Integer id) {
 
-        try{
-            if(materialRepository.findById(id).isEmpty()){
+        try {
+            if (materialRepository.findById(id).isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
             materialRepository.deleteById(id);
-        }catch (ServerErrorException e){
+        } catch (ServerErrorException e) {
             throw e;
         }
 
     }
-        public Material findById(Integer idMaterial) throws IllegalArgumentException {
-            if (idMaterial == null) {
-                throw new IllegalArgumentException("Id do material não informado");
-            }
 
-            return materialRepository.findById(idMaterial).orElseThrow(() ->
-                    new IllegalArgumentException("Material não encontrado com o ID: " + idMaterial)
-            );
+    public Material findById(Integer idMaterial) throws IllegalArgumentException {
+        if (idMaterial == null) {
+            throw new IllegalArgumentException("Id do material não informado");
         }
+
+        return materialRepository.findById(idMaterial).orElseThrow(() ->
+                new IllegalArgumentException("Material não encontrado com o ID: " + idMaterial)
+        );
+    }
+
+    public Page<MaterialDetalhadoResponseDTO> pesquisarPorNome(String nome, Pageable pageRequest) {
+        return materialRepository.findByNomeMaterialContainingIgnoreCase(nome, pageRequest)
+                .map(MaterialMapper::toMaterialDetalhadoResponseDTO);
+    }
 }

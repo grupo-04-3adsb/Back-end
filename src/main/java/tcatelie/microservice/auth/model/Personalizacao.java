@@ -8,12 +8,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Personalizacao {
 
     @Id
@@ -23,15 +22,15 @@ public class Personalizacao {
 
     @Column(name = "nome_personalizacao")
     private String nomePersonalizacao;
-    
+
     @Column(name = "tipo_personalizacao")
     private String tipoPersonalizacao;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_produto")
     private Produto produto;
 
-    @OneToMany(mappedBy = "personalizacao", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "personalizacao", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<OpcaoPersonalizacao> opcoes;
 
     @Column(name = "data_hora_cadastro")
@@ -51,3 +50,4 @@ public class Personalizacao {
         this.dthrAtualizacao = LocalDateTime.now();
     }
 }
+
