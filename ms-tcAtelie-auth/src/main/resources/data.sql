@@ -255,26 +255,30 @@ VALUES ('Cláudio Araújo', 'claudio@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J
 INSERT INTO ENDERECO
 (RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
  USUARIO_ID)
-VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil', 'Aperte a campainha',
-        TRUE, 'CASA', 1);
+VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil',
+        'Aperte a campainha',
+        TRUE, 'RUA', 1);
 
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Cláudio Araújo', 'claudio_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4322', 'HABILITADO',
+VALUES ('Cláudio Araújo', 'claudio_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC',
+        'USER', '(11) 98765-4322', 'HABILITADO',
         NOW(), NOW(), '123.456.789-09', 1,
         'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL);
 
 INSERT INTO ENDERECO
 (RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
  USUARIO_ID)
-VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil', 'Aperte a campainha',
+VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil',
+        'Aperte a campainha',
         TRUE, 'CASA', 2);
 
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Matheus Munari', 'matheus_munari_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4323',
+VALUES ('Matheus Munari', 'matheus_munari_admin@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4323',
         'HABILITADO',
         NOW(), NOW(), '321.654.987-01', 1, 'https://drive.google.com/thumbnail?id=img2', '1990-05-10', NULL);
 
@@ -287,7 +291,8 @@ VALUES ('Rua B', '456', 'Casa', 'Bairro Norte', 'São Paulo', 'SP', '02002-000',
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Matheus Munari', 'matheus_munari_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4324', 'HABILITADO',
+VALUES ('Matheus Munari', 'matheus_munari_user@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4324', 'HABILITADO',
         NOW(), NOW(), '321.654.987-02', 1, 'https://drive.google.com/thumbnail?id=img2', '1990-05-10', NULL);
 
 INSERT INTO ENDERECO
@@ -299,7 +304,8 @@ VALUES ('Rua B', '789', 'Apto 202', 'Bairro Norte', 'São Paulo', 'SP', '02003-0
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Matheus Kikuti', 'matheus_kikuti_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4325',
+VALUES ('Matheus Kikuti', 'matheus_kikuti_admin@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4325',
         'HABILITADO',
         NOW(), NOW(), '456.789.123-03', 1, 'https://drive.google.com/thumbnail?id=img3', '1992-08-15', NULL);
 
@@ -312,7 +318,8 @@ VALUES ('Rua C', '101', 'Casa 3', 'Bairro Leste', 'São Paulo', 'SP', '03004-000
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Matheus Kikuti', 'matheus_kikuti_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4326', 'HABILITADO',
+VALUES ('Matheus Kikuti', 'matheus_kikuti_user@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4326', 'HABILITADO',
         NOW(), NOW(), '456.789.123-04', 1, 'https://drive.google.com/thumbnail?id=img3', '1992-08-15', NULL);
 
 INSERT INTO ENDERECO
@@ -324,7 +331,8 @@ VALUES ('Rua C', '102', 'Apto 303', 'Bairro Leste', 'São Paulo', 'SP', '03005-0
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Guilherme Santiago', 'guilherme_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4327', 'HABILITADO',
+VALUES ('Guilherme Santiago', 'guilherme_admin@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4327', 'HABILITADO',
         NOW(), NOW(), '654.321.987-05', 1, 'https://drive.google.com/thumbnail?id=img4', '1995-12-20', NULL);
 
 INSERT INTO ENDERECO
@@ -336,7 +344,8 @@ VALUES ('Rua D', '123', 'Casa 1', 'Bairro Sul', 'São Paulo', 'SP', '04006-000',
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Guilherme Santiago', 'guilherme_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4328', 'HABILITADO',
+VALUES ('Guilherme Santiago', 'guilherme_user@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4328', 'HABILITADO',
         NOW(), NOW(), '654.321.987-06', 1, 'https://drive.google.com/thumbnail?id=img4', '1995-12-20', NULL);
 
 INSERT INTO ENDERECO
@@ -348,7 +357,8 @@ VALUES ('Rua D', '124', 'Apto 404', 'Bairro Sul', 'São Paulo', 'SP', '04007-000
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Kauã Nunes', 'kaua_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4329', 'HABILITADO',
+VALUES ('Kauã Nunes', 'kaua_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
+        '(11) 98765-4329', 'HABILITADO',
         NOW(), NOW(), '789.654.321-07', 1, 'https://drive.google.com/thumbnail?id=img5', '2000-02-05', NULL);
 
 INSERT INTO ENDERECO
@@ -360,11 +370,21 @@ VALUES ('Rua E', '125', 'Casa 2', 'Bairro Oeste', 'São Paulo', 'SP', '05008-000
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
-VALUES ('Kauã Nunes', 'kaua_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4330', 'HABILITADO',
+VALUES ('Kauã Nunes', 'kaua_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER',
+        '(11) 98765-4330', 'HABILITADO',
         NOW(), NOW(), '789.654.321-08', 1, 'https://drive.google.com/thumbnail?id=img5', '2000-02-05', NULL);
 
 INSERT INTO ENDERECO
 (RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
  USUARIO_ID)
 VALUES ('Rua E', '126', 'Apto 505', 'Bairro Oeste', 'São Paulo', 'SP', '05009-000', 'Brasil',
-        'Deixar na caixa de correio', TRUE, 'RUA', 10);
+        'Deixar na caixa de correio', TRUE, 'RUA', 1);
+
+INSERT INTO pedido (id_cliente, data_pedido, total, status, fk_endereco_entrega)
+VALUES (1, NOW(), 44.40, 'Pendente', 1);
+
+INSERT INTO item_pedido (fk_produto, fk_pedido, quantidade, preco_unitario)
+VALUES (1, 1, 1, 29.90),
+       (4, 1, 1, 9.00),
+       (5, 1, 1, 4.00),
+       (2, 1, 1, 2.50);

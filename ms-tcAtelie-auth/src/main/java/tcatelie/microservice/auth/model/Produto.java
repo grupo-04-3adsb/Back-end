@@ -64,6 +64,9 @@ public class Produto {
     @Column(name = "produto_ativo")
     private Boolean produtoAtivo;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private ItemPedido itemPedido;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_categoria", nullable = false)
     private Categoria categoria;

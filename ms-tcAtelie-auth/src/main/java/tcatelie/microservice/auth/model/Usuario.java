@@ -74,6 +74,9 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> enderecos;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pedido> pedidos;
+
     public Usuario(String telefone, UserRole role, String senha, String email, String nome, String cpf, Genero genero, String urlImgUsuario, LocalDate dataNascimento) {
         this.telefone = telefone;
         this.role = role;

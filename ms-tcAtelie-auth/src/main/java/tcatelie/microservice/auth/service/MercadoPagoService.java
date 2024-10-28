@@ -1,96 +1,97 @@
 package tcatelie.microservice.auth.service;
 
+import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.common.AddressRequest;
 import com.mercadopago.client.common.IdentificationRequest;
 import com.mercadopago.client.common.PhoneRequest;
+import com.mercadopago.client.payment.PaymentClient;
+import com.mercadopago.client.payment.PaymentCreateRequest;
+import com.mercadopago.client.payment.PaymentPayerRequest;
 import com.mercadopago.client.preference.*;
+import com.mercadopago.core.MPRequestOptions;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.preference.Preference;
-import com.mercadopago.MercadoPagoConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import tcatelie.microservice.auth.model.Pedido;
+import tcatelie.microservice.auth.repository.PedidoRepository;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MercadoPagoService {
 
     private final Logger logger = LoggerFactory.getLogger(MercadoPagoService.class);
+    private final PedidoRepository pedidoRepository;
 
-    public MercadoPagoService(@Value("${mercadopago.access.token}") String accessToken) {
+    public MercadoPagoService(@Value("${mercadopago.access.token}") String accessToken ,PedidoRepository pedidoRepository) {
         MercadoPagoConfig.setAccessToken(accessToken);
+        this.pedidoRepository = pedidoRepository;
     }
 
-    public String criarPreferencia() throws MPException, MPApiException {
-        PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
-                .id("item-ID-1234")
-                .title("Meu produto")
-                .currencyId("BRL")
-                .pictureUrl("https://www.mercadopago.com/org-img/MP3/home/logomp3.gif")
-                .description("Descrição do Item")
-                .categoryId("art")
-                .quantity(1)
-                .unitPrice(new BigDecimal("75.76"))
-                .build();
+    public String criarPagamento(Integer idPedido)
+            throws MPException, MPApiException {
+
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+
+        PreferenceClient client = new PreferenceClient();
 
         List<PreferenceItemRequest> items = new ArrayList<>();
-        items.add(itemRequest);
 
-        PreferencePayerRequest payer = PreferencePayerRequest.builder()
-                .name("João")
-                .surname("Silva")
-                .email("user@email.com")
-                .phone(PhoneRequest.builder().areaCode("11").number("4444-4444").build())
-                .identification(IdentificationRequest.builder().type("CPF").number("19119119100").build())
-                .address(AddressRequest.builder()
-                        .streetName("Street")
-                        .streetNumber(String.valueOf(123))
-                        .zipCode("06233200")
-                        .build())
+        pedido.getItens().forEach(itemPedido -> {
+            PreferenceItemRequest item =
+                    PreferenceItemRequest.builder()
+                            .title(itemPedido.getProduto().getNome())
+                            .quantity(itemPedido.getQuantidade())
+                            .unitPrice(BigDecimal.valueOf(itemPedido.getValor()))
+                            .build();
+            items.add(item);
+        });
+
+        PreferenceRequest request = PreferenceRequest.builder()
+                .purpose("wallet_purchase")
+                .items(items).build();
+
+        var response =  client.create(request);
+        logger.info("Payment response: {}", response);
+        return response.getId().toString();
+    }
+
+    public String criarPagamentoPix(Integer idPedido) throws MPException, MPApiException {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+
+        Map<String, String> customHeaders = new HashMap<>();
+        customHeaders.put("x-idempotency-key", UUID.randomUUID().toString());
+
+        MPRequestOptions requestOptions = MPRequestOptions.builder()
+                .customHeaders(customHeaders)
                 .build();
 
-        PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://www.success.com")
-                .failure("http://www.failure.com")
-                .pending("https://www.pending.com")
+        PaymentClient client = new PaymentClient();
+
+        PaymentCreateRequest paymentCreateRequest = PaymentCreateRequest.builder()
+                .transactionAmount(BigDecimal.valueOf(pedido.getValorTotal()))
+                .paymentMethodId("pix")
+                .payer(
+                        PaymentPayerRequest.builder()
+                                .email(pedido.getUsuario().getEmail())
+                                .firstName(pedido.getUsuario().getNome())
+                                .build()
+                )
                 .build();
 
-        List<PreferencePaymentMethodRequest> excludedPaymentMethods = new ArrayList<>();
-        excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("bolbradesco").build());
-        excludedPaymentMethods.add(PreferencePaymentMethodRequest.builder().id("pec").build());
+        var paymentResponse = client.create(paymentCreateRequest, requestOptions);
+        logger.info("Pagamento PIX criado com sucesso: {}", paymentResponse.getId());
 
-        List<PreferencePaymentTypeRequest> excludedPaymentTypes = new ArrayList<>();
-        excludedPaymentTypes.add(PreferencePaymentTypeRequest.builder().id("debit_card").build());
-
-        PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
-                .excludedPaymentMethods(excludedPaymentMethods)
-                .excludedPaymentTypes(excludedPaymentTypes)
-                .installments(12)
-                .build();
-
-        PreferenceRequest preferenceRequest = PreferenceRequest.builder()
-                .items(items)
-                .payer(payer)
-                .backUrls(backUrls)
-                .autoReturn("approved")
-                .paymentMethods(paymentMethods)
-                .notificationUrl("https://www.your-site.com/ipn")
-                .statementDescriptor("MEUNEGOCIO")
-                .externalReference("Reference_1234")
-                .expires(true)
-                .expirationDateFrom(OffsetDateTime.now(ZoneOffset.of("-03:00")))
-                .expirationDateTo(OffsetDateTime.now(ZoneOffset.of("-03:00")).plusHours(5))
-                .build();
-
-        Preference preference = new PreferenceClient().create(preferenceRequest);
-        logger.info("Preference ID: {}", preference.getId());
-        return preference.getId();
+        return paymentResponse.getId().toString();
     }
 }
+

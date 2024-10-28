@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tcatelie.microservice.auth.strategy.Pagavel;
+import tcatelie.microservice.auth.enums.StatusPedido;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -18,10 +19,70 @@ public class Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_pedido")
     private Integer id;
+
+    @Column(name = "nome_usuario")
     private String nomeUsuario;
-    private Double valor;
+
+    @Column(name = "total")
+    private Double valorTotal;
+
+    @Column(name = "valor_desconto")
+    private Double valorDesconto;
+
+    @Column(name = "valor_frete")
+    private Double valorFrete;
+
+    @Column(name = "num_parcela")
     private Integer parcelas;
+
+    @Column(name = "valor_parcela")
+    private Double valorParcela;
+
+    @Column(name = "forma_pgto")
     private String formaPgto;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private StatusPedido status;
+
+    @Column(name = "observacao")
+    private String observacao;
+
+    @Column(name = "data_pedido")
+    private LocalDateTime dataPedido;
+
+    @Column(name = "data_entrega")
+    private LocalDateTime dataEntrega;
+
+    @Column(name = "data_pagamento")
+    private LocalDateTime dataPagamento;
+
+    @Column(name = "data_cancelamento")
+    private LocalDateTime dataCancelamento;
+
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_endereco_entrega", nullable = false)
+    private Endereco enderecoEntrega;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "id_cliente", nullable = false)
+    private Usuario usuario;
+
+    @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private List<ItemPedido> itens;
+
+    @PrePersist
+    protected void onCreate() {
+        this.dataPedido = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.dataAtualizacao = LocalDateTime.now();
+    }
 }
