@@ -85,4 +85,18 @@ public class Pedido {
     protected void onUpdate() {
         this.dataAtualizacao = LocalDateTime.now();
     }
+
+    public Double calucularValorCarrinho() {
+        return itens.stream().map(ItemPedido::getProduto).mapToDouble(p -> {
+            double desconto = p.getDesconto();
+            return (p.getPreco() * desconto) / 100;
+        }).sum();
+    }
+
+    public Double calcularValorPedido() {
+        return itens.stream().mapToDouble(i -> {
+            double desconto = i.getValorDesconto();
+            return (i.getValor() * desconto) / 100;
+        }).sum();
+    }
 }
