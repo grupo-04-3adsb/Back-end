@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy JAR app to Azure Web App - e-buy-spring-app-homolog
+name: Build and deploy JAR app to Azure Web App - e-buy-spring-web-app
 
 on:
   push:
     branches:
-      - develop-ebuy
+      - main
   workflow_dispatch:
 
 jobs:
@@ -49,15 +49,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9B006B04D0BE49BFA9CA0655B0135EDA }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CFC3FFE8CBAF46F5BFF0C94188D76B07 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B9BA1080AF9C4B07999BF991C3AA018D }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8CF56EFB8DDB4EC2AB46401A8D321660 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_343E6E2CA9F9489CBF8DFE72FC8FA981 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A29AE6B5ABAA434CB431C17D2685F0EE }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'e-buy-spring-app-homolog'
+          app-name: 'e-buy-spring-web-app'
           slot-name: 'Production'
           package: '*.jar'
           
