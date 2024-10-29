@@ -8,17 +8,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
+import tcatelie.microservice.auth.dto.response.MercadoLivreProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.service.ProdutoService;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 @RestController
@@ -28,6 +35,8 @@ import java.io.IOException;
 public class ProdutoController {
 
     private final ProdutoService service;
+
+    private final Logger logger = LoggerFactory.getLogger(ProdutoController.class);
 
     @Operation(
             summary = "Cadastro de produtos",
@@ -141,4 +150,74 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoDesativado);
     }
 
+    /*
+        Endponts adicionais para apresentar no dia da Sprint 2
+    */
+
+    @Operation(
+            summary = "Buscar produtos do Mercado Livre",
+            description = "Este endpoint permite buscar produtos do Mercado Livre ordenados pelo preço de forma decrescente.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produtos do Mercado Livre encontrados com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = MercadoLivreProdutoResponseDTO.class))),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/mercado-livre")
+    public ResponseEntity buscarProdutosMercadoLivre() throws Exception {
+        return ResponseEntity.ok(service.ordenarProdutosMercadoLivrePrecoDecrescente());
+    }
+
+    @Operation(
+            summary = "Exportar produtos para CSV",
+            description = "Este endpoint permite exportar a lista de produtos para um arquivo CSV.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produtos exportados com sucesso.",
+                            content = @Content(mediaType = "text/plain")),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/exportar-csv")
+    public ResponseEntity<InputStreamResource> exportarProdutosCsv() {
+        try {
+            String filePath = "listaProdutos.csv";
+
+            service.exportarCSVListaProdutos(filePath);
+
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(filePath));
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=listaProdutos.csv");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(resource);
+        } catch (IOException e) {
+            logger.error("Erro ao exportar produtos para CSV: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @Operation(
+            summary = "Pesquisa binária",
+            description = "Este endpoint permite buscar um produto por nome utilizando pesquisa binária.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Produto não encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/pesquisa-binaria")
+    public ResponseEntity buscarProdutoPorNome(@RequestParam String nome) {
+        ProdutoResponseDTO produtoResponse = service.buscarProdutoPorNomePesquisaBinaria(nome);
+
+        if(produtoResponse == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(produtoResponse);
+    }
 }

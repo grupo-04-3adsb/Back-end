@@ -1,5 +1,7 @@
 package tcatelie.microservice.auth.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +24,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/pagamentos")
+@RequiredArgsConstructor
+@Tag(name = "Pagamento", description = "Operações relacionadas aos pagamentos.")
 public class PagamentoController {
     private static final Logger log = LoggerFactory.getLogger(PagamentoController.class);
-    @Autowired
-    private PagamentoRepository repository;
+
+    private final PagamentoRepository repository;
 
     @GetMapping
     public ResponseEntity<PagamentoDto[]> listarMetodosPagamento(){

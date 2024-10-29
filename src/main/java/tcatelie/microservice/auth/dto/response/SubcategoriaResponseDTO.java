@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "DTO que representa uma subcategoria.")
 public class SubcategoriaResponseDTO {
 
     @Schema(description = "ID da subcategoria", example = "1")

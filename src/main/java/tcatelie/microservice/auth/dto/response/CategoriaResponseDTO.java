@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "DTO que representa uma categoria.")
 public class CategoriaResponseDTO {
 
     @Schema(description = "ID da categoria", example = "1")

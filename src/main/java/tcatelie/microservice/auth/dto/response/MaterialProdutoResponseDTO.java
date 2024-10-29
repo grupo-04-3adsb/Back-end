@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "DTO que representa um material de um produto")
 public class MaterialProdutoResponseDTO {
 
     @Schema(description = "Quantidade necessária para produção", example = "2")

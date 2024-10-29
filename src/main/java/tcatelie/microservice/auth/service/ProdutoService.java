@@ -1,33 +1,41 @@
 package tcatelie.microservice.auth.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.MaterialProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.MaterialProdutoResponseDTO;
+import tcatelie.microservice.auth.dto.response.MercadoLivreProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.mapper.ImagensAdicionaisMapper;
 import tcatelie.microservice.auth.mapper.OpcaoPersonalizacaoMapper;
 import tcatelie.microservice.auth.mapper.PersonalizacaoMapper;
 import tcatelie.microservice.auth.mapper.ProdutoMapper;
 import tcatelie.microservice.auth.model.*;
+import tcatelie.microservice.auth.observer.EmailNotificacao;
+import tcatelie.microservice.auth.observer.Observer;
+import tcatelie.microservice.auth.observer.ProdutoObserver;
 import tcatelie.microservice.auth.repository.ImagensProdutoRepository;
 import tcatelie.microservice.auth.repository.OpcaoPersonalizacaoRepository;
 import tcatelie.microservice.auth.repository.PersonalizacaoRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
 import tcatelie.microservice.auth.specification.ProdutoSpecification;
 
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +54,8 @@ public class ProdutoService {
     private final PersonalizacaoRepository personalizacaoRepository;
     private final OpcaoPersonalizacaoRepository opcaoPersonalizacaoRepository;
     private final GoogleDriveApiService googleDriveApiService;
+    private final ProdutoObserver produtoObserver;
+    private final EmailService emailService;
     private static final Logger logger = LoggerFactory.getLogger(ProdutoService.class);
 
     public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO requestDTO) {
@@ -56,6 +66,13 @@ public class ProdutoService {
         Produto produto = criarProdutoComRelacoes(requestDTO);
         produto.setProdutoAtivo(true);
         Produto produtoSalvo = repository.save(produto);
+
+
+        Observer emailNotificacao = new EmailNotificacao("claudio.araujofo@sptech.school", emailService);
+        produtoObserver.addObserver(emailNotificacao);
+
+        produtoObserver.cadastrarProduto("Um novo produto foi cadastrado com sucesso.", produtoSalvo);
+
         return montarProdutoResponseDTO(produtoSalvo, requestDTO.getMateriais());
     }
 
@@ -184,7 +201,7 @@ public class ProdutoService {
         produtoExistente.setPersonalizavel(requestDTO.getIsPersonalizavel());
         produtoExistente.setDimensao(requestDTO.getDimensao());
 
-        if(!produtoExistente.getUrlImagemPrincipal().equals(requestDTO.getUrlProduto())) {
+        if (!produtoExistente.getUrlImagemPrincipal().equals(requestDTO.getUrlProduto())) {
             filesIds.add(produtoExistente.getIdImgDrive());
             produtoExistente.setUrlImagemPrincipal(requestDTO.getUrlProduto());
         }
@@ -315,7 +332,7 @@ public class ProdutoService {
         }
     }
 
-    public ProdutoResponseDTO desativarProduto(Integer idProduto){
+    public ProdutoResponseDTO desativarProduto(Integer idProduto) {
         Produto produto = repository.findById(idProduto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com o ID: " + idProduto));
         produto.setProdutoAtivo(false);
@@ -325,4 +342,103 @@ public class ProdutoService {
                 .collect(Collectors.toList()));
     }
 
+    public MercadoLivreProdutoResponseDTO[] ordenarProdutosMercadoLivrePrecoDecrescente() throws Exception {
+        String urlApiExterna = "https://api.mercadolibre.com/sites/MLB/search?q=produtos-personalizados";
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(urlApiExterna, String.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonResponse = mapper.readTree(response.getBody());
+
+        List<MercadoLivreProdutoResponseDTO> produtos = new ArrayList<>();
+
+        JsonNode resultsArray = jsonResponse.get("results");
+        if (resultsArray != null && resultsArray.isArray()) {
+            for (JsonNode produtoNode : resultsArray) {
+                MercadoLivreProdutoResponseDTO produto = new MercadoLivreProdutoResponseDTO();
+
+                produto.setId(produtoNode.get("id").asText());
+                produto.setTitle(produtoNode.get("title").asText());
+                produto.setCategoryId(produtoNode.get("category_id").asText());
+                produto.setCondition(produtoNode.get("condition").asText());
+                produto.setPrice(BigDecimal.valueOf(produtoNode.get("price").asDouble()));
+                produto.setCurrencyId(produtoNode.get("currency_id").asText());
+                produto.setThumbnail(produtoNode.get("thumbnail").asText());
+                produto.setPermalink(produtoNode.get("permalink").asText());
+                produto.setAvailableQuantity(produtoNode.get("available_quantity").asInt());
+
+                produtos.add(produto);
+            }
+        }
+
+        MercadoLivreProdutoResponseDTO[] v = new MercadoLivreProdutoResponseDTO[produtos.toArray().length];
+        produtos.toArray(v);
+        for (int i = 0; i < v.length - 1; i++) {
+            for (int j = i + 1; j < v.length; j++) {
+                if (v[j].getPrice().compareTo(v[i].getPrice()) == 1) {
+                    MercadoLivreProdutoResponseDTO temp = v[i];
+                    v[i] = v[j];
+                    v[j] = temp;
+                }
+            }
+        }
+        return v;
+    }
+
+    public void exportarCSVListaProdutos(String filePath) {
+        List<Produto> listaProdutos = repository.findAll();
+
+        FileWriter file = null;
+        Formatter saida = null;
+
+
+        try {
+            file = new FileWriter(filePath);
+            saida = new Formatter(file);
+
+            saida.format("%s;%s;%s;%s;%s;%s\n", "id", "nome", "preço", "dimensão", "categoria", "subcategoria");
+
+            for (Produto produto : listaProdutos) {
+                saida.format("%d;%s;%.2f;%s;%s;%s\n", produto.getId(), produto.getNome(), produto.getPreco(), produto.getDimensao(), produto.getCategoria().getNomeCategoria(), produto.getSubcategoria().getNomeSubcategoria());
+            }
+        } catch (Exception e) {
+            logger.error("Erro ao gravar o arquivo");
+        } finally {
+            saida.close();
+            try {
+                file.close();
+            } catch (IOException e) {
+                logger.error("Erro ao fechar o arquivo");
+            }
+        }
+
+    }
+
+    public ProdutoResponseDTO buscarProdutoPorNomePesquisaBinaria(String nome) {
+        List<Produto> produtos = repository.findAll();
+
+        produtos.sort(Comparator.comparing(Produto::getNome));
+
+        return buscarProdutoRecursivo(produtos, nome, 0, produtos.size() - 1);
+    }
+
+    private ProdutoResponseDTO buscarProdutoRecursivo(List<Produto> produtos, String nome, int inicio, int fim) {
+        if (inicio > fim) {
+            return null;
+        }
+
+        int meio = (inicio + fim) / 2;
+        Produto produtoMeio = produtos.get(meio);
+
+        int comparacao = produtoMeio.getNome().compareTo(nome);
+
+        if (comparacao == 0) {
+            return mapper.toResponseDTO(produtoMeio);
+        } else if (comparacao < 0) {
+            return buscarProdutoRecursivo(produtos, nome, meio + 1, fim);
+        } else {
+            return buscarProdutoRecursivo(produtos, nome, inicio, meio - 1);
+        }
+    }
 }

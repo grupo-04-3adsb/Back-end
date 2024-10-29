@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "DTO que representa uma personalização.")
 public class PersonalizacaoResponseDTO {
 
     @Schema(description = "ID da personalização", example = "1")

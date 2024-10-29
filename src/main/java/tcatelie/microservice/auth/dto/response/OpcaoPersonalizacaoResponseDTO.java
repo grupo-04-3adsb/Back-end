@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "DTO que representa uma opção de personalização.")
 public class OpcaoPersonalizacaoResponseDTO {
 
     @Schema(description = "ID da opção", example = "1")
