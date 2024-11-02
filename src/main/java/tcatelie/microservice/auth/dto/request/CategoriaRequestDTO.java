@@ -13,4 +13,7 @@ public class CategoriaRequestDTO {
 
     @Schema(description = "Nome da categoria", example = "Papeteria")
     private String nome;
+
+    @Schema(description = "Código de cor da categoria", example = "#FFFFFF")
+    private String codigoCor;
 }

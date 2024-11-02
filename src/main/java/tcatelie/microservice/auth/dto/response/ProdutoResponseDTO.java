@@ -39,10 +39,10 @@ public class ProdutoResponseDTO {
     private String idImgDrive;
 
     @Schema(description = "Data e hora de criação do produto", example = "2024-10-06T10:15:30")
-    private LocalDateTime dthrCriacao;
+    private String dthrCriacao;
 
     @Schema(description = "Data e hora da última atualização do produto", example = "2024-10-06T10:15:30")
-    private LocalDateTime dthrAtualizacao;
+    private String dthrAtualizacao;
 
     @Schema(description = "Lista de imagens adicionais do produto")
     private List<ImagemProdutoResponseDTO> imagensAdicionais;

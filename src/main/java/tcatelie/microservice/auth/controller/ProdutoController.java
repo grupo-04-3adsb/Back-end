@@ -1,6 +1,7 @@
 package tcatelie.microservice.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
+import tcatelie.microservice.auth.dto.request.ProdutosUpdateRequestDTO;
 import tcatelie.microservice.auth.dto.response.MercadoLivreProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.service.ProdutoService;
@@ -84,17 +88,48 @@ public class ProdutoController {
     })
     @GetMapping
     public ResponseEntity buscarTodosProdutosComPaginacao(
-            @PageableDefault(size = 10) Pageable pageable,
+
+            @Parameter(description = "Nome do produto", required = false, example = "Caderno")
             @RequestParam(value = "nome", required = false) String nome,
+
+            @Parameter(description = "SKU do produto", required = false, example = "123456")
             @RequestParam(value = "sku", required = false) String sku,
+
+            @Parameter(description = "Margem de lucro mínima do produto", required = false, example = "0.1")
             @RequestParam(value = "margemLucroMinima", required = false) Double margemLucroMinima,
+
+            @Parameter(description = "Margem de lucro máxima do produto", required = false, example = "0.5")
             @RequestParam(value = "margemLucroMaxima", required = false) Double margemLucroMaxima,
+
+            @Parameter(description = "Preço mínimo do produto", required = false, example = "10.0")
             @RequestParam(value = "precoMinimo", required = false) Double precoMinimo,
+
+            @Parameter(description = "Preço máximo do produto", required = false, example = "100.0")
             @RequestParam(value = "precoMaximo", required = false) Double precoMaximo,
+
+            @Parameter(description = "Nome da categoria", required = false, example = "Papelaria")
             @RequestParam(value = "nomeCategoria", required = false) String nomeCategoria,
+
+            @Parameter(description = "Nome da subcategoria", required = false, example = "Caderno")
             @RequestParam(value = "nomeSubcategoria", required = false) String nomeSubcategoria,
+
+            @Parameter(description = "Indica se o produto é personalizável", required = false, example = "true")
             @RequestParam(value = "isPersonalizavel", required = false) Boolean isPersonalizavel,
-            @RequestParam(value = "isPersonalizacaoObrigatoria", required = false) Boolean isPersonalizacaoObrigatoria) {
+
+            @Parameter(description = "Indica se a personalização é obrigatória", required = false, example = "true")
+            @RequestParam(value = "isPersonalizacaoObrigatoria", required = false) Boolean isPersonalizacaoObrigatoria,
+
+            @Parameter(description = "Número da página para paginar os resultados", required = false, example = "0")
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Tamanho da página para paginar os resultados", required = false, example = "10")
+            @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Ordenação dos resultados", required = false, example = "ASC")
+            @RequestParam(defaultValue = "asc") String sortOrder,
+
+            @Parameter(description = "Campo para ordenação dos resultados", required = false, example = "nome")
+            @RequestParam(defaultValue = "id") String sortBy) {
 
         ProdutoFiltroDTO filtroProduto = new ProdutoFiltroDTO(
                 nome,
@@ -109,7 +144,7 @@ public class ProdutoController {
                 isPersonalizacaoObrigatoria
         );
 
-        Page<ProdutoResponseDTO> produtosPaginados = service.buscarTodosProdutosPaginados(pageable, filtroProduto);
+        Page<ProdutoResponseDTO> produtosPaginados = service.buscarTodosProdutosPaginados(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)), filtroProduto);
         return ResponseEntity.ok(produtosPaginados);
     }
 
@@ -219,5 +254,20 @@ public class ProdutoController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(produtoResponse);
+    }
+
+    @Operation(
+            summary = "Atualizar categoria e subcategoria de produtos",
+            description = "Este endpoint permite atualizar a categoria e subcategoria de um ou mais produtos.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Categoria e subcategoria atualizadas com sucesso."),
+                    @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @PutMapping
+    public ResponseEntity atualizarProdutos(@RequestBody @Valid ProdutosUpdateRequestDTO requestDTO) {
+        service.atualizarCategoriaSubcategoriaDoProduto(requestDTO);
+        return ResponseEntity.noContent().build();
     }
 }

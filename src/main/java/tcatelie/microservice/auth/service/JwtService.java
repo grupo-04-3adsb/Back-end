@@ -16,14 +16,31 @@ import java.time.ZoneOffset;
 public class JwtService {
 
 	@Value("${api.security.token.secret}")
-	public String secret;
+	private String secret;
 
-	public String generateToken(Usuario usuario) {
+	@Value("${api.security.token.accessExpirationHours}")
+	private long accessExpirationHours;
+
+	@Value("${api.security.token.refreshExpirationDays}")
+	private long refreshExpirationDays;
+
+	public String generateAccessToken(Usuario usuario) {
+		return generateToken(usuario, accessExpirationHours, "access");
+	}
+
+	public String generateRefreshToken(Usuario usuario) {
+		return generateToken(usuario, refreshExpirationDays * 24, "refresh");
+	}
+
+	private String generateToken(Usuario usuario, long expirationHours, String tokenType) {
 		try {
 			Algorithm algorithm = Algorithm.HMAC256(secret);
-			String token = JWT.create().withIssuer("auth-api").withSubject(usuario.getEmail())
-					.withExpiresAt(genExpirationDate()).sign(algorithm);
-			return token;
+			return JWT.create()
+					.withIssuer("auth-api")
+					.withSubject(usuario.getEmail())
+					.withExpiresAt(genExpirationDate(expirationHours))
+					.withClaim("tokenType", tokenType)
+					.sign(algorithm);
 		} catch (JWTCreationException e) {
 			throw new RuntimeException("Erro na geração do token", e);
 		}
@@ -32,14 +49,32 @@ public class JwtService {
 	public String validateToken(String token) {
 		try {
 			Algorithm algorithm = Algorithm.HMAC256(secret);
-			return JWT.require(algorithm).withIssuer("auth-api").build().verify(token).getSubject();
+			return JWT.require(algorithm)
+					.withIssuer("auth-api")
+					.build()
+					.verify(token)
+					.getSubject();
 		} catch (JWTVerificationException e) {
 			return "";
 		}
 	}
 
-	public Instant genExpirationDate() {
-		return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+	public boolean validateRefreshToken(String token) {
+		try {
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+			var decodedJWT = JWT.require(algorithm)
+					.withIssuer("auth-api")
+					.withClaim("tokenType", "refresh")
+					.build()
+					.verify(token);
+
+			return decodedJWT.getExpiresAt().toInstant().isAfter(Instant.now());
+		} catch (JWTVerificationException e) {
+			return false;
+		}
 	}
 
+	private Instant genExpirationDate(long hours) {
+		return LocalDateTime.now().plusHours(hours).toInstant(ZoneOffset.of("-03:00"));
+	}
 }

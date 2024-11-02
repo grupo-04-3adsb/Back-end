@@ -34,6 +34,8 @@ public class Subcategoria {
     @OneToMany(mappedBy = "subcategoria")
     private List<Produto> produtos;
 
+    @Column(name = "codigo_cor")
+    private String codigoCor;
 
     @Column(name = "data_hora_cadastro")
     private LocalDateTime dthrCadastro;
