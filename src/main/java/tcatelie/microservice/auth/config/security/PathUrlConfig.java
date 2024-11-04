@@ -40,7 +40,8 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/desativar/"),
             new AntPathRequestMatcher("/produtos/{id}", "PUT"),
             new AntPathRequestMatcher("/produtos", "PUT"),
-            new AntPathRequestMatcher("/materiais/revisao", "POST")
+            new AntPathRequestMatcher("/materiais/revisao", "POST"),
+            new AntPathRequestMatcher("/produtos/listar-por-material/**")
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {

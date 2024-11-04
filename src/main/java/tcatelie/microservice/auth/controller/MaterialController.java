@@ -34,6 +34,7 @@ public class MaterialController {
     public ResponseEntity<MaterialResponseDTO> cadastrar(
             @RequestBody @Valid MaterialRequestDTO requestDTO
     ) {
+
         MaterialResponseDTO materialCadastrado = materialService.cadastrar(requestDTO);
         return ResponseEntity.status(201).body(materialCadastrado);
     }

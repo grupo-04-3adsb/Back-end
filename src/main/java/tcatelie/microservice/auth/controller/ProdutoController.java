@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -185,10 +183,6 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoDesativado);
     }
 
-    /*
-        Endponts adicionais para apresentar no dia da Sprint 2
-    */
-
     @Operation(
             summary = "Buscar produtos do Mercado Livre",
             description = "Este endpoint permite buscar produtos do Mercado Livre ordenados pelo preço de forma decrescente.",
@@ -250,7 +244,7 @@ public class ProdutoController {
     public ResponseEntity buscarProdutoPorNome(@RequestParam String nome) {
         ProdutoResponseDTO produtoResponse = service.buscarProdutoPorNomePesquisaBinaria(nome);
 
-        if(produtoResponse == null) {
+        if (produtoResponse == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(produtoResponse);
@@ -269,5 +263,16 @@ public class ProdutoController {
     public ResponseEntity atualizarProdutos(@RequestBody @Valid ProdutosUpdateRequestDTO requestDTO) {
         service.atualizarCategoriaSubcategoriaDoProduto(requestDTO);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/listar-por-material/{idMaterial}")
+    public ResponseEntity listarProdutosPorMaterial(@PathVariable Integer idMaterial,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(defaultValue = "asc") String sortOrder,
+                                                    @RequestParam(defaultValue = "id") String sortBy
+    ) {
+        Page<ProdutoResponseDTO> produtos = service.buscarProdutosPorIdMaterial(idMaterial, PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)));
+        return ResponseEntity.ok(produtos);
     }
 }

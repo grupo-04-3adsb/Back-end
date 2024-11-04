@@ -462,4 +462,11 @@ public class ProdutoService {
 
         repository.saveAll(produtos);
     }
+
+    public Page<ProdutoResponseDTO> buscarProdutosPorIdMaterial(Integer idMaterial, Pageable pageable) {
+        Page<Produto> produtos = repository.findByMateriaisProduto_Material_IdMaterial(idMaterial, pageable);
+        return produtos.map(produto -> montarProdutoResponseDTO(produto, produto.getMateriaisProduto().stream()
+                .map(mp -> new MaterialProdutoRequestDTO(mp.getMaterial().getIdMaterial(), mp.getQtdMaterialNecessario()))
+                .collect(Collectors.toList())));
+    }
 }

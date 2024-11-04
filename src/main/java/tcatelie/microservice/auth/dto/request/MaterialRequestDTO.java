@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Request DTO para a criação de um novo material")
 public class MaterialRequestDTO {
 
-    @NotNull
     @Schema(description = "Identificador do material", example = "1")
     private Integer id;
 
@@ -27,9 +26,14 @@ public class MaterialRequestDTO {
     @Schema(description = "Quantidade em estoque", example = "100")
     private Integer quantidade;
 
-    @NotBlank
     @Schema(description = "Descrição do material", example = "Tecido de algodão")
     private String descricao;
+
+    @Schema(description = "Preço do pacote", example = "100.00")
+    private Double precoPacote;
+
+    @Schema(description = "Unidades por pacote", example = "10")
+    private Integer unidadesPorPacote;
 
     @NotNull
     @Positive

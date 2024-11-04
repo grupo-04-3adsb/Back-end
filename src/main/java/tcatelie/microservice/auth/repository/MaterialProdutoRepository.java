@@ -9,4 +9,6 @@ import tcatelie.microservice.auth.model.MaterialProdutoId;
 public interface MaterialProdutoRepository extends JpaRepository<MaterialProduto, MaterialProdutoId> {
 
     Page<MaterialProduto> findByMaterial_IdMaterial(Integer idMaterial, Pageable pageable);
+
+    Integer countByMaterial_IdMaterial(Integer idMaterial);
 }

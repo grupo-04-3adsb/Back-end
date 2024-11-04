@@ -99,7 +99,7 @@ public class Produto implements Observer {
 
     public void aplicarMargemLucro() {
 
-        margemLucro = calcularMargemLucro();
+        this.margemLucro = calcularMargemLucro();
 
         if (repository != null) {
             repository.save(this);
@@ -123,7 +123,7 @@ public class Produto implements Observer {
 
     @Override
     public void update(String message, Produto produto) {
-
+        aplicarMargemLucro();
     }
 
     @Override
