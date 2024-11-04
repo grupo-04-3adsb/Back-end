@@ -26,6 +26,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/mercado-livre"),
             new AntPathRequestMatcher("/produtos/produtos/exportar-csv"),
             new AntPathRequestMatcher("/auth/refresh-token"),
+            new AntPathRequestMatcher("/materiais/filtrar"),
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
@@ -39,6 +40,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/desativar/"),
             new AntPathRequestMatcher("/produtos/{id}", "PUT"),
             new AntPathRequestMatcher("/produtos", "PUT"),
+            new AntPathRequestMatcher("/materiais/revisao", "POST")
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {

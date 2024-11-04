@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.filter.SubcategoriaFiltroDTO;
@@ -35,11 +36,11 @@ public class SubcategoriaService {
         Subcategoria subCategoriaEntidade = mapper.toSubcategoria(requestDTO);
 
         Categoria categoria = new Categoria();
-        if(requestDTO.getIdCategoria() != null) {
+        if (requestDTO.getIdCategoria() != null) {
             categoria = categoriaService.findById(requestDTO.getIdCategoria());
         } else if (StringUtils.isNotBlank(requestDTO.getNomeCategoria())) {
-           categoria = categoriaService.findByNome(requestDTO.getNomeCategoria());
-        } else{
+            categoria = categoriaService.findByNome(requestDTO.getNomeCategoria());
+        } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoria não informada");
         }
 
@@ -81,15 +82,18 @@ public class SubcategoriaService {
     }
 
     public SubcategoriaResponseDTO atualizar(@Valid SubcategoriaRequestDTO requestDTO, Integer id) {
-        if (repository.findById(id).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        Optional<Subcategoria> subCategoriaBuscada = repository.findById(id);
+        if (subCategoriaBuscada.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subcategoria não encontrada");
         }
 
-        Subcategoria entidade = mapper.toSubcategoria(requestDTO);
-        entidade.setIdSubcategoria(id);
+        Subcategoria entidade = subCategoriaBuscada.get();
+
         entidade.setNomeSubcategoria(requestDTO.getNomeSubcategoria());
         entidade.setDescricaoSubcategoria(requestDTO.getDescricaoSubcategoria());
         entidade.setCodigoCor(requestDTO.getCodigoCor());
+
         Subcategoria subCategoriaSalva = repository.save(entidade);
 
         return mapper.toSubcategoriaResponse(subCategoriaSalva);
@@ -97,8 +101,15 @@ public class SubcategoriaService {
 
     public void deletar(Integer id) {
         if (repository.findById(id).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subcategoria não encontrada");
         }
+
+        Integer qtdProdutos = produtoRepository.countBySubcategoria_IdSubcategoria(id);
+
+        if (qtdProdutos > 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Não é possível excluir a subcategoria %s pois ela possui %d produtos vinculados a ela!".formatted(repository.findById(id).get().getNomeSubcategoria(), qtdProdutos));
+        }
+
         repository.deleteById(id);
     }
 

@@ -27,7 +27,7 @@ public class Subcategoria {
     @Column(name = "descricao_subcategoria")
     private String descricaoSubcategoria;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_categoria")
     private Categoria categoria;
 

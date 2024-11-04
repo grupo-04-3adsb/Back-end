@@ -5,6 +5,9 @@ import tcatelie.microservice.auth.dto.response.material.MaterialDetalhadoRespons
 import tcatelie.microservice.auth.dto.response.material.MaterialResponseDTO;
 import tcatelie.microservice.auth.model.Material;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class MaterialMapper {
 
     public static Material toEntity(MaterialRequestDTO dto){
@@ -16,6 +19,7 @@ public class MaterialMapper {
                 .nomeMaterial(dto.getNome())
                 .estoque(dto.getQuantidade())
                 .precoUnitario(dto.getPreco())
+                .descricao(dto.getDescricao())
                 .build();
     }
 
@@ -39,7 +43,18 @@ public class MaterialMapper {
                 .nome(entidade.getNomeMaterial())
                 .quantidade(entidade.getEstoque())
                 .preco(entidade.getPrecoUnitario())
+                .dthrAtualizacao(localDateTimeToString(entidade.getDthrAtualizacao()))
+                .dthrCadastro(localDateTimeToString(entidade.getDthrCadastro()))
+                .descricao(entidade.getDescricao())
                 .build();
+    }
+
+    private static String localDateTimeToString(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm | dd/MM/yyyy");
+        return dateTime.format(formatter);
     }
 
 }

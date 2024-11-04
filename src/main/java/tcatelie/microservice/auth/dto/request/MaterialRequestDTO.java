@@ -4,22 +4,32 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "Request DTO para a criação de um novo material")
 public class MaterialRequestDTO {
+
+    @NotNull
+    @Schema(description = "Identificador do material", example = "1")
+    private Integer id;
 
     @NotBlank
     @Schema(description = "Nome do material", example = "Tecido")
     private String nome;
 
-    @NotNull
-    @Positive
     @Schema(description = "Quantidade em estoque", example = "100")
     private Integer quantidade;
+
+    @NotBlank
+    @Schema(description = "Descrição do material", example = "Tecido de algodão")
+    private String descricao;
 
     @NotNull
     @Positive

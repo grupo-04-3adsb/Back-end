@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tcatelie.microservice.auth.observer.Observer;
+import tcatelie.microservice.auth.repository.ProdutoRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Produto {
+public class Produto implements Observer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,6 +83,9 @@ public class Produto {
     @OneToMany(mappedBy = "produto", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<MaterialProduto> materiaisProduto = new ArrayList<>();
 
+    @Transient
+    private ProdutoRepository repository;
+
     @PrePersist
     protected void onCreate() {
         this.dthrCadastro = LocalDateTime.now();
@@ -92,4 +97,37 @@ public class Produto {
         this.dthrAtualizacao = LocalDateTime.now();
     }
 
+    public void aplicarMargemLucro() {
+
+        margemLucro = calcularMargemLucro();
+
+        if (repository != null) {
+            repository.save(this);
+        }
+    }
+
+    public Double calcularMargemLucro() {
+        if (preco == null || preco <= 0) {
+            return 0.0;
+        }
+
+        double custoTotal = 0.0;
+        for (MaterialProduto materialProduto : materiaisProduto) {
+            Material material = materialProduto.getMaterial();
+            int quantidadeNecessaria = materialProduto.getQtdMaterialNecessario();
+            custoTotal += material.getPrecoUnitario() * quantidadeNecessaria;
+        }
+
+        return ((preco - custoTotal) / preco) * 100;
+    }
+
+    @Override
+    public void update(String message, Produto produto) {
+
+    }
+
+    @Override
+    public void update(String message) {
+
+    }
 }
