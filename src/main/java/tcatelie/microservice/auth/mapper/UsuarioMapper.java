@@ -19,7 +19,8 @@ public interface UsuarioMapper {
 			@Mapping(source = "role", target = "cargo"), 
 			@Mapping(source = "urlImgUsuario", target = "imgUrl"),
 			@Mapping(source = "enderecos", target = "enderecos"),
-			@Mapping(target = "senha", ignore = true)
+			@Mapping(target = "senha", ignore = true),
+			@Mapping(target = "idGoogle", source = "idGoogle")
 	})
 	UsuarioResponseDTO toUsuarioResponseDTO(Usuario usuario);
 
