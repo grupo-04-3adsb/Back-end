@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import tcatelie.microservice.auth.model.Produto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Integer>, JpaSpecificationExecutor<Produto> {
 
@@ -40,5 +41,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer>, JpaS
     Integer countQtdMateriaisProduto(Integer idMaterial);
 
     Page<Produto> findByMateriaisProduto_Material_IdMaterial(Integer idMaterial, Pageable pageable);
+
+    Optional<Produto> findByNome(String nome);
 
 }

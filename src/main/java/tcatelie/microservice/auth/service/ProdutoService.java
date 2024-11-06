@@ -462,4 +462,19 @@ public class ProdutoService {
 
         repository.saveAll(produtos);
     }
+
+    public ProdutoResponseDTO buscarProdutoPorNome(String nomeProduto) {
+        logger.info("Buscando produto pelo nome: {}", nomeProduto);
+
+        Produto produto = repository.findByNome(nomeProduto)
+                .orElse(null);
+
+        if (produto == null) {
+            logger.warn("Produto com nome '{}' não encontrado.", nomeProduto);
+            return null;
+        }
+
+        return mapper.toResponseDTO(produto);
+    }
+
 }

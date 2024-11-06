@@ -15,6 +15,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/enderecos/usuario/{usuarioId}", "GET"),
             new AntPathRequestMatcher("/produtos", "GET"),
             new AntPathRequestMatcher("/produtos/{idProduto}", "GET"),
+            new AntPathRequestMatcher("/produtos/nome/{nomeProduto}", "GET"), // Adicionando o endpoint de busca por nome
             new AntPathRequestMatcher("/categorias", "GET"),
             new AntPathRequestMatcher("/categorias/{id}", "GET"),
             new AntPathRequestMatcher("/subcategorias", "GET"),
@@ -46,5 +47,4 @@ public class PathUrlConfig {
     public static final AntPathRequestMatcher[] USER_URLS = {
 
     };
-
 }
