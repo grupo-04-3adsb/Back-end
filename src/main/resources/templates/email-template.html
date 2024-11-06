@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Novo Produto Cadastrado: ' + ${produto.nome}">Novo Produto Cadastrado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .header img {
+            max-width: 150px;
+        }
+
+        .content {
+            padding: 20px 0;
+        }
+
+        .content h2 {
+            color: #333333;
+        }
+
+        .product-details {
+            margin-top: 10px;
+        }
+
+        .product-details p {
+            margin: 5px 0;
+        }
+
+        .footer {
+            text-align: center;
+            color: #777777;
+            font-size: 12px;
+            padding-top: 20px;
+            border-top: 1px solid #dddddd;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #007BFF;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .product-image {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .product-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+    </div>
+    <div class="content">
+        <h2 th:text="'Novo Produto Cadastrado: ' + ${produto.nome}">Novo Produto Cadastrado</h2>
+        <p>Olá, Administrador,</p>
+        <p>Um novo produto foi cadastrado no sistema. Veja os detalhes abaixo:</p>
+
+        <div class="product-details">
+            <p><strong>Nome:</strong> <span th:text="${produto.nome}">Nome do Produto</span></p>
+            <p><strong>SKU:</strong> <span th:text="${produto.sku}">SKU12345</span></p>
+            <p><strong>Preço de Venda:</strong> <span th:text="${produto.preco}">R$ 100,00</span></p>
+            <p><strong>Descrição:</strong> <span th:text="${produto.descricao}">Descrição do produto</span></p>
+            <p><strong>Dimensão:</strong> <span th:text="${produto.dimensao}">30x20x10 cm</span></p>
+            <p><strong>Desconto:</strong> <span th:text="${produto.desconto}">10%</span></p>
+            <p><strong>Margem de Lucro:</strong> <span th:text="${produto.margemLucro}">20%</span></p>
+            <p><strong>Categoria:</strong> <span th:text="${produto.categoria.nomeCategoria}">Categoria Exemplo</span></p>
+            <p><strong>Subcategoria:</strong> <span th:text="${produto.subcategoria.nomeSubcategoria}">Subcategoria Exemplo</span>
+            </p>
+            <p><strong>Ativo:</strong> <span th:text="${produto.produtoAtivo}">Sim</span></p>
+            <p><strong>Data de Cadastro:</strong> <span th:text="${produto.dthrCadastro}">2024-10-15 17:45</span></p>
+        </div>
+
+        <div class="product-image">
+            <img th:src="${produto.urlImagemPrincipal}" alt="Imagem Principal do Produto"/>
+        </div>
+
+        <a class="btn" th:href="@{'http://localhost:5173/dashboard/produtos/gerenciar/' + ${produto.id}}">Ver Produto</a>
+    </div>
+    <div class="footer">
+        <p>Este é um e-mail automático, por favor, não responda.</p>
+        <p>© 2024 TCAteliê. Todos os direitos reservados.</p>
+    </div>
+</div>
+</body>
+</html>
