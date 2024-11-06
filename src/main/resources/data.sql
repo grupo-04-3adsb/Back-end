@@ -351,7 +351,66 @@ VALUES ('Cláudio Araújo', 'claudio@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J
         '(11) 98765-4321', 'HABILITADO',
         DATEADD('DAY', FLOOR(RAND() * 365), NOW()), DATEADD('DAY', FLOOR(RAND() * 365), NOW()), '123.456.789-09', 1,
         'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL),
-       ('Cláudio Araújo', 'claudiouser@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER',
+       ('Cláudio Araújo', 'claudiouser@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC',
+        'USER',
         '(11) 98765-4321', 'HABILITADO',
         DATEADD('DAY', FLOOR(RAND() * 365), NOW()), DATEADD('DAY', FLOOR(RAND() * 365), NOW()), '123.456.789-08', 1,
-        'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL);
+        'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL),
+       ('Matheus Munari', 'matheus_munari_admin@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4323',
+        'HABILITADO',
+        NOW(), NOW(), '321.654.987-01', 1, 'https://drive.google.com/thumbnail?id=img2', '1990-05-10', NULL),
+       ('Matheus Munari', 'matheus_munari_user@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4324', 'HABILITADO',
+        NOW(), NOW(), '321.654.987-02', 1, 'https://drive.google.com/thumbnail?id=img2', '1990-05-10', NULL),
+       ('Matheus Kikuti', 'matheus_kikuti_admin@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4325',
+        'HABILITADO',
+        NOW(), NOW(), '456.789.123-03', 1, 'https://drive.google.com/thumbnail?id=img3', '1992-08-15', NULL),
+       ('Matheus Kikuti', 'matheus_kikuti_user@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4326', 'HABILITADO',
+        NOW(), NOW(), '456.789.123-04', 1, 'https://drive.google.com/thumbnail?id=img3', '1992-08-15', NULL),
+       ('Guilherme Santiago', 'guilherme_admin@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4327', 'HABILITADO',
+        NOW(), NOW(), '654.321.987-05', 1, 'https://drive.google.com/thumbnail?id=img4', '1995-12-20', NULL),
+       ('Guilherme Santiago', 'guilherme_user@gmail.com',
+        '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4328', 'HABILITADO',
+        NOW(), NOW(), '654.321.987-06', 1, 'https://drive.google.com/thumbnail?id=img4', '1995-12-20', NULL),
+       ('Kauã Nunes', 'kaua_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
+        '(11) 98765-4329', 'HABILITADO',
+        NOW(), NOW(), '789.654.321-07', 1, 'https://drive.google.com/thumbnail?id=img5', '2000-02-05', NULL),
+       ('Kauã Nunes', 'kaua_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER',
+        '(11) 98765-4330', 'HABILITADO',
+        NOW(), NOW(), '789.654.321-08', 1, 'https://drive.google.com/thumbnail?id=img5', '2000-02-05', NULL);
+
+
+INSERT INTO ENDERECO
+(RUA, NUMERO, COMPLEMENTO, BAIRRO, CIDADE, ESTADO, CEP, PAIS, INSTRUCAO_ENTREGA, ENDERECO_PADRAO, LOGRADOURO,
+ USUARIO_ID)
+VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil',
+        'Aperte a campainha',
+        TRUE, 'RUA', 1),('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil',
+        'Aperte a campainha',
+        TRUE, 'CASA', 2),('Rua B', '456', 'Casa', 'Bairro Norte', 'São Paulo', 'SP', '02002-000', 'Brasil', 'Tocar a campainha', TRUE,
+        'RUA', 3),('Rua B', '789', 'Apto 202', 'Bairro Norte', 'São Paulo', 'SP', '02003-000', 'Brasil',
+        'Deixar na caixa de correio', TRUE, 'RUA', 4),('Rua C', '101', 'Casa 3', 'Bairro Leste', 'São Paulo', 'SP', '03004-000', 'Brasil', 'Tocar duas vezes', TRUE,
+        'RUA', 5),('Rua C', '102', 'Apto 303', 'Bairro Leste', 'São Paulo', 'SP', '03005-000', 'Brasil', 'Deixar com o porteiro',
+        TRUE, 'RUA', 6),('Rua D', '123', 'Casa 1', 'Bairro Sul', 'São Paulo', 'SP', '04006-000', 'Brasil', 'Deixar na garagem', TRUE,
+        'RUA', 7),('Rua D', '124', 'Apto 404', 'Bairro Sul', 'São Paulo', 'SP', '04007-000', 'Brasil',
+        'Deixar na caixa de correio', TRUE, 'RUA', 8),('Rua E', '125', 'Casa 2', 'Bairro Oeste', 'São Paulo', 'SP', '05008-000', 'Brasil', 'Deixar na garagem', TRUE,
+        'RUA', 9),('Rua E', '126', 'Apto 505', 'Bairro Oeste', 'São Paulo', 'SP', '05009-000', 'Brasil',
+        'Deixar na caixa de correio', TRUE, 'RUA', 1);
+
+INSERT INTO PEDIDO (NOME_USUARIO, TOTAL, VALOR_DESCONTO, VALOR_FRETE, NUM_PARCELA, VALOR_PARCELA, FORMA_PAGAMENTO, STATUS,
+                    OBSERVACAO, DATA_PEDIDO, DATA_ENTREGA, DATA_PAGAMENTO, DATA_CANCELAMENTO, DATA_ATUALIZACAO,
+                    FK_ENDERECO_ENTREGA, FK_USUARIO)
+VALUES ('Cláudio Araújo', 0.01, 10.00, 20.00, 3, 83.33, '', 'Carrinho', 'Entrega rápida', NOW(),
+        DATEADD('DAY', FLOOR(RAND() * 365), NOW()), NULL, NULL, NOW(), 1, 1);
+
+INSERT INTO ITEM_PEDIDO (QUANTIDADE, PRECO_UNITARIO, VALOR_TOTAL, DESCONTO, VALOR_DESCONTO, VALOR_FRETE, FK_PRODUTO,
+                         FK_PEDIDO)
+VALUES (2, 100.00, 200.00, 5.0, 10.00, 10.00, 1, 1);
+
+INSERT INTO ITEM_PEDIDO (QUANTIDADE, PRECO_UNITARIO, VALOR_TOTAL, DESCONTO, VALOR_DESCONTO, VALOR_FRETE, FK_PRODUTO,
+                         FK_PEDIDO)
+VALUES (1, 60.00, 60.00, 0.0, 0.00, 10.00, 2, 1);

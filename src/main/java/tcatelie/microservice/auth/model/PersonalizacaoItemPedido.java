@@ -9,9 +9,11 @@ import lombok.*;
 @Setter
 @Builder
 @Entity
+@Table(name = "personalizacao_item_pedido")
 public class PersonalizacaoItemPedido {
 
     @Id
+    @Column(name = "id_personalizacao_item_pedido")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

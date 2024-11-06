@@ -40,7 +40,7 @@ public class Pedido {
     @Column(name = "valor_parcela")
     private Double valorParcela;
 
-    @Column(name = "forma_pgto")
+    @Column(name = "forma_pagamento")
     private String formaPgto;
 
     @Column(name = "status")
@@ -65,12 +65,15 @@ public class Pedido {
     @Column(name = "data_atualizacao")
     private LocalDateTime dataAtualizacao;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @Column(name = "id_pagamento")
+    private String paymentId;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "fk_endereco_entrega", nullable = false)
     private Endereco enderecoEntrega;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @JoinColumn(name = "id_cliente", nullable = false)
+    @JoinColumn(name = "fk_usuario", nullable = false)
     private Usuario usuario;
 
     @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
