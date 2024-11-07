@@ -16,6 +16,9 @@ import java.util.List;
 @Schema(description = "Response DTO do usuário.")
 public class UsuarioResponseDTO {
 
+    @Schema(description = "Id do usuário no banco", example = "1")
+    private Integer idUsuario;
+
     @Schema(description = "Nome completo do usuário.", example = "Cláudio Araújo")
     private String nome;
 
