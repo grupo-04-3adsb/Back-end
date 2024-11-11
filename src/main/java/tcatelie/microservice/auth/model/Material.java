@@ -25,6 +25,12 @@ public class Material implements Observable {
     @Column(name = "nome_material", unique = true)
     private String nomeMaterial;
 
+    @Column(name = "preco_pacote")
+    private Double precoPacote;
+
+    @Column(name = "unidades_por_pacote")
+    private Integer unidadesPorPacote;
+
     @Column(name = "preco_unitario")
     private Double precoUnitario;
 
@@ -67,11 +73,15 @@ public class Material implements Observable {
     }
 
     public void notifyObservers(String message, Object object) {
+        for (Observer observer : observers) {
+            observer.update(message, (Produto) object);
+        }
     }
 
     public void notifyObservers(String message) {
+        List<MaterialProduto> produtosCopia = new ArrayList<>(produtos);
         for (Observer observer : observers) {
-            for (MaterialProduto mp : produtos) {
+            for (MaterialProduto mp : produtosCopia) {
                 observer.update(message, mp.getProduto());
             }
         }

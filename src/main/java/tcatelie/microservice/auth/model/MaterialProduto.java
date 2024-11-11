@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class MaterialProduto {
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_material")
     private Material material;
 

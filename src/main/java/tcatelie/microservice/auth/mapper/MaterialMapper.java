@@ -20,6 +20,8 @@ public class MaterialMapper {
                 .estoque(dto.getQuantidade())
                 .precoUnitario(dto.getPreco())
                 .descricao(dto.getDescricao())
+                .unidadesPorPacote(dto.getUnidadesPorPacote())
+                .precoPacote(dto.getPrecoPacote())
                 .build();
     }
 
@@ -46,6 +48,8 @@ public class MaterialMapper {
                 .dthrAtualizacao(localDateTimeToString(entidade.getDthrAtualizacao()))
                 .dthrCadastro(localDateTimeToString(entidade.getDthrCadastro()))
                 .descricao(entidade.getDescricao())
+                .unidadesPorPacote(entidade.getUnidadesPorPacote())
+                .precoPacote(entidade.getPrecoPacote())
                 .build();
     }
 

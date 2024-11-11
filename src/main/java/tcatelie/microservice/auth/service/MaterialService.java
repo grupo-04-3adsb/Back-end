@@ -16,6 +16,7 @@ import tcatelie.microservice.auth.mapper.MaterialMapper;
 import tcatelie.microservice.auth.model.Material;
 import tcatelie.microservice.auth.model.MaterialProduto;
 import tcatelie.microservice.auth.model.Produto;
+import tcatelie.microservice.auth.observer.Observer;
 import tcatelie.microservice.auth.repository.MaterialProdutoRepository;
 import tcatelie.microservice.auth.repository.MaterialRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
@@ -23,6 +24,7 @@ import tcatelie.microservice.auth.specification.MaterialSpecification;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,18 +37,16 @@ public class MaterialService {
     public MaterialResponseDTO cadastrar(MaterialRequestDTO dto) {
         Material materialEntidade = MaterialMapper.toEntity(dto);
 
-        try {
-            Optional<Material> materialBuscado = materialRepository.findByNomeMaterial(dto.getNome());
-            if (materialBuscado.isPresent()) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um material com o nome informado");
-            }
-
-            Material materialSalvo = materialRepository.save(materialEntidade);
-
-            return MaterialMapper.toMaterialResponseDTO(materialSalvo);
-        } catch (ServerErrorException e) {
-            throw e;
+        Optional<Material> materialBuscado = materialRepository.findByNomeMaterial(dto.getNome());
+        if (materialBuscado.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um material com o nome informado");
         }
+
+        validarPrecos(dto);
+
+        Material materialSalvo = materialRepository.save(materialEntidade);
+
+        return MaterialMapper.toMaterialResponseDTO(materialSalvo);
     }
 
     public List<MaterialResponseDTO> buscar() {
@@ -76,28 +76,34 @@ public class MaterialService {
     }
 
     public MaterialDetalhadoResponseDTO atualizar(MaterialRequestDTO dto, Integer id) {
-        try {
-            Material materialEntidade = materialRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Material materialEntidade = materialRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-            Double precoAntigo = materialEntidade.getPrecoUnitario();
+        Double precoAntigo = materialEntidade.getPrecoUnitario();
 
-            materialEntidade.setNomeMaterial(dto.getNome());
-            materialEntidade.setDescricao(dto.getDescricao());
-            materialEntidade.setPrecoUnitario(dto.getPreco());
+        materialEntidade.setNomeMaterial(dto.getNome());
+        materialEntidade.setDescricao(dto.getDescricao());
+        materialEntidade.setPrecoUnitario(dto.getPreco());
 
-            Material materialSalvo = materialRepository.save(materialEntidade);
+        validarPrecos(dto);
 
-            if (!precoAntigo.equals(dto.getPreco())) {
-                materialEntidade.notifyObservers("O preço do material " + materialEntidade.getNomeMaterial() + " foi alterado.");
-            }
+        Material materialSalvo = materialRepository.save(materialEntidade);
 
-            return MaterialMapper.toMaterialDetalhadoResponseDTO(materialSalvo);
-        } catch (ServerErrorException e) {
-            throw e;
+        if (!precoAntigo.equals(dto.getPreco())) {
+            List<Produto> produtos = materialEntidade.getProdutos().stream()
+                    .map(MaterialProduto::getProduto)
+                    .collect(Collectors.toList());
+
+            produtos.forEach(produto -> {
+                materialEntidade.addObserver((Observer) produto);
+                produto.setRepository(produtoRepository);
+            });
+
+            materialEntidade.notifyObservers("O preço do material " + materialEntidade.getNomeMaterial() + " foi alterado.");
         }
-    }
 
+        return MaterialMapper.toMaterialDetalhadoResponseDTO(materialSalvo);
+    }
 
     public void deletar(Integer id) {
 
@@ -105,6 +111,13 @@ public class MaterialService {
             if (materialRepository.findById(id).isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
+
+            Integer qtdProdutos = materialProdutoRepository.countByMaterial_IdMaterial(id);
+
+            if (qtdProdutos > 0) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Não é possível excluir um material que está vinculado a um produto, total de produtos vinculados: " + qtdProdutos);
+            }
+
             materialRepository.deleteById(id);
         } catch (ServerErrorException e) {
             throw e;
@@ -170,6 +183,23 @@ public class MaterialService {
         Double precoVendaComDesconto = produto.getPreco() * (1 - produto.getDesconto());
 
         return ((precoVendaComDesconto - custoTotal) / precoVendaComDesconto) * 100;
+    }
+
+    private void validarPrecos(MaterialRequestDTO dto) {
+        if (dto.getPrecoPacote() != null &&
+                dto.getUnidadesPorPacote() == null ||
+                dto.getPrecoPacote() == null &&
+                        dto.getUnidadesPorPacote() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Para informar o preço do pacote é necessário informar a quantidade de unidades por pacote e vice-versa!");
+        }
+
+        if (dto.getPrecoPacote() != null &&
+                dto.getUnidadesPorPacote() != null) {
+            double precoUnitario = dto.getPrecoPacote() / dto.getUnidadesPorPacote();
+            if (precoUnitario != dto.getPreco()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O preço unitário inserido não corresponde ao preço unitário do pacote!");
+            }
+        }
     }
 
 }

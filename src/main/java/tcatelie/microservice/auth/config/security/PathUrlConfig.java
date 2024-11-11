@@ -5,7 +5,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class PathUrlConfig {
 
     public static final AntPathRequestMatcher[] PUBLIC_URLS = {
-            new AntPathRequestMatcher("/auth/customer/login"),
+            new AntPathRequestMatcher("/auth/**"),
             new AntPathRequestMatcher("/auth/register"),
             new AntPathRequestMatcher("/auth/google"),
             new AntPathRequestMatcher("/auth/admin/login", "POST"),
@@ -43,7 +43,8 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/desativar/"),
             new AntPathRequestMatcher("/produtos/{id}", "PUT"),
             new AntPathRequestMatcher("/produtos", "PUT"),
-            new AntPathRequestMatcher("/materiais/revisao", "POST")
+            new AntPathRequestMatcher("/materiais/revisao", "POST"),
+            new AntPathRequestMatcher("/produtos/listar-por-material/**")
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {

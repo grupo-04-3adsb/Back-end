@@ -54,7 +54,7 @@ public class UsuarioResponseDTO {
     private LocalDate dataNascimento;
 
     @Schema(description = "id google do usuário.", example = "123456")
-    private Integer idGoogle;
+    private String idGoogle;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     @Schema(description = "Data de criação do registro do usuário.", example = "01/01/2023 10:00:00")

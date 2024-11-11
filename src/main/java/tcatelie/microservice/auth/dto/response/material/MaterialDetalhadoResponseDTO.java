@@ -36,4 +36,14 @@ public class MaterialDetalhadoResponseDTO {
 
     @Schema(description = "Data e hora de atualização do material")
     private String dthrAtualizacao;
+
+    @Schema(description = "Estoque disponível do material", example = "100")
+    private Integer estoque;
+
+    @Schema(description = "Preço do pacote", example = "100.00")
+    private Double precoPacote;
+
+    @Schema(description = "Unidades por pacote", example = "10")
+    private Integer unidadesPorPacote;
+
 }
