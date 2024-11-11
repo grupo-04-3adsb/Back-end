@@ -89,17 +89,33 @@ VALUES
     ('Calendário Empresarial', 19.90, 'Calendário para empresas.', 'N/A', 0.05, 0.20, 'CALENDARIO-EMPRESARIAL', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQF8eyt-9h1u1qiLnDr6VvENbOQWxWw0vF6g&s', false, false, 1, 5, '1_CIkSOZoyKyb8Yo_E1GUL4TjINu2i0g', true),
     ('Caneta Empresarial', 12.90, 'Caneta personalizada para empresas.', 'N/A', 0.05, 0.20, 'CANETA-EMPRESARIAL', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgorUHkv--OP-M2dQx5Mqgv2xkpd8yftQHMA&s', false, false, 1, 5, '1_CIkSOZoyKyb8Yo_E1GUL4TjINu2i0g', true);
 
-
 INSERT INTO imagens_produto (url_img_adicional, fk_produto, id_img_drive)
-VALUES ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
-        '1kJUI8FDa3Z4qVDxRvS0wYzeZwGrt55r2'),
-       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
-        '1kJUI8FDa3Z4qVDxRvS0wYzeZwGrt55r2'),
-       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 2, 'abc123'),
-       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 3, 'abc123'),
-       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 4, 'abc123'),
-       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
-       ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 6, 'abc123');
+VALUES
+    -- Agenda Minnie
+    ('https://down-br.img.susercontent.com/file/br-11134207-7r98o-ll12v9cj8igic1', 1, '1kJUI8FDa3Z4qVDxRvS0wYzeZwGrt55r2'),
+    ('https://images.tcdn.com.br/img/img_prod/1090591/agenda_datada_2022_minnie_vermelha_1_807_1_9fbda09577108ffeeeefbbadcb2e7261.png', 1, '1kJUI8FDa3Z4qVDxRvS0wYzeZwGrt55r2'),
+    ('https://img.elo7.com.br/product/zoom/36549DC/arquivo-agenda-escolar-minnie-arquivo-agenda-minnie.jpg', 1, '1kJUI8FDa3Z4qVDxRvS0wYzeZwGrt55r2'),
+
+    -- Agenda Mickey
+    ('https://dac.com.br/wp-content/uploads/2022/04/3655-Agenda-A5-2023-Mickey_frente.jpg', 2, 'abc123'),
+    ('https://www.daclojaonline.com.br/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/a/g/agenda-a5-2025-mickey-4583_2.jpg', 2, 'abc123'),
+
+    -- Caderno One Piece
+    ('https://down-br.img.susercontent.com/file/br-11134201-23020-1w2je3ot22nv4d', 3, 'abc123'),
+    ('https://d1zvfmhlebc91g.cloudfront.net/n49shopv2_papelecia/images/products/6568ed12b0a70/7891027340445_5_6541683aca0b0-6568ed12b0acb.jpg', 3, 'abc123'),
+
+    -- Caneca Kratos
+    ('https://cdn.dooca.store/105509/products/ysqioyql3kimiytgxitmfdecteve8oj3dxnm_640x640+fill_ffffff.jpg?v=1695482338&webp=0', 4, 'abc123'),
+
+    -- Caneca Playstation
+    ('https://images.tcdn.com.br/img/img_prod/460977/caneca_playstation_preta_cd_60599_1_70eec11fe05028e6e5b3fd3d4b31e71a.jpg', 5, 'abc123'),
+
+    -- Caneca Gamer
+    ('https://cdn.awsli.com.br/800x800/186/186813/produto/120124877/caneca-ps-gamer-efd03081.jpg', 6, 'abc123'),
+    ('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSxgkZLXfQ-6Q1tjHNJqFwgxwTh5qgeRL5kwbjFRVnyplY8LV85OHZeWLUVQeIJlne9e8&usqp=CAU', 6, 'abc123'),
+
+    -- Caneca Java
+    ('https://cdn.awsli.com.br/608/608801/produto/27768511/d3aea2373e.jpg', 7, 'abc123');
 
 INSERT INTO personalizacao (nome_personalizacao, tipo_personalizacao, fk_produto)
 VALUES ('Personalização de Capa', 'Texto', 1),
@@ -145,4 +161,24 @@ INSERT INTO USUARIO
  DATA_ATUALIZACAO_USUARIO, CPF_USUARIO, GENERO_USUARIO, URL_IMG_USUARIO, DATA_NASCIMENTO_USUARIO, ID_GOOGLE)
 VALUES ('Cláudio Araújo', 'claudio@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
         '(11) 98765-4321', 'HABILITADO',
-        NOW(), NOW(), '123.456.789-09', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL);
+        NOW(), NOW(), '123.456.789-09', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL),
+
+        ('Kauã Nunes', 'kaua@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
+                '(11) 96280-7541', 'HABILITADO',
+                NOW(), NOW(), '123.456.789-10', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2003-05-22', NULL),
+
+        ('Guilherme Santiago', 'guilherme@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
+                        '(11) 91547-7541', 'HABILITADO',
+                        NOW(), NOW(), '321.456.789-10', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-03-12', NULL),
+
+        ('Matheus Munari', 'mateus@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
+                       '(11) 98304-7541', 'HABILITADO',
+                       NOW(), NOW(), '123.654.789-10', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2000-04-09', NULL);
+
+
+
+
+INSERT INTO AVALIACAO (id_avaliacao, titulo, nota_avaliacao, avaliacao_aprovada, descricao, produto_id, usuario_id) VALUES (1, 'Melhor Agenda', 4, true, 'Produto Bom! A agenda é muito útil.', 1, 1);
+INSERT INTO AVALIACAO (id_avaliacao, titulo, nota_avaliacao, avaliacao_aprovada, descricao, produto_id, usuario_id) VALUES (2, 'Agenda Perfeita', 5, true, 'Produto excelente! A agenda é linda e muito útil.', 1, 2);
+INSERT INTO AVALIACAO (id_avaliacao, titulo, nota_avaliacao, avaliacao_aprovada, descricao, produto_id, usuario_id) VALUES (3, 'Boa Agenda', 3, true, 'Produto Ok, A agenda é útil.', 1, 3);
+INSERT INTO AVALIACAO (id_avaliacao, titulo, nota_avaliacao, avaliacao_aprovada, descricao, produto_id, usuario_id) VALUES (4, 'Não curti', 2, true, 'Produto mais ou menos! A agenda é de bom material.', 1, 4);

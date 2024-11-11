@@ -15,7 +15,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/enderecos/usuario/{usuarioId}", "GET"),
             new AntPathRequestMatcher("/produtos", "GET"),
             new AntPathRequestMatcher("/produtos/{idProduto}", "GET"),
-            new AntPathRequestMatcher("/produtos/nome/{nomeProduto}", "GET"), // Adicionando o endpoint de busca por nome
+            new AntPathRequestMatcher("/produtos/nome/{nomeProduto}", "GET"),
             new AntPathRequestMatcher("/categorias", "GET"),
             new AntPathRequestMatcher("/categorias/{id}", "GET"),
             new AntPathRequestMatcher("/subcategorias", "GET"),
@@ -28,6 +28,8 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/produtos/exportar-csv"),
             new AntPathRequestMatcher("/auth/refresh-token"),
             new AntPathRequestMatcher("/materiais/filtrar"),
+            new AntPathRequestMatcher("/avaliacoes", "POST"),
+            new AntPathRequestMatcher("/avaliacoes/produto/{produtoId}", "GET")
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
