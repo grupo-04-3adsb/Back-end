@@ -30,17 +30,17 @@ public class AvaliacaoController {
     }
 
     @GetMapping("/produto/{produtoId}")
-    public ResponseEntity<?> obterAvaliacoesPorProduto(@PathVariable Integer produtoId) {
+    public ResponseEntity obterAvaliacoesPorProduto(@PathVariable Integer produtoId) {
         return avaliacaoService.obterAvaliacoesPorProduto(produtoId);
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<?> obterAvaliacoesPorUsuario(@PathVariable Integer usuarioId) {
+    public ResponseEntity obterAvaliacoesPorUsuario(@PathVariable Integer usuarioId) {
         return avaliacaoService.obterAvaliacoesPorUsuario(usuarioId);
     }
 
     @GetMapping("/produto/{produtoId}/media")
-    public ResponseEntity<?> calcularMediaAvaliacaoProduto(@PathVariable Integer produtoId) {
+    public ResponseEntity calcularMediaAvaliacaoProduto(@PathVariable Integer produtoId) {
         return avaliacaoService.calcularMediaAvaliacaoProduto(produtoId);
     }
 }

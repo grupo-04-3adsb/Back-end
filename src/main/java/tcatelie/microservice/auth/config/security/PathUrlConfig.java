@@ -29,7 +29,8 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/auth/refresh-token"),
             new AntPathRequestMatcher("/materiais/filtrar"),
             new AntPathRequestMatcher("/avaliacoes", "POST"),
-            new AntPathRequestMatcher("/avaliacoes/produto/{produtoId}", "GET")
+            new AntPathRequestMatcher("/avaliacoes/produto/{produtoId}", "GET"),
+            new AntPathRequestMatcher("/avaliacoes/produto/{produtoId}/media")
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
