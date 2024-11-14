@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.MaterialProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
+import tcatelie.microservice.auth.dto.request.ProdutosUpdateRequestDTO;
 import tcatelie.microservice.auth.dto.response.MaterialProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.MercadoLivreProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
@@ -441,4 +442,39 @@ public class ProdutoService {
             return buscarProdutoRecursivo(produtos, nome, inicio, meio - 1);
         }
     }
+
+    public void atualizarCategoriaSubcategoriaDoProduto(ProdutosUpdateRequestDTO dto){
+
+        List<Produto> produtos = new ArrayList<>();
+        if(dto.getNomesProdutos().size() == 1 & dto.getNomesProdutos().get(0).equals("TODOS")){
+            produtos = repository.findByCategoria_NomeCategoria(dto.getCategoriaAntiga());
+        } else{
+            produtos = repository.findAllByNomeIn(dto.getNomesProdutos());
+        }
+
+        Categoria categoria = categoriaService.findByNome(dto.getNomeCategoria());
+        Subcategoria subcategoria = subcategoriaService.findByNome(dto.getNomeSubcategoria());
+
+        produtos.forEach(produto -> {
+            produto.setCategoria(categoria);
+            produto.setSubcategoria(subcategoria);
+        });
+
+        repository.saveAll(produtos);
+    }
+
+    public ProdutoResponseDTO buscarProdutoPorNome(String nomeProduto) {
+        logger.info("Buscando produto pelo nome: {}", nomeProduto);
+
+        Produto produto = repository.findByNome(nomeProduto)
+                .orElse(null);
+
+        if (produto == null) {
+            logger.warn("Produto com nome '{}' não encontrado.", nomeProduto);
+            return null;
+        }
+
+        return mapper.toResponseDTO(produto);
+    }
+
 }

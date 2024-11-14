@@ -89,7 +89,7 @@ public class UsuarioService implements UserDetailsService {
 
         usuario = repository.save(usuario);
 
-        String token = jwtService.generateToken(usuario);
+        String token = jwtService.generateAccessToken(usuario);
 
         UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
         LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);
@@ -209,7 +209,7 @@ public class UsuarioService implements UserDetailsService {
             }
         }
 
-        String token = jwtService.generateToken(usuario);
+        String token = jwtService.generateAccessToken(usuario);
 
         UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
         LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);

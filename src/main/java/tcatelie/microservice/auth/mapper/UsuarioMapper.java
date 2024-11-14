@@ -13,13 +13,16 @@ public interface UsuarioMapper {
 
 	UsuarioMapper INSTANCE = Mappers.getMapper(UsuarioMapper.class);
 
-	@Mappings({ @Mapping(source = "telefone", target = "numeroTelefone"),
+	@Mappings({
+			@Mapping(source = "telefone", target = "numeroTelefone"),
 			@Mapping(source = "dthrCadastro", target = "dataCriacao"),
 			@Mapping(source = "dthrAtualizacao", target = "dataAtualizacao"),
 			@Mapping(source = "role", target = "cargo"), 
 			@Mapping(source = "urlImgUsuario", target = "imgUrl"),
 			@Mapping(source = "enderecos", target = "enderecos"),
-			@Mapping(source = "idUsuario", target= "idUsuario")
+			@Mapping(source = "idUsuario", target= "idUsuario"),
+			@Mapping(target = "senha", ignore = true),
+			@Mapping(target = "idGoogle", source = "idGoogle")
 	})
 	UsuarioResponseDTO toUsuarioResponseDTO(Usuario usuario);
 
@@ -27,5 +30,4 @@ public interface UsuarioMapper {
 	@Mapping(target = "dthrAtualizacao", ignore = true)
 	@Mapping(source = "imgUrl", target = "urlImgUsuario")
 	Usuario toUsuario(RegisterDTO registerDTO);
-
 }

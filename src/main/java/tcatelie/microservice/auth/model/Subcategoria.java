@@ -27,13 +27,15 @@ public class Subcategoria {
     @Column(name = "descricao_subcategoria")
     private String descricaoSubcategoria;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_categoria")
     private Categoria categoria;
 
     @OneToMany(mappedBy = "subcategoria")
     private List<Produto> produtos;
 
+    @Column(name = "codigo_cor")
+    private String codigoCor;
 
     @Column(name = "data_hora_cadastro")
     private LocalDateTime dthrCadastro;

@@ -30,12 +30,14 @@ public class Categoria {
     @OneToMany(mappedBy = "categoria")
     private List<Produto> produtos;
 
-
     @Column(name = "data_hora_cadastro")
     private LocalDateTime dthrCadastro;
 
     @Column(name = "data_hora_atualizacao")
     private LocalDateTime dthrAtualizacao;
+
+    @Column(name = "codigo_cor")
+    private String codigoCor;
 
     @PrePersist
     protected void onCreate() {
