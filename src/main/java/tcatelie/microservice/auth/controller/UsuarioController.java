@@ -1,9 +1,7 @@
 package tcatelie.microservice.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
-import tcatelie.microservice.auth.dto.RegisterDTO;
+import tcatelie.microservice.auth.dto.request.UpdateUserDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.service.UsuarioService;
 
@@ -40,8 +38,8 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "403", description = "Você não tem permissão para realizar esta ação.", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "404", description = "Usuário não encontrado.", content = @Content(mediaType = "application/json")) })
 	@PutMapping("/{id}")
-	public ResponseEntity atualizarUsuario(@Parameter(description = "ID do usuário a ser atualizado") Integer id,
-			@RequestBody @Valid RegisterDTO dto, Authentication authentication) {
+	public ResponseEntity atualizarUsuario(@PathVariable Integer id,
+										   @RequestBody @Valid UpdateUserDTO dto, Authentication authentication) {
 		return service.atualizarUsuario(id, dto, authentication);
 	}
 
@@ -50,7 +48,7 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "403", description = "Você não tem permissão para realizar esta ação.", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "404", description = "Usuário não encontrado.", content = @Content(mediaType = "application/json")) })
 	@DeleteMapping("{id}")
-	public ResponseEntity deletarUsuario(@Parameter(description = "ID do usuário a ser deletado") Integer id,
+	public ResponseEntity deletarUsuario(@PathVariable Integer id,
 			Authentication authentication) {
 		return service.deletarUsuario(id, authentication);
 	}

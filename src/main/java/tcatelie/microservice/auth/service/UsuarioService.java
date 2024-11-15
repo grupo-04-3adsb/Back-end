@@ -3,7 +3,6 @@ package tcatelie.microservice.auth.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,11 +14,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
+import tcatelie.microservice.auth.dto.request.UpdateUserDTO;
 import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
 import tcatelie.microservice.auth.dto.response.LoginResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.enums.Status;
 import tcatelie.microservice.auth.enums.UserRole;
+import tcatelie.microservice.auth.mapper.AtualizarUsuarioMapper;
 import tcatelie.microservice.auth.mapper.UsuarioMapper;
 import tcatelie.microservice.auth.model.Usuario;
 import tcatelie.microservice.auth.repository.UserRepository;
@@ -121,7 +122,7 @@ public class UsuarioService implements UserDetailsService {
         return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuario));
     }
 
-    public ResponseEntity<?> atualizarUsuario(Integer id, RegisterDTO dto, Authentication authentication) {
+    public ResponseEntity<?> atualizarUsuario(Integer id, UpdateUserDTO dto, Authentication authentication) {
         ResponseEntity<?> response = verificarPermissoes(id, authentication);
         if (response.getStatusCode().value() != 200) {
             return response;
@@ -129,25 +130,50 @@ public class UsuarioService implements UserDetailsService {
 
         Usuario usuarioAtual = (Usuario) response.getBody();
 
+        usuarioAtual.setNome(dto.getNome());
+        usuarioAtual.setCpf(dto.getCpf());
         usuarioAtual.setTelefone(dto.getTelefone());
-        usuarioAtual.setUrlImgUsuario(dto.getImgUrl());
         usuarioAtual.setEmail(dto.getEmail());
+        usuarioAtual.setDataNascimento(dto.getDataNascimento());
+        usuarioAtual.setGenero(dto.getGenero());
+        if(dto.getImgUrl()!=null){
+            usuarioAtual.setUrlImgUsuario(dto.getImgUrl());
+        }
+
+//        Usuario atualizacaoUsuario = AtualizarUsuarioMapper.toUsuario(dto, id);
+//        atualizacaoUsuario.setIdGoogle(usuarioAtual.getIdGoogle());
+//        atualizacaoUsuario.setIdImgDrive(usuarioAtual.getIdImgDrive());
+//        atualizacaoUsuario.setAvaliacoes(usuarioAtual.getAvaliacoes());
+//        atualizacaoUsuario.setEnderecos(usuarioAtual.getEnderecos());
+//        if(atualizacaoUsuario.getUrlImgUsuario()==null){
+//            atualizacaoUsuario.setUrlImgUsuario(usuarioAtual.getUrlImgUsuario());
+//        }
+//        atualizacaoUsuario.setDthrCadastro(usuarioAtual.getDthrCadastro());
+//        atualizacaoUsuario.setDthrAtualizacao(LocalDateTime.now());
 
         if (authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
-            usuarioAtual.setStatus(dto.getStatus());
-            usuarioAtual.setRole(dto.getRole());
+            if(dto.getStatus()!=null){
+                usuarioAtual.setStatus(dto.getStatus());
+            }
+            if(dto.getRole()!=null){
+                usuarioAtual.setRole(dto.getRole());
+            }
         }
 
+//        atualizacaoUsuario.setSenha(usuarioAtual.getSenha());
+//
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        if (!StringUtils.isEmpty(dto.getSenha())) {
-            String encryptedPassword = passwordEncoder.encode(dto.getSenha());
-            usuarioAtual.setSenha(encryptedPassword);
-        }
+//
+//        if (!StringUtils.isEmpty(dto.getSenha())) {
+//            String encryptedPassword = passwordEncoder.encode(dto.getSenha());
+//            usuarioAtual.setSenha(encryptedPassword);
+//        }
 
-        repository.save(usuarioAtual);
-        return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuarioAtual));
+        Usuario usuarioSalvo = repository.save(usuarioAtual);
+        System.out.println("SIm");
+        return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuarioSalvo));
     }
 
     public ResponseEntity<?> deletarUsuario(Integer id, Authentication authentication) {

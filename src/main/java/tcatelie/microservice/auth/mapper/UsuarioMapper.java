@@ -30,4 +30,5 @@ public interface UsuarioMapper {
 	@Mapping(target = "dthrAtualizacao", ignore = true)
 	@Mapping(source = "imgUrl", target = "urlImgUsuario")
 	Usuario toUsuario(RegisterDTO registerDTO);
+
 }
