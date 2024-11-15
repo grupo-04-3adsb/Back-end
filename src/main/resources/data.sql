@@ -163,7 +163,7 @@ VALUES ('Cláudio Araújo', 'claudio@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J
         '(11) 98765-4321', 'HABILITADO',
         NOW(), NOW(), '123.456.789-09', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL),
 
-        ('Kauã Nunes', 'kaua@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
+        ('Kauã Nunes', 'kaua@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER',
                 '(11) 96280-7541', 'HABILITADO',
                 NOW(), NOW(), '123.456.789-10', 1, 'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2003-05-22', NULL),
 

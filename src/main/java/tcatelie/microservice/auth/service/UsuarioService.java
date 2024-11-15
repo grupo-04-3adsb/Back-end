@@ -124,6 +124,7 @@ public class UsuarioService implements UserDetailsService {
 
     public ResponseEntity<?> atualizarUsuario(Integer id, UpdateUserDTO dto, Authentication authentication) {
         ResponseEntity<?> response = verificarPermissoes(id, authentication);
+
         if (response.getStatusCode().value() != 200) {
             return response;
         }
@@ -140,17 +141,6 @@ public class UsuarioService implements UserDetailsService {
             usuarioAtual.setUrlImgUsuario(dto.getImgUrl());
         }
 
-//        Usuario atualizacaoUsuario = AtualizarUsuarioMapper.toUsuario(dto, id);
-//        atualizacaoUsuario.setIdGoogle(usuarioAtual.getIdGoogle());
-//        atualizacaoUsuario.setIdImgDrive(usuarioAtual.getIdImgDrive());
-//        atualizacaoUsuario.setAvaliacoes(usuarioAtual.getAvaliacoes());
-//        atualizacaoUsuario.setEnderecos(usuarioAtual.getEnderecos());
-//        if(atualizacaoUsuario.getUrlImgUsuario()==null){
-//            atualizacaoUsuario.setUrlImgUsuario(usuarioAtual.getUrlImgUsuario());
-//        }
-//        atualizacaoUsuario.setDthrCadastro(usuarioAtual.getDthrCadastro());
-//        atualizacaoUsuario.setDthrAtualizacao(LocalDateTime.now());
-
         if (authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
             if(dto.getStatus()!=null){
@@ -161,18 +151,7 @@ public class UsuarioService implements UserDetailsService {
             }
         }
 
-//        atualizacaoUsuario.setSenha(usuarioAtual.getSenha());
-//
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-//
-//        if (!StringUtils.isEmpty(dto.getSenha())) {
-//            String encryptedPassword = passwordEncoder.encode(dto.getSenha());
-//            usuarioAtual.setSenha(encryptedPassword);
-//        }
-
         Usuario usuarioSalvo = repository.save(usuarioAtual);
-        System.out.println("SIm");
         return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuarioSalvo));
     }
 
