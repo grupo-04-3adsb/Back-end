@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,7 @@ import tcatelie.microservice.auth.dto.RegisterDTO;
 import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
 import tcatelie.microservice.auth.dto.response.LoginResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
+import tcatelie.microservice.auth.mapper.UsuarioMapper;
 import tcatelie.microservice.auth.model.Usuario;
 import tcatelie.microservice.auth.service.JwtService;
 import tcatelie.microservice.auth.service.UsuarioService;
@@ -31,6 +33,7 @@ public class AuthenticationController {
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
 	private final UsuarioService service;
+	private final UsuarioMapper mapper;
 
 	@Operation(summary = "Realiza o login para os usuários com nível 'ADMIN' na dashboard.", description = "Endpoint para autenticação de usuários administradores. Retorna um token JWT para acesso aos recursos restritos da dashboard.", responses = {
 			@ApiResponse(responseCode = "200", description = "Usuário logado com sucesso e token gerado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class))),
@@ -49,7 +52,7 @@ public class AuthenticationController {
 			return ResponseEntity.status(403).body("Acesso negado.");
 		}
 
-		var token = jwtService.generateToken(usuario);
+		var token = jwtService.generateAccessToken(usuario);
 		ResponseEntity response = service.buscarUsuarioEmailSenha(data);
 
 		return ResponseEntity.ok(new LoginResponseDTO((UsuarioResponseDTO) response.getBody(), token));
@@ -75,7 +78,7 @@ public class AuthenticationController {
 			return ResponseEntity.status(403).body("Acesso negado. Apenas clientes podem acessar.");
 		}
 
-		var token = jwtService.generateToken(usuario);
+		var token = jwtService.generateAccessToken(usuario);
 		ResponseEntity response = service.buscarUsuarioEmailSenha(data);
 
 		return ResponseEntity.ok(new LoginResponseDTO((UsuarioResponseDTO) response.getBody(), token));
@@ -108,4 +111,19 @@ public class AuthenticationController {
 			@RequestParam @Parameter(description = "CPF do usuário") String cpf) {
 		return service.buscarPorEmailECPF(email, cpf);
 	}
+
+	@PostMapping("/refresh-token")
+	public ResponseEntity<?> refreshAccessToken(@RequestBody String refreshToken) {
+		if (jwtService.validateRefreshToken(refreshToken)) {
+			String email = jwtService.validateToken(refreshToken);
+			Usuario usuario = (Usuario) service.loadUserByUsername(email);
+
+			String newAccessToken = jwtService.generateAccessToken(usuario);
+
+			return ResponseEntity.ok(new LoginResponseDTO(mapper.toUsuarioResponseDTO(usuario), newAccessToken));
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token inválido ou expirado.");
+		}
+	}
+
 }

@@ -6,20 +6,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
+import tcatelie.microservice.auth.dto.filter.CategoriaFiltroDTO;
 import tcatelie.microservice.auth.dto.request.CategoriaRequestDTO;
 import tcatelie.microservice.auth.dto.response.CategoriaResponseDTO;
 import tcatelie.microservice.auth.mapper.CategoriaMapper;
+import tcatelie.microservice.auth.mapper.ProdutoMapper;
 import tcatelie.microservice.auth.model.Categoria;
-import tcatelie.microservice.auth.model.Produto;
 import tcatelie.microservice.auth.repository.CategoriaRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
-import tcatelie.microservice.auth.specification.ProdutoSpecification;
-
-import java.util.List;
-import java.util.Optional;
+import tcatelie.microservice.auth.repository.SubcategoriaRepository;
+import tcatelie.microservice.auth.specification.CategoriaSpecification;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,15 +29,17 @@ public class CategoriaService {
 
     private final CategoriaRepository repository;
     private final CategoriaMapper mapper;
+    private final ProdutoMapper produtoMapper;
     private final ProdutoRepository produtoRepository;
+    private final SubcategoriaRepository subcategoriaRepository;
 
     public CategoriaResponseDTO cadastrarCategoria(CategoriaRequestDTO requestDTO) {
         validarRequest(requestDTO);
         Categoria categoriaEntidade = mapper.toCategoria(requestDTO);
 
         Optional<Categoria> categoriaBuscada = repository.findByNomeCategoria(requestDTO.getNome());
-        if(categoriaBuscada.isPresent()){
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        if (categoriaBuscada.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe uma categoria com o nome " + requestDTO.getNome());
         }
 
         Categoria categoriaSalva = repository.save(categoriaEntidade);
@@ -60,14 +61,20 @@ public class CategoriaService {
         );
     }
 
-    public Categoria findById(Integer id) throws IllegalArgumentException{
+    public Categoria findById(Integer id) throws IllegalArgumentException {
         return repository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("Categoria não encontrada com o id: " + id)
         );
     }
 
-    public Page<CategoriaResponseDTO> pesquisarPorNome(String nome, Pageable pageable) {
-        return repository.findByNomeCategoriaContainingIgnoreCase(nome, pageable).map(c -> mapper.toCategoriaResponse(c));
+    public Page<CategoriaResponseDTO> pesquisar(Pageable pageable, CategoriaFiltroDTO filtro) {
+        Page<Categoria> categorias = repository.findAll(CategoriaSpecification.filtrar(filtro), pageable);
+
+        return categorias.map(c -> {
+            var categoriaResponse = mapper.toCategoriaResponse(c);
+            contarProdutosESubcategorias(categoriaResponse);
+            return categoriaResponse;
+        });
     }
 
     public List<CategoriaResponseDTO> listarCategoria() {
@@ -77,28 +84,50 @@ public class CategoriaService {
     }
 
     public CategoriaResponseDTO atualizar(@Valid CategoriaRequestDTO categoriaRequestDTO, Integer id) {
-        if(repository.findById(id).isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        if (repository.findById(id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada");
         }
 
         Categoria categoriaEntidade = findById(id);
         categoriaEntidade.setNomeCategoria(categoriaRequestDTO.getNome());
+        categoriaEntidade.setCodigoCor(categoriaRequestDTO.getCodigoCor());
+
+        Optional<Categoria> categoriaBusca = repository.findByNomeCategoria(categoriaRequestDTO.getNome());
+
+        if (categoriaBusca.isPresent()) {
+            Categoria categoriaEncontrada = categoriaBusca.get();
+            if (categoriaEncontrada.getIdCategoria() != id) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe uma categoria com o nome " + categoriaRequestDTO.getNome());
+            }
+        }
+
         Categoria categoriaSalva = repository.save(categoriaEntidade);
         return mapper.toCategoriaResponse(categoriaSalva);
     }
 
-    public void deletar(Integer id) {
-        if(repository.findById(id).isEmpty()){
+    public ResponseEntity deletar(Integer id) {
+        if (repository.findById(id).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         Categoria categoria = findById(id);
 
-        List<Produto> listaProdutos = produtoRepository.findAll(ProdutoSpecification.filtrar(ProdutoFiltroDTO.builder().nomeCategoria(categoria.getNomeCategoria()).build()));
+        Integer qtdProdutos = produtoRepository.countByCategoria_IdCategoria(id);
 
-        if(listaProdutos.isEmpty()){
+        if (qtdProdutos == 0) {
             repository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Não é possível deletar a categoria pois existem %s produtos associados a ela.".formatted(qtdProdutos));
         }
 
     }
+
+    public void contarProdutosESubcategorias(CategoriaResponseDTO categoriaResponseDTO) {
+        Integer qtdProdutos = produtoRepository.countByCategoria_IdCategoria(categoriaResponseDTO.getIdCategoria());
+        Integer qtdSubcategorias = subcategoriaRepository.countByCategoria_IdCategoria(categoriaResponseDTO.getIdCategoria());
+        categoriaResponseDTO.setQtdProdutosCategoria(qtdProdutos);
+        categoriaResponseDTO.setQtdSubcategorias(qtdSubcategorias);
+    }
+
 }

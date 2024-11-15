@@ -39,10 +39,10 @@ public class ProdutoResponseDTO {
     private String idImgDrive;
 
     @Schema(description = "Data e hora de criação do produto", example = "2024-10-06T10:15:30")
-    private LocalDateTime dthrCriacao;
+    private String dthrCriacao;
 
     @Schema(description = "Data e hora da última atualização do produto", example = "2024-10-06T10:15:30")
-    private LocalDateTime dthrAtualizacao;
+    private String dthrAtualizacao;
 
     @Schema(description = "Lista de imagens adicionais do produto")
     private List<ImagemProdutoResponseDTO> imagensAdicionais;
@@ -56,25 +56,27 @@ public class ProdutoResponseDTO {
     @Schema(description = "Margem de lucro do produto", example = "10.00")
     private Double margemLucro;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Produto personalizável", example = "true")
     private Boolean isPersonalizavel;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Personalização obrigatória", example = "true")
     private Boolean isPersonalizacaoObrigatoria;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Categoria do produto")
     private CategoriaResponseDTO categoria;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Produto ativo")
     private Boolean produtoAtivo;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Subcategoria do produto")
     private SubcategoriaResponseDTO subcategoria;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Materiais associados ao produto")
     private List<MaterialProdutoResponseDTO> materiais;
 
-    @Schema(description = "Quantidade de personalizações do produto", example = "100")
+    @Schema(description = "Personalizações disponíveis para o produto")
     private List<PersonalizacaoResponseDTO> personalizacoes;
 
+    @Schema(description = "Lista de avaliações do produto")
+    private List<AvaliacaoResponseDTO> avaliacoes;
 }

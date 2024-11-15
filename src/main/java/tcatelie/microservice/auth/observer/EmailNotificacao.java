@@ -30,4 +30,9 @@ public class EmailNotificacao implements Observer {
             System.out.println("Erro ao enviar e-mail: " + e.getMessage());
         }
     }
+
+    @Override
+    public void update(String message) {
+
+    }
 }

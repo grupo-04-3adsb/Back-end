@@ -29,9 +29,11 @@ public class MaterialProduto {
     @Column(name = "qtd_material_necessario")
     private Integer qtdMaterialNecessario;
 
-
     @Column(name = "data_hora_cadastro")
     private LocalDateTime dthrCadastro;
+
+    @Column(name = "nome_material")
+    private String nomeMaterial;
 
     @Column(name = "data_hora_atualizacao")
     private LocalDateTime dthrAtualizacao;

@@ -1,26 +1,30 @@
 package tcatelie.microservice.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import tcatelie.microservice.auth.dto.filter.CategoriaFiltroDTO;
 import tcatelie.microservice.auth.dto.request.CategoriaRequestDTO;
 import tcatelie.microservice.auth.dto.response.CategoriaResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.mapper.CategoriaMapper;
-import tcatelie.microservice.auth.service.CategoriaService;
 import tcatelie.microservice.auth.model.Categoria;
+import tcatelie.microservice.auth.service.CategoriaService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -45,7 +49,7 @@ public class CategoriaController {
             }
     )
     @PostMapping
-    public ResponseEntity cadastrarCategoria(@RequestBody @Valid CategoriaRequestDTO requestDTO){
+    public ResponseEntity cadastrarCategoria(@RequestBody @Valid CategoriaRequestDTO requestDTO) {
         CategoriaResponseDTO categoriaResponse = service.cadastrarCategoria(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaResponse);
     }
@@ -62,7 +66,7 @@ public class CategoriaController {
             }
     )
     @GetMapping
-    public ResponseEntity listarCategoria(){
+    public ResponseEntity listarCategoria() {
         List<CategoriaResponseDTO> categoriasBuscadas = service.listarCategoria();
         return categoriasBuscadas.isEmpty() ? ResponseEntity.noContent().build() :
                 ResponseEntity.ok(categoriasBuscadas);
@@ -81,7 +85,7 @@ public class CategoriaController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity buscarPorId(@PathVariable Integer id){
+    public ResponseEntity buscarPorId(@PathVariable Integer id) {
         Categoria categoriaBuscada = service.findById(id);
         return ResponseEntity.ok(mapper.toCategoriaResponse(categoriaBuscada));
     }
@@ -95,10 +99,50 @@ public class CategoriaController {
     @GetMapping("/pesquisar")
     public Page<CategoriaResponseDTO> pesquisarCategorias(
             @Parameter(description = "Nome da categoria a ser pesquisada", required = false)
-            @RequestParam String nome,
+            @RequestParam(required = false) String nome,
+
+            @Parameter(description = "Data de cadastro inicial", required = false, example = "2021-01-01T00:00:00")
+            @RequestParam(required = false) String dataCadastroInicio,
+
+            @Parameter(description = "Data de cadastro final", required = false, example = "2021-01-01T00:00:00")
+            @RequestParam(required = false) String dataCadastroFim,
+
+            @Parameter(description = "Data de atualização inicial", required = false, example = "2021-01-01T00:00:00")
+            @RequestParam(required = false) String dataAtualizacaoInicio,
+
+            @Parameter(description = "Data de atualização final", required = false, example = "2021-01-01T00:00:00")
+            @RequestParam(required = false) String dataAtualizacaoFim,
+
             @Parameter(description = "Número da página para paginar os resultados", required = false, example = "0")
-            @RequestParam(defaultValue = "0") int pagina) {
-        return service.pesquisarPorNome(nome, PageRequest.of(pagina, 10));
+            @RequestParam(defaultValue = "0") int pagina,
+
+            @Parameter(description = "Tamanho da página para paginar os resultados", required = false, example = "10")
+            @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Ordenação dos resultados", required = false, example = "ASC")
+            @RequestParam(defaultValue = "asc") String sortOrder,
+
+            @Parameter(description = "Campo para ordenação dos resultados", required = false, example = "nomeCategoria")
+            @RequestParam(defaultValue = "idCategoria") String sortBy
+    ) {
+
+        CategoriaFiltroDTO filtro = new CategoriaFiltroDTO();
+        filtro.setNomeCategoria(nome);
+
+        if (StringUtils.isNotBlank(dataCadastroInicio)) {
+            filtro.setDataCadastroInicio(LocalDateTime.parse(dataCadastroInicio));
+        }
+        if (StringUtils.isNotBlank(dataCadastroFim)) {
+            filtro.setDataCadastroFim(LocalDateTime.parse(dataCadastroFim));
+        }
+        if (StringUtils.isNotBlank(dataAtualizacaoInicio)) {
+            filtro.setDataAtualizacaoInicio(LocalDateTime.parse(dataAtualizacaoInicio));
+        }
+        if (StringUtils.isNotBlank(dataAtualizacaoFim)) {
+            filtro.setDataAtualizacaoFim(LocalDateTime.parse(dataAtualizacaoFim));
+        }
+
+        return service.pesquisar(PageRequest.of(pagina, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)), filtro);
     }
 
     @Operation(
@@ -116,7 +160,7 @@ public class CategoriaController {
     )
     @PutMapping("/{id}")
     public ResponseEntity atualizar(@PathVariable Integer id,
-                                    @RequestBody @Valid CategoriaRequestDTO categoriaRequestDTO){
+                                    @RequestBody @Valid CategoriaRequestDTO categoriaRequestDTO) {
         CategoriaResponseDTO categoriaSalva = service.atualizar(categoriaRequestDTO, id);
         return ResponseEntity.ok(categoriaSalva);
     }
@@ -132,8 +176,7 @@ public class CategoriaController {
             }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity deletar(@PathVariable Integer id){
-        service.deletar(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity deletar(@PathVariable Integer id) {
+        return service.deletar(id);
     }
 }
