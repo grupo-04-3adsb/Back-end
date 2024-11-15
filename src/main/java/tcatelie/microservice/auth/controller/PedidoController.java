@@ -10,7 +10,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
+import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
+import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
+import tcatelie.microservice.auth.mapper.PedidoMapper;
 import tcatelie.microservice.auth.service.PedidoService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/pedidos")
@@ -19,6 +24,7 @@ import tcatelie.microservice.auth.service.PedidoService;
 public class PedidoController {
 
     private final PedidoService service;
+    private final PedidoMapper mapper;
 
     @Operation(summary = "Busca um pedido pelo id",
             description = "Retorna um pedido pelo id",
@@ -28,7 +34,7 @@ public class PedidoController {
             })
     @GetMapping("{idPedido}")
     public ResponseEntity getPedidoById(@PathVariable Integer idPedido) {
-        return ResponseEntity.ok(service.getPedidoById(idPedido));
+        return ResponseEntity.ok(mapper.pedidoToPedidoResponseDTO(service.getPedidoById(idPedido)));
     }
 
     @Operation(summary = "Busca todos os pedidos",
@@ -46,4 +52,36 @@ public class PedidoController {
         return service.getPedidos(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)));
     }
 
+    @Operation(summary = "Cria um pedido",
+            description = "Cria um pedido",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Pedido criado"),
+                    @ApiResponse(responseCode = "400", description = "Erro na requisição")
+            })
+    @GetMapping("/listar")
+    public List<PedidoResponseDTO> findAll(
+            @RequestParam(value = "idPedido", required = false) Integer idPedido,
+            @RequestParam(value = "nomeCliente", required = false) String nomeCliente,
+            @RequestParam(value = "idResponsavel", required = false) Integer idResponsavel,
+            @RequestParam(value = "status", required = false) String status
+    ) {
+        PedidoFiltroDTO filtro = new PedidoFiltroDTO();
+        filtro.setIdPedido(idPedido);
+        filtro.setNomeCliente(nomeCliente);
+
+        if (idResponsavel != null) {
+            filtro.setIdsResponsaveis(List.of(idResponsavel));
+        }
+
+        if (status != null && !status.isEmpty()) {
+            filtro.setStatusList(List.of(status));
+        }
+
+        return service.findAll(filtro);
+    }
+
+    @PutMapping("{idPedido}")
+    public ResponseEntity updatePedido(@PathVariable Integer idPedido, @RequestBody PedidoRequestDTO pedido) {
+        return service.updatePedido(idPedido, pedido);
+    }
 }

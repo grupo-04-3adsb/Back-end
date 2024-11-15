@@ -33,6 +33,9 @@ public class Personalizacao {
     @OneToMany(mappedBy = "personalizacao", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<OpcaoPersonalizacao> opcoes;
 
+    @OneToMany(mappedBy = "personalizacao", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<PersonalizacaoItemPedido> personalizacaoItemPedido;
+
     @Column(name = "data_hora_cadastro")
     private LocalDateTime dthrCadastro;
 

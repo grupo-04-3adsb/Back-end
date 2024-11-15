@@ -24,11 +24,14 @@ public class PersonalizacaoItemPedido {
     private Double valorPersonalizacao;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "fk_item_pedido", nullable = false)
     private ItemPedido itemPedido;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "fk_personalizacao", nullable = false)
     private Personalizacao personalizacao;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "fk_opcao_personalizacao", nullable = false)
     private OpcaoPersonalizacao opcaoPersonalizacao;
 }

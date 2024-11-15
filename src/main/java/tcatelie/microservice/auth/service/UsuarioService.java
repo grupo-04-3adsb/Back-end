@@ -3,7 +3,6 @@ package tcatelie.microservice.auth.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +16,7 @@ import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
 import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
 import tcatelie.microservice.auth.dto.response.LoginResponseDTO;
+import tcatelie.microservice.auth.dto.response.ResponsavelResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.enums.Status;
 import tcatelie.microservice.auth.enums.UserRole;
@@ -25,6 +25,7 @@ import tcatelie.microservice.auth.model.Usuario;
 import tcatelie.microservice.auth.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -215,6 +216,13 @@ public class UsuarioService implements UserDetailsService {
         LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
+    }
+
+    public List<ResponsavelResponseDTO> buscarAdmins() {
+        return repository
+                .findByRole(UserRole.ADMIN)
+                .stream().map(usuarioMapper::toResponsavelResponseDTO)
+                .toList();
     }
 
 }

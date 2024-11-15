@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tcatelie.microservice.auth.enums.StatusPedido;
+import tcatelie.microservice.auth.util.converters.StatusPedidoConverter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,7 +45,7 @@ public class Pedido {
     private String formaPgto;
 
     @Column(name = "status")
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = StatusPedidoConverter.class)
     private StatusPedido status;
 
     @Column(name = "observacao")
@@ -52,6 +53,9 @@ public class Pedido {
 
     @Column(name = "data_pedido")
     private LocalDateTime dataPedido;
+
+    @Column(name = "data_conclusao")
+    private LocalDateTime dataConclusao;
 
     @Column(name = "data_entrega")
     private LocalDateTime dataEntrega;
@@ -72,12 +76,15 @@ public class Pedido {
     @JoinColumn(name = "fk_endereco_entrega", nullable = false)
     private Endereco enderecoEntrega;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private List<ItemPedido> itens;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "fk_usuario", nullable = false)
     private Usuario usuario;
 
     @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    private List<ItemPedido> itens;
+    private List<ResponsavelPedido> responsaveis;
 
     @PrePersist
     protected void onCreate() {

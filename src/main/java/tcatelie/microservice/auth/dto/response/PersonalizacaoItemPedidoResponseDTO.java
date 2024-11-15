@@ -1,14 +1,11 @@
 package tcatelie.microservice.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import tcatelie.microservice.auth.dto.response.OpcaoPersonalizacaoResponseDTO;
 import tcatelie.microservice.auth.dto.response.PersonalizacaoResponseDTO;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PersonalizacaoItemPedidoResponseDTO {

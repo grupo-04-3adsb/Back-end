@@ -246,13 +246,23 @@ VALUES ('Papel', 0.20, 1.00, 500, 5, DATEADD('DAY', FLOOR(RAND() * 365), NOW()),
        ('Capa de chuva', 5.00, 10.00, 10, 10, DATEADD('DAY', FLOOR(RAND() * 365), NOW()),
         DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
        ('Protetor auricular', 2.00, 5.00, 20, 10, DATEADD('DAY', FLOOR(RAND() * 365), NOW()),
+        DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
+       ('Papel Fotográfico  1/2 A4 - 230g', 0.17, null, null, null, DATEADD('DAY', FLOOR(RAND() * 365), NOW()), -- id: 32
+        DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
+       ('Miolo offset A6 - 90g', 0.03, null, null, null, DATEADD('DAY', FLOOR(RAND() * 365), NOW()), -- id: 33
+        DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
+       ('Impressão 1/2 colorida', 0.25, null, null, null, DATEADD('DAY', FLOOR(RAND() * 365), NOW()), -- id: 34
+        DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
+       ('Laminção 1/2 A4', 0.60, null, null, null, DATEADD('DAY', FLOOR(RAND() * 365), NOW()), -- id: 35
+        DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
+       ('Espiral transparente 9mm 1/2', 0.15, null, null, null, DATEADD('DAY', FLOOR(RAND() * 365), NOW()), -- id: 36
         DATEADD('DAY', FLOOR(RAND() * 365), NOW()));
 
 INSERT INTO produto (nome, preco_venda, descricao, dimensao, desconto, margem_lucro, sku, url_imagem_principal,
                      personalizavel, personalizacao_obrigatoria, fk_categoria, fk_subcategoria, id_img_drive,
                      produto_Ativo, data_hora_cadastro, data_hora_atualizacao)
 VALUES ('Agenda Minnie', 34.90, 'Agenda decorada com a personagem Minnie.', 'A5', 0.10, 0.50, 'AGENDA-MINNIE',
-        'https://ascriativasloja.com.br/wp-content/uploads/2023/01/1-12.jpg', true, true, 1, 1,
+        'https://ascriativasloja.com.br/wp-content/uploads/2023/01/1-12.jpg', true, true, 2, 3,
         '1OosCxJEq0zdIUuuzpNhzRafG3N6eEyG5', true, NOW(), NOW()),
        ('Agenda Mickey', 34.90, 'Agenda decorada com a personagem Mickey.', 'A5', 0.10, 0.50, 'AGENDA-MICKEY',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTh9GrMNq4LrRs6X1Vi4vko2drhPqjBDDwfGVaAaIHiTS2_Dq6TLN96sDZLr4MmBXGYGYg&usqp=CAU',
@@ -280,7 +290,9 @@ VALUES ('Agenda Minnie', 34.90, 'Agenda decorada com a personagem Minnie.', 'A5'
         true, true, 1, 1, '1vLQ2aQQsfN6ug1N_luc2h9Uuc3qT5AC', true, NOW(), NOW()),
        ('Caneta hidrográfica', 4.90, 'Caneta hidrográfica com ponta fina.', 'Caneta', 0.05, 0.50, 'CANETA-HIDROGRAFICA',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdG6ZRtKmK9t8EB-_N_8w9oPwDiydMj6FTrA&usqp=CAU',
-        true, true, 1, 1, '1myf1ra6gBMe0nJu1sMfthjJ6okmnP-E', true, NOW(), NOW());
+        true, true, 1, 1, '1myf1ra6gBMe0nJu1sMfthjJ6okmnP-E', true, NOW(), NOW()),
+        ('Bloco A5 30fl', 6.22, 'Bloco de anotações A5 com 30 folhas.', 'A5', 0, 300.0, 'BLOCO-A5-30FL',
+         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ', false, false, 1, 1, null, true, NOW(), NOW());
 
 
 INSERT INTO imagens_produto (url_img_adicional, fk_produto, id_img_drive)
@@ -342,7 +354,12 @@ VALUES (1, 1, 2),
        (2, 3, 1),
        (3, 4, 1),
        (4, 5, 5),
-       (1, 6, 2);
+       (1, 6, 2),
+       (32,11,1),
+       (33,11,30),
+       (34,11,1),
+       (35,11,1),
+       (36,11,1);
 
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
@@ -350,7 +367,7 @@ INSERT INTO USUARIO
 VALUES ('Cláudio Araújo', 'claudio@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
         '(11) 98765-4321', 'HABILITADO',
         DATEADD('DAY', FLOOR(RAND() * 365), NOW()), DATEADD('DAY', FLOOR(RAND() * 365), NOW()), '123.456.789-09', 1,
-        'https://drive.google.com/thumbnail?id=14bS2oXh2unEpaM2lgzwpqxPduDYvFsHB&sz=w1000', '2005-01-07', NULL),
+        'https://drive.google.com/thumbnail?id=1XIwVniVviUmZfMycRm7qj14IXefBkk1l&sz=w1000', '2005-01-07', NULL),
        ('Cláudio Araújo', 'claudiouser@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC',
         'USER',
         '(11) 98765-4321', 'HABILITADO',
@@ -359,26 +376,30 @@ VALUES ('Cláudio Araújo', 'claudio@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J
        ('Matheus Munari', 'matheus_munari_admin@gmail.com',
         '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4323',
         'HABILITADO',
-        NOW(), NOW(), '321.654.987-01', 1, 'https://drive.google.com/thumbnail?id=img2', '1990-05-10', NULL),
+        NOW(), NOW(), '321.654.987-01', 1,
+        'https://drive.google.com/thumbnail?id=1mbQFeK1UuV0RqLTdoPHzaYR3u-xHQuRW&sz=w1000', '1990-05-10', NULL),
        ('Matheus Munari', 'matheus_munari_user@gmail.com',
         '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4324', 'HABILITADO',
         NOW(), NOW(), '321.654.987-02', 1, 'https://drive.google.com/thumbnail?id=img2', '1990-05-10', NULL),
        ('Matheus Kikuti', 'matheus_kikuti_admin@gmail.com',
         '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4325',
         'HABILITADO',
-        NOW(), NOW(), '456.789.123-03', 1, 'https://drive.google.com/thumbnail?id=img3', '1992-08-15', NULL),
+        NOW(), NOW(), '456.789.123-03', 1,
+        'https://drive.google.com/thumbnail?id=1951U5DoFHk200f75sOBRoVc09x8G9f0j&sz=w1000', '1992-08-15', NULL),
        ('Matheus Kikuti', 'matheus_kikuti_user@gmail.com',
         '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4326', 'HABILITADO',
         NOW(), NOW(), '456.789.123-04', 1, 'https://drive.google.com/thumbnail?id=img3', '1992-08-15', NULL),
        ('Guilherme Santiago', 'guilherme_admin@gmail.com',
         '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN', '(11) 98765-4327', 'HABILITADO',
-        NOW(), NOW(), '654.321.987-05', 1, 'https://drive.google.com/thumbnail?id=img4', '1995-12-20', NULL),
+        NOW(), NOW(), '654.321.987-05', 1,
+        'https://drive.google.com/thumbnail?id=1qYns6JdeRRiz0iZqEc77u52Cw4CFgQUb&sz=w1000', '1995-12-20', NULL),
        ('Guilherme Santiago', 'guilherme_user@gmail.com',
         '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER', '(11) 98765-4328', 'HABILITADO',
         NOW(), NOW(), '654.321.987-06', 1, 'https://drive.google.com/thumbnail?id=img4', '1995-12-20', NULL),
        ('Kauã Nunes', 'kaua_admin@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'ADMIN',
         '(11) 98765-4329', 'HABILITADO',
-        NOW(), NOW(), '789.654.321-07', 1, 'https://drive.google.com/thumbnail?id=img5', '2000-02-05', NULL),
+        NOW(), NOW(), '789.654.321-07', 1,
+        'https://drive.google.com/thumbnail?id=11Uwm72ZzSqqGfF_FX6kDixuTHA0rSKFW&sz=w1000', '2000-02-05', NULL),
        ('Kauã Nunes', 'kaua_user@gmail.com', '$2b$12$4FM3A0un93R72ieiEddIE.J9hWbrO64j93W4cJZy0jyQcQo2WMFBC', 'USER',
         '(11) 98765-4330', 'HABILITADO',
         NOW(), NOW(), '789.654.321-08', 1, 'https://drive.google.com/thumbnail?id=img5', '2000-02-05', NULL);
@@ -389,28 +410,124 @@ INSERT INTO ENDERECO
  USUARIO_ID)
 VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil',
         'Aperte a campainha',
-        TRUE, 'RUA', 1),('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil',
+        TRUE, 'RUA', 1),
+       ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'SP', '09930-220', 'Brasil',
         'Aperte a campainha',
-        TRUE, 'CASA', 2),('Rua B', '456', 'Casa', 'Bairro Norte', 'São Paulo', 'SP', '02002-000', 'Brasil', 'Tocar a campainha', TRUE,
-        'RUA', 3),('Rua B', '789', 'Apto 202', 'Bairro Norte', 'São Paulo', 'SP', '02003-000', 'Brasil',
-        'Deixar na caixa de correio', TRUE, 'RUA', 4),('Rua C', '101', 'Casa 3', 'Bairro Leste', 'São Paulo', 'SP', '03004-000', 'Brasil', 'Tocar duas vezes', TRUE,
-        'RUA', 5),('Rua C', '102', 'Apto 303', 'Bairro Leste', 'São Paulo', 'SP', '03005-000', 'Brasil', 'Deixar com o porteiro',
-        TRUE, 'RUA', 6),('Rua D', '123', 'Casa 1', 'Bairro Sul', 'São Paulo', 'SP', '04006-000', 'Brasil', 'Deixar na garagem', TRUE,
-        'RUA', 7),('Rua D', '124', 'Apto 404', 'Bairro Sul', 'São Paulo', 'SP', '04007-000', 'Brasil',
-        'Deixar na caixa de correio', TRUE, 'RUA', 8),('Rua E', '125', 'Casa 2', 'Bairro Oeste', 'São Paulo', 'SP', '05008-000', 'Brasil', 'Deixar na garagem', TRUE,
-        'RUA', 9),('Rua E', '126', 'Apto 505', 'Bairro Oeste', 'São Paulo', 'SP', '05009-000', 'Brasil',
+        TRUE, 'RUA', 2),
+       ('Rua B', '456', 'Casa', 'Bairro Norte', 'São Paulo', 'SP', '02002-000', 'Brasil', 'Tocar a campainha', TRUE,
+        'RUA', 3),
+       ('Rua B', '789', 'Apto 202', 'Bairro Norte', 'São Paulo', 'SP', '02003-000', 'Brasil',
+        'Deixar na caixa de correio', TRUE, 'RUA', 4),
+       ('Rua C', '101', 'Casa 3', 'Bairro Leste', 'São Paulo', 'SP', '03004-000', 'Brasil', 'Tocar duas vezes', TRUE,
+        'RUA', 5),
+       ('Rua C', '102', 'Apto 303', 'Bairro Leste', 'São Paulo', 'SP', '03005-000', 'Brasil', 'Deixar com o porteiro',
+        TRUE, 'RUA', 6),
+       ('Rua D', '123', 'Casa 1', 'Bairro Sul', 'São Paulo', 'SP', '04006-000', 'Brasil', 'Deixar na garagem', TRUE,
+        'RUA', 7),
+       ('Rua D', '124', 'Apto 404', 'Bairro Sul', 'São Paulo', 'SP', '04007-000', 'Brasil',
+        'Deixar na caixa de correio', TRUE, 'RUA', 8),
+       ('Rua E', '125', 'Casa 2', 'Bairro Oeste', 'São Paulo', 'SP', '05008-000', 'Brasil', 'Deixar na garagem', TRUE,
+        'RUA', 9),
+       ('Rua E', '126', 'Apto 505', 'Bairro Oeste', 'São Paulo', 'SP', '05009-000', 'Brasil',
         'Deixar na caixa de correio', TRUE, 'RUA', 1);
 
-INSERT INTO PEDIDO (NOME_USUARIO, TOTAL, VALOR_DESCONTO, VALOR_FRETE, NUM_PARCELA, VALOR_PARCELA, FORMA_PAGAMENTO, STATUS,
-                    OBSERVACAO, DATA_PEDIDO, DATA_ENTREGA, DATA_PAGAMENTO, DATA_CANCELAMENTO, DATA_ATUALIZACAO,
-                    FK_ENDERECO_ENTREGA, FK_USUARIO)
+INSERT INTO PEDIDO (NOME_USUARIO, TOTAL, VALOR_DESCONTO, VALOR_FRETE, NUM_PARCELA, VALOR_PARCELA, FORMA_PAGAMENTO,
+                    STATUS, OBSERVACAO, DATA_PEDIDO, DATA_ENTREGA, DATA_PAGAMENTO, DATA_CANCELAMENTO, DATA_ATUALIZACAO,
+                    FK_ENDERECO_ENTREGA, FK_USUARIO, DATA_CONCLUSAO)
 VALUES ('Cláudio Araújo', 0.01, 10.00, 20.00, 3, 83.33, '', 'Carrinho', 'Entrega rápida', NOW(),
-        DATEADD('DAY', FLOOR(RAND() * 365), NOW()), NULL, NULL, NOW(), 1, 1);
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NULL, NOW(), 1, 2, NULL),
+
+       ('Matheus Munari', 150.00, 15.00, 10.00, 5, 30.00, 'Cartão de Crédito', 'Pendente', 'Entrega rápida', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NOW(), NULL, NOW(), 3, 4, NULL),
+
+       ('Guilherme Santiago', 200.00, 20.00, 15.00, 4, 50.00, 'Boleto', 'Pendente', 'Entrega normal', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NULL, NOW(), 5, 8, NULL),
+
+       ('Kauã Nunes', 300.00, 30.00, 20.00, 6, 50.00, 'Pix', 'Concluído', 'Entrega rápida', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NOW(), NOW(), 7, 10, DATEADD(DAY, FLOOR(RAND() * 365), NOW())),
+
+       ('Matheus Kikuti', 250.00, 25.00, 12.00, 3, 83.33, 'Cartão de Débito', 'Pendente de pagamento', 'Entrega normal',
+        NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NOW(), NULL, NOW(), 9, 6, NULL),
+
+       ('Cláudio Araújo', 0.01, 10.00, 20.00, 3, 83.33, '', 'Em rota', 'Entrega rápida', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NULL, NOW(), 1, 2, NULL),
+
+       ('Matheus Munari', 150.00, 15.00, 10.00, 5, 30.00, 'Cartão de Crédito', 'Em preparo', 'Entrega rápida', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NOW(), NULL, NOW(), 3, 4, NULL),
+
+       ('Guilherme Santiago', 200.00, 20.00, 15.00, 4, 50.00, 'Boleto', 'Pendente', 'Entrega normal', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NULL, NOW(), 5, 8, NULL),
+
+       ('Kauã Nunes', 300.00, 30.00, 20.00, 6, 50.00, 'Pix', 'Concluído', 'Entrega rápida', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NOW(), NOW(), 7, 10, DATEADD(DAY, FLOOR(RAND() * 365), NOW())),
+
+       ('Matheus Kikuti', 250.00, 25.00, 12.00, 3, 83.33, 'Cartão de Débito', 'Concluído', 'Entrega normal', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NOW(), NULL, NOW(), 9, 6, DATEADD(DAY, FLOOR(RAND() * 365), NOW()));
 
 INSERT INTO ITEM_PEDIDO (QUANTIDADE, PRECO_UNITARIO, VALOR_TOTAL, DESCONTO, VALOR_DESCONTO, VALOR_FRETE, FK_PRODUTO,
                          FK_PEDIDO)
-VALUES (2, 100.00, 200.00, 5.0, 10.00, 10.00, 1, 1);
+VALUES (1, 50.00, 50.00, 5.0, 2.50, 5.00, 1, 2),
+       (2, 75.00, 150.00, 10.0, 15.00, 10.00, 4, 3),
+       (3, 100.00, 300.00, 15.0, 45.00, 15.00, 5, 4),
+       (1, 50.00, 50.00, 5.0, 2.50, 5.00, 6, 5),
+       (2, 75.00, 150.00, 10.0, 15.00, 10.00, 2, 2),
+       (3, 100.00, 300.00, 15.0, 45.00, 15.00, 8, 2),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 6, 5),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 5, 10),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 2, 1),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 8, 1),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 6, 5),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 5, 8),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 2, 1),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 8, 7),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 6, 8),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 5, 1),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 2, 1),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 8, 9),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 6, 5),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 5, 10),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 2, 1),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 8, 1),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 6, 5),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 5, 1),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 2, 1),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 8, 7),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 6, 5),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 5, 6),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 2, 7),
+       (2, 100.00, 200.00, 5.0, 10.00, 10.00, 8, 6),
+       (1, 60.00, 60.00, 0.0, 0.00, 10.00, 6, 5);
 
-INSERT INTO ITEM_PEDIDO (QUANTIDADE, PRECO_UNITARIO, VALOR_TOTAL, DESCONTO, VALOR_DESCONTO, VALOR_FRETE, FK_PRODUTO,
-                         FK_PEDIDO)
-VALUES (1, 60.00, 60.00, 0.0, 0.00, 10.00, 2, 1);
+INSERT INTO PERSONALIZACAO_ITEM_PEDIDO(DESCRICAO_PERSONALIZACAO, VALOR_PERSONALIZACAO, FK_ITEM_PEDIDO,
+                                       FK_PERSONALIZACAO, FK_OPCAO_PERSONALIZACAO)
+VALUES ('Cláudio', 4.0, 1, 1, 1);
+
+INSERT INTO RESPONSAVEL_PEDIDO (FK_PEDIDO, FK_RESPONSAVEL, DATA_HORA_CADASTRO, DATA_HORA_ATUALIZACAO)
+VALUES (2, 1, NOW(), NOW()),
+       (3, 3, NOW(), NOW()),
+       (4, 5, NOW(), NOW()),
+       (2, 5, NOW(), NOW()),
+       (1, 3, NOW(), NOW()),
+       (5, 7, NOW(), NOW()),
+       (1, 1, NOW(), NOW()),
+       (2, 3, NOW(), NOW()),
+       (3, 5, NOW(), NOW()),
+       (4, 7, NOW(), NOW()),
+       (5, 1, NOW(), NOW()),
+       (10, 1, NOW(), NOW()),
+       (9, 3, NOW(), NOW()),
+       (8, 5, NOW(), NOW()),
+       (7, 7, NOW(), NOW()),
+       (6, 9, NOW(), NOW()),
+       (5, 3, NOW(), NOW()),
+       (4, 1, NOW(), NOW()),
+       (3, 1, NOW(), NOW()),
+       (2, 9, NOW(), NOW()),
+       (1, 7, NOW(), NOW());
+
+INSERT INTO CUSTO_OUTROS(descricao, valor)
+VALUES ('Custos Outros - Luz, Net - R$ 240', 0.38),
+       ('Impressora, R$ 1.200', 0.2),
+       ('Tinta R$ 300 a cada 2 meses R$ 1800', 0.30),
+       ('Perda de Materiais 5%', 0.9);

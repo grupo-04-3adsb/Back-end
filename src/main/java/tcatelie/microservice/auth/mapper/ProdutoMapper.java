@@ -39,11 +39,11 @@ public interface ProdutoMapper {
     @Mapping(source = "margemLucro", target = "margemLucro")
     @Mapping(source = "idImgDrive", target = "idImgDrive")
     @Mapping(source = "produtoAtivo", target = "produtoAtivo")
-    @Mapping(source = "dthrCadastro", target = "dthrCriacao", qualifiedByName = "localDateTimeToString")
-    @Mapping(source = "dthrAtualizacao", target = "dthrAtualizacao", qualifiedByName = "localDateTimeToString")
+    @Mapping(source = "dthrCadastro", target = "dthrCriacao", qualifiedByName = "localDateTimeProdutoToString")
+    @Mapping(source = "dthrAtualizacao", target = "dthrAtualizacao", qualifiedByName = "localDateTimeProdutoToString")
     ProdutoResponseDTO toResponseDTO(Produto produto);
 
-    @Named("localDateTimeToString")
+    @Named("localDateTimeProdutoToString")
     default String localDateTimeToString(LocalDateTime dateTime) {
         if (dateTime == null) {
             return null;

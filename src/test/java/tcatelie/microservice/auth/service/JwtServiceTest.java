@@ -42,7 +42,7 @@ public class JwtServiceTest {
 				"(11) 94463-6705", Status.HABILITADO, LocalDateTime.now(), LocalDateTime.now(), "123.456.789-09",
 				Genero.MASCULINO, "img.png", LocalDate.now());
 
-		String token = jwtService.generateToken(usuario);
+		String token = jwtService.generateAccessToken(usuario);
 
 		assertNotNull(token);
 		assertTrue(token.startsWith("eyJ"));

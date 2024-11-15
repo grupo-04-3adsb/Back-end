@@ -45,6 +45,8 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/materiais/revisao", "POST"),
             new AntPathRequestMatcher("/produtos/listar-por-material/**"),
             new AntPathRequestMatcher("/pedidos/**"),
+            new AntPathRequestMatcher("/usuarios/admins", "GET"),
+            new AntPathRequestMatcher("/pedidos/listar"),
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {

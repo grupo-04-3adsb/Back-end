@@ -3,6 +3,8 @@ package tcatelie.microservice.auth.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -33,11 +35,16 @@ public class ItemPedido {
     @Column(name = "valor_frete")
     private Double valorFrete;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @JoinColumn(name = "fk_personalizacao")
-    private PersonalizacaoItemPedido personalizacao;
+    @Column(name = "custo_producao")
+    private Double custoProducao;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @Column(name = "produto_feito")
+    private Boolean produtoFeito;
+
+    @OneToMany(mappedBy = "itemPedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PersonalizacaoItemPedido> personalizacoes;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "fk_produto", nullable = false)
     private Produto produto;
 
