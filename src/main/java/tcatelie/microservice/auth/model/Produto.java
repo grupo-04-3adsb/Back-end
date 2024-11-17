@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.Where;
 import tcatelie.microservice.auth.observer.Observer;
 import tcatelie.microservice.auth.repository.CustosOutrosRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
@@ -66,6 +70,9 @@ public class Produto implements Observer {
 
     @Column(name = "produto_ativo")
     private Boolean produtoAtivo;
+
+    @Column(name = "peso")
+    private Double peso;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private ItemPedido itemPedido;
@@ -131,7 +138,7 @@ public class Produto implements Observer {
         double precoVenda = custoTotal * (1 + margemLucro / 100);
         this.preco = precoVenda;
 
-        return ((precoVenda - custoTotal) / precoVenda) * 100; 
+        return ((precoVenda - custoTotal) / precoVenda) * 100;
     }
 
 
@@ -144,4 +151,5 @@ public class Produto implements Observer {
     public void update(String message) {
 
     }
+
 }

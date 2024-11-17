@@ -34,7 +34,7 @@ public class PedidoController {
             })
     @GetMapping("{idPedido}")
     public ResponseEntity getPedidoById(@PathVariable Integer idPedido) {
-        return ResponseEntity.ok(mapper.pedidoToPedidoResponseDTO(service.getPedidoById(idPedido)));
+        return ResponseEntity.ok(service.transformarPedido(service.getPedidoById(idPedido)));
     }
 
     @Operation(summary = "Busca todos os pedidos",
@@ -84,4 +84,6 @@ public class PedidoController {
     public ResponseEntity updatePedido(@PathVariable Integer idPedido, @RequestBody PedidoRequestDTO pedido) {
         return service.updatePedido(idPedido, pedido);
     }
+
+
 }

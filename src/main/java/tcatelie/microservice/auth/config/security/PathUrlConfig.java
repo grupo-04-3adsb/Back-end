@@ -47,11 +47,12 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/pedidos/**"),
             new AntPathRequestMatcher("/usuarios/admins", "GET"),
             new AntPathRequestMatcher("/pedidos/listar"),
+            new AntPathRequestMatcher("/custos-outros")
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {
             new AntPathRequestMatcher("/pedidos/**"),
-
+            new AntPathRequestMatcher("/item-pedidos/**")
     };
 
 }

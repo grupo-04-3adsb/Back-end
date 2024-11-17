@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,4 +26,24 @@ public class CustoOutros {
 
     @Column(name = "valor")
     private Double valor;
+
+    @Column(name = "ativo")
+    private Boolean ativo;
+
+    @Column(name = "data_hora_atualizacao")
+    private LocalDateTime dataHoraAtualizacao;
+
+    @Column(name = "data_hora_criacao")
+    private LocalDateTime dataHoraCriacao;
+
+    @PreUpdate
+    public void preUpdate() {
+        dataHoraAtualizacao = LocalDateTime.now();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        dataHoraCriacao = LocalDateTime.now();
+        dataHoraAtualizacao = LocalDateTime.now();
+    }
 }

@@ -26,6 +26,9 @@ public class Personalizacao {
     @Column(name = "tipo_personalizacao")
     private String tipoPersonalizacao;
 
+    @Column(name = "personalizacao_ativa")
+    private Boolean personalizacaoAtiva;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_produto")
     private Produto produto;
@@ -46,11 +49,13 @@ public class Personalizacao {
     protected void onCreate() {
         this.dthrCadastro = LocalDateTime.now();
         this.dthrAtualizacao = LocalDateTime.now();
+        this.personalizacaoAtiva = true;
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.dthrAtualizacao = LocalDateTime.now();
     }
+
 }
 

@@ -17,6 +17,7 @@ public class PedidoResponseDTO {
     private Double valorTotal;
     private Double valorDesconto;
     private Double valorFrete;
+    private Double totalCustoProducao;
     private Integer parcelas;
     private String formaPgto;
     private String status;

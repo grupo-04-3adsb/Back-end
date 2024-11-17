@@ -23,7 +23,7 @@ public class PersonalizacaoItemPedido {
     @Column(name = "valor_personalizacao")
     private Double valorPersonalizacao;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @ManyToOne
     @JoinColumn(name = "fk_item_pedido", nullable = false)
     private ItemPedido itemPedido;
 

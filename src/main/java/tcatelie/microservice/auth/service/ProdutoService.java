@@ -170,10 +170,16 @@ public class ProdutoService {
     public ProdutoResponseDTO buscarProdutoPorId(Integer id) {
         Produto produto = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com o ID: " + id));
+
+        produto.setPersonalizacoes(produto.getPersonalizacoes().stream()
+                .filter(Personalizacao::getPersonalizacaoAtiva)
+                .collect(Collectors.toList()));
+
         return montarProdutoResponseDTO(produto, produto.getMateriaisProduto().stream()
                 .map(mp -> new MaterialProdutoRequestDTO(mp.getMaterial().getIdMaterial(), mp.getQtdMaterialNecessario()))
                 .collect(Collectors.toList()));
     }
+
 
     public Page<ProdutoResponseDTO> buscarTodosProdutosPaginados(Pageable pageable, ProdutoFiltroDTO produtoFiltroDTO) {
         Page<Produto> produtos = repository.findAll(ProdutoSpecification.filtrar(produtoFiltroDTO), pageable);
@@ -191,6 +197,13 @@ public class ProdutoService {
 
         validarRequest(requestDTO);
 
+        if (repository.findByNomeAndIdNot(requestDTO.getNome(), idProduto).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Produto já cadastrado com esse nome.");
+        }
+        if (repository.findBySkuAndIdNot(requestDTO.getSku(), idProduto).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Produto já cadastrado com esse sku.");
+        }
+
         List<String> filesIds = new ArrayList<>();
 
         produtoExistente.setNome(requestDTO.getNome());
@@ -201,6 +214,7 @@ public class ProdutoService {
         produtoExistente.setMargemLucro(requestDTO.getMargemLucro());
         produtoExistente.setPersonalizavel(requestDTO.getIsPersonalizavel());
         produtoExistente.setDimensao(requestDTO.getDimensao());
+        produtoExistente.setPeso(requestDTO.getPeso());
 
         if (!produtoExistente.getUrlImagemPrincipal().equals(requestDTO.getUrlProduto())) {
             filesIds.add(produtoExistente.getIdImgDrive());
@@ -242,17 +256,17 @@ public class ProdutoService {
                 .map(personalizacaoMapper::toPersonalizacaoWithOpcoes)
                 .collect(Collectors.toList());
 
-        List<Personalizacao> personalizacoesParaRemover = personalizacoesExistentes.stream()
-                .filter(pExistente -> personalizacoesRecebidas.stream()
-                        .noneMatch(pRecebida -> pRecebida.getIdPersonalizacao() != null
-                                && pRecebida.getIdPersonalizacao().equals(pExistente.getIdPersonalizacao())))
-                .collect(Collectors.toList());
+        personalizacoesExistentes.forEach(pExistente -> {
+            boolean aindaAtiva = personalizacoesRecebidas.stream()
+                    .anyMatch(pRecebida -> pRecebida.getIdPersonalizacao() != null
+                            && pRecebida.getIdPersonalizacao().equals(pExistente.getIdPersonalizacao()));
+            pExistente.setPersonalizacaoAtiva(aindaAtiva);
+        });
 
-        personalizacoesParaRemover.forEach(p -> p.getOpcoes().forEach(o -> filesIds.add(o.getIdImgDrive())));
-        produtoExistente.getPersonalizacoes().removeAll(personalizacoesParaRemover);
         personalizacoesRecebidas.forEach(p -> {
             if (p.getIdPersonalizacao() == null) {
                 p.setProduto(produtoExistente);
+                p.setPersonalizacaoAtiva(true);
                 produtoExistente.getPersonalizacoes().add(p);
             } else {
                 Personalizacao personalizacaoExistente = personalizacaoRepository.findById(p.getIdPersonalizacao())
@@ -260,18 +274,22 @@ public class ProdutoService {
 
                 personalizacaoExistente.setNomePersonalizacao(p.getNomePersonalizacao());
                 personalizacaoExistente.setTipoPersonalizacao(p.getTipoPersonalizacao());
+                personalizacaoExistente.setPersonalizacaoAtiva(true); // Certifica-se de que ela está ativa
 
                 List<OpcaoPersonalizacao> opcoesExistentes = personalizacaoExistente.getOpcoes();
                 List<OpcaoPersonalizacao> opcoesRecebidas = p.getOpcoes();
 
-                List<OpcaoPersonalizacao> opcoesParaRemover = opcoesExistentes.stream()
-                        .filter(oExistente -> opcoesRecebidas.stream()
-                                .noneMatch(oRecebida -> oRecebida.getIdOpcaoPersonalizacao() != null
-                                        && oRecebida.getIdOpcaoPersonalizacao().equals(oExistente.getIdOpcaoPersonalizacao())))
-                        .collect(Collectors.toList());
-
-                opcoesParaRemover.forEach(o -> filesIds.add(o.getIdImgDrive()));
-                personalizacaoExistente.getOpcoes().removeAll(opcoesParaRemover);
+                opcoesExistentes.forEach(oExistente -> {
+                    boolean opcaoAindaAtiva = opcoesRecebidas.stream()
+                            .anyMatch(oRecebida -> oRecebida.getIdOpcaoPersonalizacao() != null
+                                    && oRecebida.getIdOpcaoPersonalizacao().equals(oExistente.getIdOpcaoPersonalizacao()));
+                    if (!opcaoAindaAtiva) {
+                        filesIds.add(oExistente.getIdImgDrive());
+                    }
+                });
+                opcoesExistentes.removeIf(o -> opcoesRecebidas.stream()
+                        .noneMatch(oRecebida -> oRecebida.getIdOpcaoPersonalizacao() != null
+                                && oRecebida.getIdOpcaoPersonalizacao().equals(o.getIdOpcaoPersonalizacao())));
 
                 opcoesRecebidas.forEach(o -> {
                     if (o.getIdOpcaoPersonalizacao() == null) {
@@ -290,6 +308,7 @@ public class ProdutoService {
                 });
             }
         });
+
 
         atualizarMateriais(produtoExistente, requestDTO.getMateriais());
 
@@ -443,12 +462,12 @@ public class ProdutoService {
         }
     }
 
-    public void atualizarCategoriaSubcategoriaDoProduto(ProdutosUpdateRequestDTO dto){
+    public void atualizarCategoriaSubcategoriaDoProduto(ProdutosUpdateRequestDTO dto) {
 
         List<Produto> produtos = new ArrayList<>();
-        if(dto.getNomesProdutos().size() == 1 & dto.getNomesProdutos().get(0).equals("TODOS")){
+        if (dto.getNomesProdutos().size() == 1 & dto.getNomesProdutos().get(0).equals("TODOS")) {
             produtos = repository.findByCategoria_NomeCategoria(dto.getCategoriaAntiga());
-        } else{
+        } else {
             produtos = repository.findAllByNomeIn(dto.getNomesProdutos());
         }
 

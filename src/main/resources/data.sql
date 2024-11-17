@@ -247,7 +247,8 @@ VALUES ('Papel', 0.20, 1.00, 500, 5, DATEADD('DAY', FLOOR(RAND() * 365), NOW()),
         DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
        ('Protetor auricular', 2.00, 5.00, 20, 10, DATEADD('DAY', FLOOR(RAND() * 365), NOW()),
         DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
-       ('Papel Fotográfico  1/2 A4 - 230g', 0.17, null, null, null, DATEADD('DAY', FLOOR(RAND() * 365), NOW()), -- id: 32
+       ('Papel Fotográfico  1/2 A4 - 230g', 0.17, null, null, null,
+        DATEADD('DAY', FLOOR(RAND() * 365), NOW()), -- id: 32
         DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
        ('Miolo offset A6 - 90g', 0.03, null, null, null, DATEADD('DAY', FLOOR(RAND() * 365), NOW()), -- id: 33
         DATEADD('DAY', FLOOR(RAND() * 365), NOW())),
@@ -260,39 +261,39 @@ VALUES ('Papel', 0.20, 1.00, 500, 5, DATEADD('DAY', FLOOR(RAND() * 365), NOW()),
 
 INSERT INTO produto (nome, preco_venda, descricao, dimensao, desconto, margem_lucro, sku, url_imagem_principal,
                      personalizavel, personalizacao_obrigatoria, fk_categoria, fk_subcategoria, id_img_drive,
-                     produto_Ativo, data_hora_cadastro, data_hora_atualizacao)
-VALUES ('Agenda Minnie', 34.90, 'Agenda decorada com a personagem Minnie.', 'A5', 0.10, 0.50, 'AGENDA-MINNIE',
+                     produto_Ativo, data_hora_cadastro, data_hora_atualizacao, peso)
+VALUES ('Agenda Minnie', 34.90, 'Agenda decorada com a personagem Minnie.', '2x0x5', 0.10, 0.50, 'AGENDA-MINNIE',
         'https://ascriativasloja.com.br/wp-content/uploads/2023/01/1-12.jpg', true, true, 2, 3,
-        '1OosCxJEq0zdIUuuzpNhzRafG3N6eEyG5', true, NOW(), NOW()),
-       ('Agenda Mickey', 34.90, 'Agenda decorada com a personagem Mickey.', 'A5', 0.10, 0.50, 'AGENDA-MICKEY',
+        '1OosCxJEq0zdIUuuzpNhzRafG3N6eEyG5', true, NOW(), NOW(), 0.50),
+       ('Agenda Mickey', 34.90, 'Agenda decorada com a personagem Mickey.', '7x8x2', 0.10, 0.50, 'AGENDA-MICKEY',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTh9GrMNq4LrRs6X1Vi4vko2drhPqjBDDwfGVaAaIHiTS2_Dq6TLN96sDZLr4MmBXGYGYg&usqp=CAU',
-        true, true, 1, 1, '1bXl8JQW_FQ8i9-OeMcC_2KYss5_3TeWB', true, NOW(), NOW()),
-       ('Agenda Stitch', 34.90, 'Agenda decorada com o personagem Stitch.', 'A5', 0.10, 0.50, 'AGENDA-STITCH',
+        true, true, 1, 1, '1bXl8JQW_FQ8i9-OeMcC_2KYss5_3TeWB', true, NOW(), NOW(), 0.50),
+       ('Agenda Stitch', 34.90, 'Agenda decorada com o personagem Stitch.', '2', 0.10, 0.50, 'AGENDA-STITCH',
         'https://a-static.mlcdn.com.br/800x560/agenda-diaria-personagem-stitch-para-seu-novo-ano-2021-spiral/pigmamultivendas/10334979371/475381966b4f3da09197b691e1d5f1c5.jpg',
-        true, true, 1, 1, '1bJ4H3RLbY8w2I8Gth7_yTVPrbNYgDnv', true, NOW(), NOW()),
-       ('Agenda Luffy', 34.90, 'Agenda decorada com o personagem Luffy.', 'A5', 0.10, 0.50, 'AGENDA-LUFFY',
+        true, true, 1, 1, '1bJ4H3RLbY8w2I8Gth7_yTVPrbNYgDnv', true, NOW(), NOW(), 0.50),
+       ('Agenda Luffy', 34.90, 'Agenda decorada com o personagem Luffy.', '2x3', 0.10, 0.50, 'AGENDA-LUFFY',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAZsp0YxZ7Z4KzIN5MOA9YteFnKdxJjHwN0w&usqp=CAU',
-        true, true, 1, 1, '1MSLIsUToCtiL_YNYVtYbH4HLw7upgl7', true, NOW(), NOW()),
-       ('Caderno 10 matérias', 29.90, 'Caderno com 10 matérias.', 'A4', 0.10, 0.50, 'CADERNO-10MATERIAS',
+        true, true, 1, 1, '1MSLIsUToCtiL_YNYVtYbH4HLw7upgl7', true, NOW(), NOW(), 0.50),
+       ('Caderno 10 matérias', 29.90, 'Caderno com 10 matérias.', '3x5x6', 0.10, 0.50, 'CADERNO-10MATERIAS',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQnTFmJyd3m8e6XL8HcZdbXcX4UwOpCLAXW&usqp=CAU',
-        true, true, 1, 1, '1GQFL5P5nqdrtMYjs5iT9Za9F4_uJwS7', true, NOW(), NOW()),
-       ('Caderno 15 matérias', 34.90, 'Caderno com 15 matérias.', 'A4', 0.10, 0.50, 'CADERNO-15MATERIAS',
+        true, true, 1, 1, '1GQFL5P5nqdrtMYjs5iT9Za9F4_uJwS7', true, NOW(), NOW(), 0.50),
+       ('Caderno 15 matérias', 34.90, 'Caderno com 15 matérias.', '1x9x8', 0.10, 0.50, 'CADERNO-15MATERIAS',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYxN1SQHhZUDCdojEDgL5hv3cMa4ZZIUnR0g&usqp=CAU',
-        true, true, 1, 1, '1PCFlN1s6u5b4-pFnF3uON-1g2XWwhZf', true, NOW(), NOW()),
-       ('Caderno 20 matérias', 39.90, 'Caderno com 20 matérias.', 'A4', 0.10, 0.50, 'CADERNO-20MATERIAS',
+        true, true, 1, 1, '1PCFlN1s6u5b4-pFnF3uON-1g2XWwhZf', true, NOW(), NOW(), 0.50),
+       ('Caderno 20 matérias', 39.90, 'Caderno com 20 matérias.', '9x8x7', 0.10, 0.50, 'CADERNO-20MATERIAS',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5mtqCj6lE3EVuv5zY27qJZYN_t0I0uk-9PA&usqp=CAU',
-        true, true, 1, 1, '1PYMNYALDbLEZVVl_SFQLx2dpJgOrCl-8', true, NOW(), NOW()),
-       ('Caderno 30 matérias', 44.90, 'Caderno com 30 matérias.', 'A4', 0.10, 0.50, 'CADERNO-30MATERIAS',
+        true, true, 1, 1, '1PYMNYALDbLEZVVl_SFQLx2dpJgOrCl-8', true, NOW(), NOW(), 0.50),
+       ('Caderno 30 matérias', 44.90, 'Caderno com 30 matérias.', '3x4x2', 0.10, 0.50, 'CADERNO-30MATERIAS',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx0yHRP8Y9tZ4Aauyw4MT5LElC4QayOWRkxA&usqp=CAU',
-        true, true, 1, 1, '1sOv2tAjW_oW2_Bk2Wn65VfsqOb0E8a8', true, NOW(), NOW()),
-       ('Caneta esferográfica', 2.90, 'Caneta esferográfica azul.', 'Caneta', 0.05, 0.50, 'CANETA-ESFEROGRAFICA',
+        true, true, 1, 1, '1sOv2tAjW_oW2_Bk2Wn65VfsqOb0E8a8', true, NOW(), NOW(), 0.50),
+       ('Caneta esferográfica', 2.90, 'Caneta esferográfica azul.', '9x8x5', 0.05, 0.50, 'CANETA-ESFEROGRAFICA',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYmGtvVdRSW-HxXSEH2_sDTxH1QHcOCUe8tQ&usqp=CAU',
-        true, true, 1, 1, '1vLQ2aQQsfN6ug1N_luc2h9Uuc3qT5AC', true, NOW(), NOW()),
-       ('Caneta hidrográfica', 4.90, 'Caneta hidrográfica com ponta fina.', 'Caneta', 0.05, 0.50, 'CANETA-HIDROGRAFICA',
+        true, true, 1, 1, '1vLQ2aQQsfN6ug1N_luc2h9Uuc3qT5AC', true, NOW(), NOW(), 0.50),
+       ('Caneta hidrográfica', 4.90, 'Caneta hidrográfica com ponta fina.', '0x0x3', 0.05, 0.50, 'CANETA-HIDROGRAFICA',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdG6ZRtKmK9t8EB-_N_8w9oPwDiydMj6FTrA&usqp=CAU',
-        true, true, 1, 1, '1myf1ra6gBMe0nJu1sMfthjJ6okmnP-E', true, NOW(), NOW()),
-        ('Bloco A5 30fl', 6.22, 'Bloco de anotações A5 com 30 folhas.', 'A5', 0, 300.0, 'BLOCO-A5-30FL',
-         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ', false, false, 1, 1, null, true, NOW(), NOW());
+        true, true, 1, 1, '1myf1ra6gBMe0nJu1sMfthjJ6okmnP-E', true, NOW(), NOW(), 0.50),
+       ('Bloco A5 30fl', 6.22, 'Bloco de anotações A5 com 30 folhas.', '5x4x2', 0, 300.0, 'BLOCO-A5-30FL',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ', false, false, 1, 1, null, true, NOW(), NOW(), 0.50);
 
 
 INSERT INTO imagens_produto (url_img_adicional, fk_produto, id_img_drive)
@@ -306,12 +307,12 @@ VALUES ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg
        ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
        ('https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 6, 'abc123');
 
-INSERT INTO personalizacao (nome_personalizacao, tipo_personalizacao, fk_produto)
-VALUES ('Personalização de Capa', 'Texto', 1),
-       ('Personalização de Datas', 'Texto', 2),
-       ('Design Especial para Casamento', 'Design', 4),
-       ('Mensagem Especial', 'Texto', 3),
-       ('Mensagem para Faixa', 'Texto', 6);
+INSERT INTO personalizacao (nome_personalizacao, tipo_personalizacao, fk_produto, personalizacao_ativa)
+VALUES ('Personalização de Capa', 'Texto', 1, false),
+       ('Personalização de Datas', 'Texto', 2, true),
+       ('Design Especial para Casamento', 'Design', 4, true),
+       ('Mensagem Especial', 'Texto', 3, true),
+       ('Mensagem para Faixa', 'Texto', 6, true);
 
 INSERT INTO opcao_personalizacao (nome_opcao, descricao, acrescimo_opcao, url_img_opcao, fk_personalizacao,
                                   id_img_drive)
@@ -355,11 +356,11 @@ VALUES (1, 1, 2),
        (3, 4, 1),
        (4, 5, 5),
        (1, 6, 2),
-       (32,11,1),
-       (33,11,30),
-       (34,11,1),
-       (35,11,1),
-       (36,11,1);
+       (32, 11, 1),
+       (33, 11, 30),
+       (34, 11, 1),
+       (35, 11, 1),
+       (36, 11, 1);
 
 INSERT INTO USUARIO
 (NOME_USUARIO, EMAIL_USUARIO, SENHA_USUARIO, CARGO_USUARIO, TELEFONE_USUARIO, STATUS_USUARIO, DATA_CADASTRO_USUARIO,
@@ -530,4 +531,4 @@ INSERT INTO CUSTO_OUTROS(descricao, valor)
 VALUES ('Custos Outros - Luz, Net - R$ 240', 0.38),
        ('Impressora, R$ 1.200', 0.2),
        ('Tinta R$ 300 a cada 2 meses R$ 1800', 0.30),
-       ('Perda de Materiais 5%', 0.9);
+       ('Perda de Materiais 5%', 0.09);

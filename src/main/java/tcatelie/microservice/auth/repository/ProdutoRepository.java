@@ -9,8 +9,13 @@ import org.springframework.data.repository.query.Param;
 import tcatelie.microservice.auth.model.Produto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Integer>, JpaSpecificationExecutor<Produto> {
+
+    Optional<Produto> findByNomeAndIdNot(String nome, Integer idProduto);
+
+    Optional<Produto> findBySkuAndIdNot(String sku, Integer idProduto);
 
     Boolean existsByNome(String nome);
 

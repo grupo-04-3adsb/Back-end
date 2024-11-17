@@ -10,15 +10,17 @@ import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
+import tcatelie.microservice.auth.dto.response.CustoOutrosResponseDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
+import tcatelie.microservice.auth.model.CustoOutros;
 import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.repository.PedidoRepository;
 import tcatelie.microservice.auth.specification.PedidoSpecification;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,9 @@ public class PedidoService {
 
     private final PedidoRepository repository;
     private final PedidoMapper mapper;
+    private final CustoOutrosService custoOutrosService;
+
+    private List<CustoOutrosResponseDTO> custosOutros = new ArrayList<>();
 
     public Pedido getPedidoById(Integer idPedido) {
         return repository.findById(idPedido)
@@ -44,7 +49,7 @@ public class PedidoService {
                 pageRequest);
 
 
-        return pedidos.map(mapper::pedidoToPedidoResponseDTO);
+        return pedidos.map(this::transformarPedido);
     }
 
     public List<Pedido> buscarPedidosPorStatus(StatusPedido status) {
@@ -58,7 +63,7 @@ public class PedidoService {
 
     public List<PedidoResponseDTO> findAll(PedidoFiltroDTO filtroDTO) {
         return repository.findAll(PedidoSpecification.filterBy(filtroDTO)).stream()
-                .map(mapper::pedidoToPedidoResponseDTO)
+                .map(this::transformarPedido)
                 .toList();
     }
 
@@ -69,7 +74,7 @@ public class PedidoService {
 
         pedido.setStatus(StatusPedido.valueOf(pedidoRequestDTO.getStatusPedido()));
 
-        if(pedido.getStatus().equals(StatusPedido.CONCLUIDO)){
+        if (pedido.getStatus().equals(StatusPedido.CONCLUIDO)) {
             pedido.setDataConclusao(LocalDateTime.now());
         }
 
@@ -81,7 +86,7 @@ public class PedidoService {
         StatusPedido pedidoAtual = pedido.getStatus();
         StatusPedido novoStatus = StatusPedido.valueOf(pedidoRequestDTO.getStatusPedido().toUpperCase());
 
-        if(pedidoAtual.equals(novoStatus)){
+        if (pedidoAtual.equals(novoStatus)) {
             return;
         }
 
@@ -123,6 +128,38 @@ public class PedidoService {
             default:
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transição de status inválida.");
         }
+    }
+
+    public PedidoResponseDTO transformarPedido(Pedido pedido) {
+        PedidoResponseDTO response = mapper.pedidoToPedidoResponseDTO(pedido);
+
+        if(custosOutros.isEmpty()){
+            custosOutros = custoOutrosService.findAll();
+        }
+
+        if (pedido.getStatus().equals(StatusPedido.PENDENTE) ||
+                pedido.getStatus().equals(StatusPedido.PENDENTE_PAGAMENTO)) {
+
+            double totalCustoProducao = pedido.getItens().stream()
+                    .mapToDouble(item -> item.getProduto().getMateriaisProduto().stream()
+                            .mapToDouble(materialProduto ->
+                                    materialProduto.getMaterial().getPrecoUnitario() *
+                                            materialProduto.getQtdMaterialNecessario())
+                            .sum() * item.getQuantidade())
+                    .sum();
+
+            double totalCustoOutros = pedido.getItens().stream()
+                    .mapToDouble(item -> custosOutros.stream()
+                            .mapToDouble(outroCusto -> outroCusto.getValor())
+                            .sum() * item.getQuantidade())
+                    .sum();
+
+            response.setTotalCustoProducao(totalCustoProducao);
+        }
+
+        response.setDataPedido(pedido.getDataPedido().toString());
+
+        return response;
     }
 
 }

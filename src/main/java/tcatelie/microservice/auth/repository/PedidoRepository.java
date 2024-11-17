@@ -11,6 +11,7 @@ import tcatelie.microservice.auth.model.Pedido;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Integer>, JpaSpecificationExecutor<Pedido> {
 
@@ -34,5 +35,5 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer>, JpaSpe
             @Param("startOfWeek") LocalDateTime startOfWeek,
             @Param("endOfWeek") LocalDateTime endOfWeek);
 
-
+    Optional<Pedido> findByStatusAndUsuario_IdUsuario(StatusPedido status, Integer idUsuario);
 }

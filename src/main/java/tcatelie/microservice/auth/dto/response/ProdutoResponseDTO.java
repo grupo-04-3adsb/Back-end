@@ -56,6 +56,9 @@ public class ProdutoResponseDTO {
     @Schema(description = "Margem de lucro do produto", example = "10.00")
     private Double margemLucro;
 
+    @Schema(description = "Peso do produto", example = "0.500")
+    private Double peso;
+
     @Schema(description = "Quantidade em estoque do produto", example = "100")
     private Boolean isPersonalizavel;
 

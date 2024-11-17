@@ -29,6 +29,7 @@ public interface ProdutoMapper {
     @Mapping(source = "isPersonalizacaoObrigatoria", target = "personalizacaoObrigatoria")
     @Mapping(source = "desconto", target = "desconto")
     @Mapping(source = "margemLucro", target = "margemLucro")
+    @Mapping(source = "peso", target = "peso")
     Produto toProduto(ProdutoRequestDTO requestDTO);
 
     @Mapping(source = "urlImagemPrincipal", target = "urlProduto")
@@ -41,6 +42,7 @@ public interface ProdutoMapper {
     @Mapping(source = "produtoAtivo", target = "produtoAtivo")
     @Mapping(source = "dthrCadastro", target = "dthrCriacao", qualifiedByName = "localDateTimeProdutoToString")
     @Mapping(source = "dthrAtualizacao", target = "dthrAtualizacao", qualifiedByName = "localDateTimeProdutoToString")
+    @Mapping(source = "peso", target = "peso")
     ProdutoResponseDTO toResponseDTO(Produto produto);
 
     @Named("localDateTimeProdutoToString")
