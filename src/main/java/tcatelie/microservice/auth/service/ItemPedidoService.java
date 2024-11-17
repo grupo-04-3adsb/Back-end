@@ -26,7 +26,7 @@ public class ItemPedidoService {
     private final PersonalizacaoItemPedidoRepository personalizacaoItemPedidoRepository;
     private final CustosOutrosRepository custosOutrosRepository;
 
-    private List<CustoOutros> custosOutros = custosOutrosRepository.findAll();
+    private List<CustoOutros> custosOutros;
 
     public void adicionarAoCarrinho(Integer idCliente, ItemPedidoRequestDTO itemPedidoRequestDTO) {
         Optional<Pedido> pedidoOpt = pedidoRepository.findByStatusAndUsuario_IdUsuario(StatusPedido.CARRINHO, idCliente);
@@ -98,6 +98,9 @@ public class ItemPedidoService {
     }
 
     public void finalizarItemPedido(Integer idItemPedido) {
+        if(custosOutros == null || custosOutros.isEmpty()) {
+            custosOutros = custosOutrosRepository.findAll();
+        }
 
         ItemPedido itemPedido = repository.findById(idItemPedido).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item pedido não encontrado"));
@@ -112,6 +115,8 @@ public class ItemPedidoService {
     }
 
     public void atualizarItemPedidoPagamentoAprovado(ItemPedido itemPedido) {
+
+
         itemPedido.setDesconto(
                 itemPedido.getProduto().getDesconto()
         );
