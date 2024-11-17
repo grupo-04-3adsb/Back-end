@@ -5,7 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.Where;
 import tcatelie.microservice.auth.observer.Observer;
+import tcatelie.microservice.auth.repository.CustosOutrosRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
 
 import java.time.LocalDateTime;
@@ -66,6 +71,12 @@ public class Produto implements Observer {
     @Column(name = "produto_ativo")
     private Boolean produtoAtivo;
 
+    @Column(name = "peso")
+    private Double peso;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private ItemPedido itemPedido;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_categoria", nullable = false)
     private Categoria categoria;
@@ -89,6 +100,9 @@ public class Produto implements Observer {
     @Transient
     private ProdutoRepository repository;
 
+    @Transient
+    private CustosOutrosRepository custosOutrosRepository;
+
     @PrePersist
     protected void onCreate() {
         this.dthrCadastro = LocalDateTime.now();
@@ -110,9 +124,7 @@ public class Produto implements Observer {
     }
 
     public Double calcularMargemLucro() {
-        if (preco == null || preco <= 0) {
-            return 0.0;
-        }
+        List<CustoOutros> custosOutros = custosOutrosRepository.findAll();
 
         double custoTotal = 0.0;
         for (MaterialProduto materialProduto : materiaisProduto) {
@@ -121,8 +133,17 @@ public class Produto implements Observer {
             custoTotal += material.getPrecoUnitario() * quantidadeNecessaria;
         }
 
-        return ((preco - custoTotal) / preco) * 100;
+        double custoTotalOutros = custosOutros.stream()
+                .mapToDouble(CustoOutros::getValor)
+                .sum();
+        custoTotal += custoTotalOutros;
+
+        double precoVenda = custoTotal * (1 + margemLucro / 100);
+        this.preco = precoVenda;
+
+        return ((precoVenda - custoTotal) / precoVenda) * 100;
     }
+
 
     @Override
     public void update(String message, Produto produto) {
@@ -133,4 +154,5 @@ public class Produto implements Observer {
     public void update(String message) {
 
     }
+
 }

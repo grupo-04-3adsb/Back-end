@@ -26,12 +26,18 @@ public class Personalizacao {
     @Column(name = "tipo_personalizacao")
     private String tipoPersonalizacao;
 
+    @Column(name = "personalizacao_ativa")
+    private Boolean personalizacaoAtiva;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_produto")
     private Produto produto;
 
     @OneToMany(mappedBy = "personalizacao", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<OpcaoPersonalizacao> opcoes;
+
+    @OneToMany(mappedBy = "personalizacao", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<PersonalizacaoItemPedido> personalizacaoItemPedido;
 
     @Column(name = "data_hora_cadastro")
     private LocalDateTime dthrCadastro;
@@ -43,11 +49,13 @@ public class Personalizacao {
     protected void onCreate() {
         this.dthrCadastro = LocalDateTime.now();
         this.dthrAtualizacao = LocalDateTime.now();
+        this.personalizacaoAtiva = true;
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.dthrAtualizacao = LocalDateTime.now();
     }
+
 }
 

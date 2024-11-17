@@ -13,6 +13,10 @@ import java.util.Optional;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Integer>, JpaSpecificationExecutor<Produto> {
 
+    Optional<Produto> findByNomeAndIdNot(String nome, Integer idProduto);
+
+    Optional<Produto> findBySkuAndIdNot(String sku, Integer idProduto);
+
     Boolean existsByNome(String nome);
 
     Boolean existsBySku(String nome);

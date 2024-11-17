@@ -24,6 +24,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/subcategorias/pesquisar"),
             new AntPathRequestMatcher("/subcategorias/filtrar"),
             new AntPathRequestMatcher("/materiais/pesquisar/**"),
+            new AntPathRequestMatcher("/api/v1/mercadopago/**"),
             new AntPathRequestMatcher("/produtos/mercado-livre"),
             new AntPathRequestMatcher("/produtos/produtos/exportar-csv"),
             new AntPathRequestMatcher("/auth/refresh-token"),
@@ -31,6 +32,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/avaliacoes", "POST"),
             new AntPathRequestMatcher("/avaliacoes/produto/{produtoId}", "GET"),
             new AntPathRequestMatcher("/avaliacoes/produto/{produtoId}/media")
+            new AntPathRequestMatcher("/api/v1/mercadopago/payment"),
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
@@ -45,10 +47,15 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/{id}", "PUT"),
             new AntPathRequestMatcher("/produtos", "PUT"),
             new AntPathRequestMatcher("/materiais/revisao", "POST"),
-            new AntPathRequestMatcher("/produtos/listar-por-material/**")
+            new AntPathRequestMatcher("/produtos/listar-por-material/**"),
+            new AntPathRequestMatcher("/pedidos/**"),
+            new AntPathRequestMatcher("/usuarios/admins", "GET"),
+            new AntPathRequestMatcher("/pedidos/listar"),
+            new AntPathRequestMatcher("/custos-outros")
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {
-
+            new AntPathRequestMatcher("/pedidos/**"),
+            new AntPathRequestMatcher("/item-pedidos/**")
     };
 }

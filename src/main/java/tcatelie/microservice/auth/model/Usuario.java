@@ -78,6 +78,12 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Avaliacao> avaliacoes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pedido> pedidos;
+
+    @OneToMany(mappedBy = "responsavel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResponsavelPedido> responsaveis;
+
     public Usuario(String telefone, UserRole role, String senha, String email, String nome, String cpf, Genero genero, String urlImgUsuario, LocalDate dataNascimento) {
         this.telefone = telefone;
         this.role = role;
