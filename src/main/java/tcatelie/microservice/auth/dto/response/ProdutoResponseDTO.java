@@ -59,25 +59,27 @@ public class ProdutoResponseDTO {
     @Schema(description = "Peso do produto", example = "0.500")
     private Double peso;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Produto personalizável", example = "true")
     private Boolean isPersonalizavel;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Personalização obrigatória", example = "true")
     private Boolean isPersonalizacaoObrigatoria;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Categoria do produto")
     private CategoriaResponseDTO categoria;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Produto ativo")
     private Boolean produtoAtivo;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Subcategoria do produto")
     private SubcategoriaResponseDTO subcategoria;
 
-    @Schema(description = "Quantidade em estoque do produto", example = "100")
+    @Schema(description = "Materiais associados ao produto")
     private List<MaterialProdutoResponseDTO> materiais;
 
-    @Schema(description = "Quantidade de personalizações do produto", example = "100")
+    @Schema(description = "Personalizações disponíveis para o produto")
     private List<PersonalizacaoResponseDTO> personalizacoes;
 
+    @Schema(description = "Lista de avaliações do produto")
+    private List<AvaliacaoResponseDTO> avaliacoes;
 }

@@ -11,6 +11,7 @@ import tcatelie.microservice.auth.enums.UserRole;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -75,11 +76,13 @@ public class Usuario implements UserDetails {
     private List<Endereco> enderecos;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Avaliacao> avaliacoes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pedido> pedidos;
 
     @OneToMany(mappedBy = "responsavel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ResponsavelPedido> responsaveis;
-
 
     public Usuario(String telefone, UserRole role, String senha, String email, String nome, String cpf, Genero genero, String urlImgUsuario, LocalDate dataNascimento) {
         this.telefone = telefone;

@@ -31,7 +31,7 @@ public class EnderecoController {
 			@ApiResponse(responseCode = "404", description = "Erro: usuário não encontrado.", content = @Content(mediaType = "application/json")) })
 	@PostMapping("{idUsuario}")
 	public ResponseEntity cadastrarEndereco(
-			@Parameter(description = "ID do usuário que está cadastrando o endereço") Integer idUsuario,
+			@PathVariable Integer idUsuario,
 			@RequestBody @Valid EnderecoRequestDTO dto, Authentication authentication) {
 		return enderecoService.cadastrarEndereco(idUsuario, dto, authentication);
 	}
@@ -40,7 +40,7 @@ public class EnderecoController {
 			@ApiResponse(responseCode = "200", description = "Endereço atualizado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoResponseDTO.class))),
 			@ApiResponse(responseCode = "404", description = "Erro: endereço não encontrado.", content = @Content(mediaType = "application/json")) })
 	@PutMapping("/{id}")
-	public ResponseEntity atualizarEndereco(@Parameter(description = "ID do endereço a ser atualizado") Integer id,
+	public ResponseEntity atualizarEndereco(@PathVariable Integer id,
 			@RequestBody EnderecoRequestDTO dto, Authentication authentication) {
 		return enderecoService.atualizarEndereco(id, dto, authentication);
 	}
@@ -49,7 +49,7 @@ public class EnderecoController {
 			@ApiResponse(responseCode = "200", description = "Endereço deletado com sucesso", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "404", description = "Erro: endereço não encontrado.", content = @Content(mediaType = "application/json")) })
 	@DeleteMapping("/{id}")
-	public ResponseEntity deletarEndereco(@Parameter(description = "ID do endereço a ser deletado") Integer id,
+	public ResponseEntity deletarEndereco(@PathVariable Integer id,
 			Authentication authentication) {
 		return enderecoService.deletarEndereco(id, authentication);
 	}
@@ -66,7 +66,7 @@ public class EnderecoController {
 			@ApiResponse(responseCode = "200", description = "Endereço encontrado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoResponseDTO.class))),
 			@ApiResponse(responseCode = "404", description = "Erro: endereço não encontrado.", content = @Content(mediaType = "application/json")) })
 	@GetMapping("/{id}")
-	public ResponseEntity obterEnderecoPorId(@Parameter(description = "ID do endereço a ser obtido") Integer id) {
+	public ResponseEntity obterEnderecoPorId(@PathVariable Integer id) {
 		return enderecoService.obterEnderecoPorId(id);
 	}
 
@@ -75,7 +75,7 @@ public class EnderecoController {
 			@ApiResponse(responseCode = "404", description = "Erro: usuário não encontrado.", content = @Content(mediaType = "application/json")) })
 	@GetMapping("/usuario/{usuarioId}")
 	public ResponseEntity obterEnderecosPorUsuario(
-			@Parameter(description = "ID do usuário cujos endereços serão obtidos") Integer usuarioId,
+			@PathVariable Integer usuarioId,
 			Authentication authentication) {
 		return enderecoService.obterEnderecosPorUsuario(usuarioId, authentication);
 	}

@@ -12,14 +12,19 @@ import tcatelie.microservice.auth.model.Usuario;
 @Mapper(componentModel = "spring", uses = { EnderecoMapper.class })
 public interface UsuarioMapper {
 
-	@Mapping(source = "telefone", target = "numeroTelefone")
-	@Mapping(source = "dthrCadastro", target = "dataCriacao")
-	@Mapping(source = "dthrAtualizacao", target = "dataAtualizacao")
-	@Mapping(source = "role", target = "cargo")
-	@Mapping(source = "urlImgUsuario", target = "imgUrl")
-	@Mapping(source = "enderecos", target = "enderecos")
-	@Mapping(target = "idGoogle", source = "idGoogle")
-	@Mapping(target = "senha", ignore = true)
+	UsuarioMapper INSTANCE = Mappers.getMapper(UsuarioMapper.class);
+
+	@Mappings({
+			@Mapping(source = "telefone", target = "numeroTelefone"),
+			@Mapping(source = "dthrCadastro", target = "dataCriacao"),
+			@Mapping(source = "dthrAtualizacao", target = "dataAtualizacao"),
+			@Mapping(source = "role", target = "cargo"), 
+			@Mapping(source = "urlImgUsuario", target = "imgUrl"),
+			@Mapping(source = "enderecos", target = "enderecos"),
+			@Mapping(source = "idUsuario", target= "idUsuario"),
+			@Mapping(target = "senha", ignore = true),
+			@Mapping(target = "idGoogle", source = "idGoogle")
+	})
 	UsuarioResponseDTO toUsuarioResponseDTO(Usuario usuario);
 
 	@Mapping(target = "dthrCadastro", ignore = true)

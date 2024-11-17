@@ -46,4 +46,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer>, JpaS
 
     Page<Produto> findByMateriaisProduto_Material_IdMaterial(Integer idMaterial, Pageable pageable);
 
+    Optional<Produto> findByNome(String nome);
+
 }

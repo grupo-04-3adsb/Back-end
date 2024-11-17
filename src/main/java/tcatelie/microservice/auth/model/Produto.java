@@ -94,6 +94,9 @@ public class Produto implements Observer {
     @OneToMany(mappedBy = "produto", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<MaterialProduto> materiaisProduto = new ArrayList<>();
 
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Avaliacao> avaliacoes = new ArrayList<>();
+
     @Transient
     private ProdutoRepository repository;
 

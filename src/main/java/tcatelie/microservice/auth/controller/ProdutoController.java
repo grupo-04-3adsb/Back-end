@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -183,6 +185,10 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoDesativado);
     }
 
+    /*
+        Endponts adicionais para apresentar no dia da Sprint 2
+    */
+
     @Operation(
             summary = "Buscar produtos do Mercado Livre",
             description = "Este endpoint permite buscar produtos do Mercado Livre ordenados pelo preço de forma decrescente.",
@@ -229,26 +235,26 @@ public class ProdutoController {
         }
     }
 
-    @Operation(
-            summary = "Pesquisa binária",
-            description = "Este endpoint permite buscar um produto por nome utilizando pesquisa binária.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso.",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Produto não encontrado."),
-                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
-            }
-    )
-    @GetMapping("/pesquisa-binaria")
-    public ResponseEntity buscarProdutoPorNome(@RequestParam String nome) {
-        ProdutoResponseDTO produtoResponse = service.buscarProdutoPorNomePesquisaBinaria(nome);
-
-        if (produtoResponse == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(produtoResponse);
-    }
+//    @Operation(
+//            summary = "Pesquisa binária",
+//            description = "Este endpoint permite buscar um produto por nome utilizando pesquisa binária.",
+//            responses = {
+//                    @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso.",
+//                            content = @Content(mediaType = "application/json",
+//                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
+//                    @ApiResponse(responseCode = "404", description = "Produto não encontrado."),
+//                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+//            }
+//    )
+//    @GetMapping("/pesquisa-binaria")
+//    public ResponseEntity buscarProdutoPorNome(@RequestParam String nome) {
+//        ProdutoResponseDTO produtoResponse = service.buscarProdutoPorNomePesquisaBinaria(nome);
+//
+//        if(produtoResponse == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        return ResponseEntity.ok(produtoResponse);
+//    }
 
     @Operation(
             summary = "Atualizar categoria e subcategoria de produtos",
@@ -265,14 +271,25 @@ public class ProdutoController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/listar-por-material/{idMaterial}")
-    public ResponseEntity listarProdutosPorMaterial(@PathVariable Integer idMaterial,
-                                                    @RequestParam(defaultValue = "0") int page,
-                                                    @RequestParam(defaultValue = "10") int size,
-                                                    @RequestParam(defaultValue = "asc") String sortOrder,
-                                                    @RequestParam(defaultValue = "id") String sortBy
-    ) {
-        Page<ProdutoResponseDTO> produtos = service.buscarProdutosPorIdMaterial(idMaterial, PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)));
-        return ResponseEntity.ok(produtos);
+    @Operation(
+            summary = "Buscar produto pelo nome completo na URL",
+            description = "Este endpoint permite buscar um produto utilizando o nome completo na URL.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Produto não encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/nome/{nomeProduto}")
+    public ResponseEntity buscarProdutoPorNome(@PathVariable String nomeProduto) {
+        ProdutoResponseDTO produtoResponse = service.buscarProdutoPorNome(nomeProduto);
+
+        if (produtoResponse == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(produtoResponse);
     }
+
 }
