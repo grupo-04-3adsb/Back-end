@@ -13,7 +13,6 @@ import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.dto.response.CustoOutrosResponseDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
-import tcatelie.microservice.auth.model.CustoOutros;
 import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.repository.PedidoRepository;
 import tcatelie.microservice.auth.specification.PedidoSpecification;
@@ -29,6 +28,7 @@ public class PedidoService {
     private final PedidoRepository repository;
     private final PedidoMapper mapper;
     private final CustoOutrosService custoOutrosService;
+    private final ItemPedidoService itemPedidoService;
 
     private List<CustoOutrosResponseDTO> custosOutros = new ArrayList<>();
 
@@ -72,10 +72,32 @@ public class PedidoService {
 
         validaStatusPedido(pedidoRequestDTO, pedido);
 
+        StatusPedido statusAnterior = pedido.getStatus();
+
         pedido.setStatus(StatusPedido.valueOf(pedidoRequestDTO.getStatusPedido()));
 
-        if (pedido.getStatus().equals(StatusPedido.CONCLUIDO)) {
-            pedido.setDataConclusao(LocalDateTime.now());
+        switch (pedido.getStatus()) {
+            case CARRINHO:
+                pedido.setDataPedido(null);
+                pedido.setValorFrete(pedidoRequestDTO.getValorFrete());
+                pedido.setValorDesconto(pedido.getItens().stream().mapToDouble(
+                                item -> item.getProduto().getPreco() * (item.getProduto().getDesconto() / 100) * item.getQuantidade()
+                        ).sum()
+                );
+                break;
+            case PENDENTE_PAGAMENTO:
+                pedido.setDataPedido(LocalDateTime.now());
+                break;
+            case PENDENTE:
+                break;
+            case EM_PREPARO:
+                pedido.getItens().stream().forEach(i -> i.setProdutoFeito(true));
+                break;
+            case EM_ROTA:
+                pedido.setDataConclusao(LocalDateTime.now());
+                break;
+            default:
+                break;
         }
 
         repository.save(pedido);
@@ -133,7 +155,7 @@ public class PedidoService {
     public PedidoResponseDTO transformarPedido(Pedido pedido) {
         PedidoResponseDTO response = mapper.pedidoToPedidoResponseDTO(pedido);
 
-        if(custosOutros.isEmpty()){
+        if (custosOutros.isEmpty()) {
             custosOutros = custoOutrosService.findAll();
         }
 

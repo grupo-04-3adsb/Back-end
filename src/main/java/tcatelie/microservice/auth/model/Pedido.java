@@ -83,7 +83,7 @@ public class Pedido {
     @JoinColumn(name = "fk_usuario", nullable = false)
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<ResponsavelPedido> responsaveis;
 
     @PrePersist
