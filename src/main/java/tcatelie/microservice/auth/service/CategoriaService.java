@@ -106,16 +106,13 @@ public class CategoriaService {
     }
 
     public ResponseEntity deletar(Integer id) {
-        if (repository.findById(id).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
         Categoria categoria = findById(id);
 
         Integer qtdProdutos = produtoRepository.countByCategoria_IdCategoria(id);
 
         if (qtdProdutos == 0) {
-            repository.deleteById(id);
+            categoria.setCategoriaAtiva(false);
+            repository.save(categoria);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Não é possível deletar a categoria pois existem %s produtos associados a ela.".formatted(qtdProdutos));

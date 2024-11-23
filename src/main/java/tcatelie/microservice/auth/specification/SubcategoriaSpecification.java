@@ -49,7 +49,7 @@ public class SubcategoriaSpecification {
                             criteriaBuilder.le(criteriaBuilder.count(produtosJoin), filtro.getQuantidadeMaximaProdutos()));
                 }
 
-                query.having(havingPredicate); // Aplica a condição na cláusula HAVING
+                query.having(havingPredicate);
             }
 
 
@@ -97,6 +97,8 @@ public class SubcategoriaSpecification {
                         filtro.getDataAtualizacaoFim()
                 ));
             }
+
+            predicates.add(criteriaBuilder.equal(root.get("subcategoriaAtiva"), true));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

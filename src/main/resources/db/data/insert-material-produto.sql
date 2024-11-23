@@ -1,0 +1,15 @@
+INSERT INTO material_produto (fk_material, fk_produto, qtd_material_necessario)
+VALUES (1, 1, 2),
+       (2, 1, 1),
+       (1, 2, 3),
+       (2, 2, 1),
+       (1, 3, 1),
+       (2, 3, 1),
+       (3, 4, 1),
+       (4, 5, 5),
+       (1, 6, 2),
+       (32, 11, 1),
+       (33, 11, 30),
+       (34, 11, 1),
+       (35, 11, 1),
+       (36, 11, 1);
