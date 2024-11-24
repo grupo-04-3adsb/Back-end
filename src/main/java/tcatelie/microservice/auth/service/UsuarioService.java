@@ -134,7 +134,6 @@ public class UsuarioService implements UserDetailsService {
         usuarioAtual.setNome(dto.getNome());
         usuarioAtual.setCpf(dto.getCpf());
         usuarioAtual.setTelefone(dto.getTelefone());
-        usuarioAtual.setEmail(dto.getEmail());
         usuarioAtual.setDataNascimento(dto.getDataNascimento());
         usuarioAtual.setGenero(dto.getGenero());
         if(dto.getImgUrl()!=null){
@@ -220,6 +219,15 @@ public class UsuarioService implements UserDetailsService {
         LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);
 
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
+    }
+
+    public ResponseEntity<UsuarioResponseDTO> buscarPorId(Integer id){
+        Optional<Usuario> usuarioBuscado = repository.findById(id);
+
+        if(usuarioBuscado.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(usuarioMapper.toUsuarioResponseDTO(usuarioBuscado.get()));
     }
 
 }

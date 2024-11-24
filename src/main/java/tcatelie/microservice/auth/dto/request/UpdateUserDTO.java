@@ -33,11 +33,6 @@ public class UpdateUserDTO {
     @Schema(description = "Número de telefone do usuário.", example = "(11) 98765-4321")
     private String telefone;
 
-    @NotBlank
-    @Email
-    @Schema(description = "Endereço de e-mail do usuário. Deve estar em formato válido.", example = "claudio@gmail.com")
-    private String email;
-
     @NotNull
     @Schema(description = "Data de nascimento do usuário. Não pode ser nula.", example = "2005-01-07")
     private LocalDate dataNascimento;
@@ -56,20 +51,18 @@ public class UpdateUserDTO {
     private UserRole role;
 
 
-    public UpdateUserDTO(String nome, String cpf, String telefone, String email, String senha, UserRole role,
+    public UpdateUserDTO(String nome, String cpf, String telefone, String senha, UserRole role,
                          Genero genero, String imgUrl, Status status, LocalDate dataNascimento) {
         this.nome = nome;
         this.cpf = cpf;
         this.telefone = telefone;
-        this.email = email;
         this.dataNascimento = dataNascimento;
     }
 
-    public UpdateUserDTO(String nome, String cpf, String telefone, String email, LocalDate dataNascimento, Genero genero, String imgUrl, Status status, UserRole role) {
+    public UpdateUserDTO(String nome, String cpf, String telefone, LocalDate dataNascimento, Genero genero, String imgUrl, Status status, UserRole role) {
         this.nome = nome;
         this.cpf = cpf;
         this.telefone = telefone;
-        this.email = email;
         this.dataNascimento = dataNascimento;
         this.genero = genero;
         this.imgUrl = imgUrl;

@@ -14,7 +14,6 @@ public class AtualizarUsuarioMapper {
         return Usuario.builder()
                 .idUsuario(id)
                 .nome(dto.getNome())
-                .email(dto.getEmail())
                 .dataNascimento(dto.getDataNascimento())
                 .telefone(dto.getTelefone())
                 .cpf(dto.getCpf())
