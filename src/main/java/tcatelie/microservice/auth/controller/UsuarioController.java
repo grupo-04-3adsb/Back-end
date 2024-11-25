@@ -45,6 +45,18 @@ public class UsuarioController {
 		return service.atualizarUsuario(id, dto, authentication);
 	}
 
+	@Operation(summary = "Atualiza a senha de um usuário", description = "Este endpoint permite que um usuário atualize sua senha. Apenas o próprio usuário ou um administrador pode realizar esta ação.", responses = {
+			@ApiResponse(responseCode = "200", description = "Senha atualizada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDTO.class))),
+			@ApiResponse(responseCode = "400", description = "Corpo da requisição inválido.", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "403", description = "Você não tem permissão para realizar esta ação.", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado.", content = @Content(mediaType = "application/json"))
+	})
+	@PatchMapping("/{id}")
+	public ResponseEntity atualizarSenha (@Parameter(description = "ID do usuário a ser atualizado") Integer id,
+										  @RequestBody @Valid RegisterDTO dto, Authentication auth) {
+		return service.atualizarSenha(id, dto, auth);
+	}
+
 	@Operation(summary = "Deleta um usuário", description = "Este endpoint permite que um usuário delete sua conta. Apenas o próprio usuário ou um administrador pode realizar esta ação.", responses = {
 			@ApiResponse(responseCode = "200", description = "Usuário deletado com sucesso", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "403", description = "Você não tem permissão para realizar esta ação.", content = @Content(mediaType = "application/json")),

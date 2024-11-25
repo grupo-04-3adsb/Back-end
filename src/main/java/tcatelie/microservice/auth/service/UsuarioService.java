@@ -150,6 +150,25 @@ public class UsuarioService implements UserDetailsService {
         return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuarioAtual));
     }
 
+    public ResponseEntity<?> atualizarSenha(Integer id, RegisterDTO dto, Authentication auth){
+        ResponseEntity<?> response = verificarPermissoes(id, auth);
+        if(response.getStatusCode().value() != 200){
+            return response;
+        }
+
+        Usuario usuarioAtual = (Usuario) response.getBody();
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        if(!StringUtils.isEmpty(dto.getSenha())){
+            String encrypdtedPassword = passwordEncoder.encode(dto.getSenha());
+            usuarioAtual.setSenha(encrypdtedPassword);
+        }
+
+        repository.save(usuarioAtual);
+        return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuarioAtual));
+    }
+
     public ResponseEntity<?> deletarUsuario(Integer id, Authentication authentication) {
         ResponseEntity<?> response = verificarPermissoes(id, authentication);
         if (response.getStatusCode().value() != 200) {
