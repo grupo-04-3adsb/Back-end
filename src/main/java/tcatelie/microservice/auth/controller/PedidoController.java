@@ -85,5 +85,8 @@ public class PedidoController {
         return service.updatePedido(idPedido, pedido);
     }
 
-
+    @GetMapping("/carrinho/{idCliente}")
+    public ResponseEntity getPedidoCarrinho(@PathVariable Integer idCliente) {
+        return ResponseEntity.ok(service.carregarCarrinhoUsuario(idCliente));
+    }
 }

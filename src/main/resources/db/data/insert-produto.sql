@@ -1,7 +1,7 @@
 INSERT INTO produto (nome, preco_venda, descricao, dimensao, desconto, margem_lucro, sku, url_imagem_principal,
                      personalizavel, personalizacao_obrigatoria, fk_categoria, fk_subcategoria, id_img_drive,
                      produto_Ativo, data_hora_cadastro, data_hora_atualizacao, peso)
-VALUES ('Agenda Minnie', 34.90, 'Agenda decorada com a personagem Minnie.', '2x0x5', 0.10, 0.50, 'AGENDA-MINNIE',
+VALUES ('Agenda Minnie', 34.90, 'Agenda decorada com a personagem Minnie.', '2x0x5', 1.0, 0.50, 'AGENDA-MINNIE',
         'https://ascriativasloja.com.br/wp-content/uploads/2023/01/1-12.jpg', true, true, 2, 3,
         '1OosCxJEq0zdIUuuzpNhzRafG3N6eEyG5', true, NOW(), NOW(), 0.50),
        ('Agenda Mickey', 34.90, 'Agenda decorada com a personagem Mickey.', '7x8x2', 0.10, 0.50, 'AGENDA-MICKEY',

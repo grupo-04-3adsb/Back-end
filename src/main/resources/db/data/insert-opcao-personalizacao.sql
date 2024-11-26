@@ -1,9 +1,9 @@
 INSERT INTO opcao_personalizacao (nome_opcao, descricao, acrescimo_opcao, url_img_opcao, fk_personalizacao,
                                   id_img_drive)
-VALUES ('Texto em Ouro', 'Texto na capa em efeito dourado', 5.00,
+VALUES ('Título', 'Texto na capa em efeito dourado', 5.00,
         'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
         '1cCAa5y637fsJ4VZ96Lqz5Utz_ZcZKo49'),
-       ('Texto em Prata', 'Texto na capa em efeito prateado', 4.00,
+       ('Subtítulo', 'Texto na capa em efeito prateado', 4.00,
         'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 1,
         '1OLxbmeet0tTxCn5BOIas0LmB7Y4G7pbf'),
        ('Data em Dourado', 'Datas em efeito dourado', 3.00,
@@ -28,4 +28,10 @@ VALUES ('Texto em Ouro', 'Texto na capa em efeito dourado', 5.00,
        ('Mensagem em Amarelo', 'Mensagem em efeito amarelo', 2.00,
         'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
        ('Mensagem em Rosa', 'Mensagem em efeito rosa', 2.00,
-        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123');
+        'https://drive.google.com/thumbnail?id=1SStxF5xD5SM_HyDM_bk9rD0rY6y8jrOg&sz=w1000', 5, 'abc123'),
+       ('Vermelho', 'Texto em vermelho', 1.00, 'https://placehold.co/100', 6, 'abc123'),
+       ('Azul', 'Texto em azul', 1.00, 'https://placehold.co/100', 6, 'abc123'),
+       ('Verde', 'Texto em verde', 1.00, 'https://placehold.co/100', 6, 'abc123'),
+       ('Amarelo', 'Texto em amarelo', 1.00, 'https://placehold.co/100', 6, 'abc123'),
+       ('Rosa', 'Texto em rosa', 1.00, 'https://placehold.co/100', 6, 'abc123'),
+       ('Imagem de capa', 'Imagem de coração', 3.00, 'https://placehold.co/100', 7, 'abc123');

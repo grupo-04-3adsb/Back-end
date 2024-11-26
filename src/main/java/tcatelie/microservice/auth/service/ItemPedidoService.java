@@ -224,6 +224,8 @@ public class ItemPedidoService {
     }
 
     private double calcularCustoProducao(ItemPedido item) {
+        verificaCustoOutros();
+
         double custoMateriais = item.getProduto().getMateriaisProduto()
                 .stream()
                 .mapToDouble(m -> m.getMaterial().getPrecoUnitario() * m.getQtdMaterialNecessario())

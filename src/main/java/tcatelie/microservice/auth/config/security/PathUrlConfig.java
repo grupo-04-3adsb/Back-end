@@ -33,7 +33,10 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/avaliacoes/produto/{produtoId}", "GET"),
             new AntPathRequestMatcher("/avaliacoes/produto/{produtoId}/media"),
             new AntPathRequestMatcher("/api/v1/mercadopago/payment"),
-            new AntPathRequestMatcher("/calcular-fretes/**")
+            new AntPathRequestMatcher("/calcular-fretes/**"),
+            new AntPathRequestMatcher("/pedidos/carrinho/{idUsuario}", "GET"),
+            new AntPathRequestMatcher("/item-pedidos/{idItemPedido}"),
+            new AntPathRequestMatcher("/item-pedidos"),
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
@@ -55,7 +58,6 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/custos-outros"),
             new AntPathRequestMatcher("/usuarios/pesquisar-admins"),
             new AntPathRequestMatcher("/usuarios/responsavel"),
-            new AntPathRequestMatcher("/item-pedidos/{idItemPedido}", "PUT"),
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {
