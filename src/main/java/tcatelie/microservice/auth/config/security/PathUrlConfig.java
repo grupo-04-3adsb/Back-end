@@ -37,6 +37,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/pedidos/carrinho/{idUsuario}", "GET"),
             new AntPathRequestMatcher("/item-pedidos/{idItemPedido}"),
             new AntPathRequestMatcher("/item-pedidos"),
+            new AntPathRequestMatcher("/produtos/pesquisar/nome-sku")
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {

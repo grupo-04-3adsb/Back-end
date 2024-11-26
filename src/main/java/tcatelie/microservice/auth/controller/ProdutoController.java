@@ -292,4 +292,26 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoResponse);
     }
 
+    @Operation(
+            summary = "Buscar produto por nome e SKU",
+            description = "Este endpoint permite buscar um produto por nome e SKU.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                    @ApiResponse(responseCode = "204", description = "Produto não encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/pesquisar/nome-sku")
+    public ResponseEntity buscarProdutoPorNomeESku(@RequestParam String pesquisa, @RequestParam int page, int size) {
+        Page<ProdutoResponseDTO> pagina = service.buscarPorNomeOuSku(pesquisa, PageRequest.of(page, size));
+
+        if (pagina == null || pagina.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(pagina);
+    }
+
 }

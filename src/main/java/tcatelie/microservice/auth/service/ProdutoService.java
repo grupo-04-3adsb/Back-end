@@ -496,4 +496,10 @@ public class ProdutoService {
         return mapper.toResponseDTO(produto);
     }
 
+    public Page<ProdutoResponseDTO> buscarPorNomeOuSku(String pesquisa, Pageable pageable) {
+        return repository.findByNomeContainingIgnoreCaseOrSkuContainingIgnoreCase(pesquisa, pesquisa, pageable)
+                .map(produto -> montarProdutoResponseDTO(produto, produto.getMateriaisProduto().stream()
+                        .map(mp -> new MaterialProdutoRequestDTO(mp.getMaterial().getIdMaterial(), mp.getQtdMaterialNecessario()))
+                        .collect(Collectors.toList())));
+    }
 }

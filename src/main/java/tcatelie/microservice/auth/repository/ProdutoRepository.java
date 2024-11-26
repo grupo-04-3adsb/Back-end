@@ -45,6 +45,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer>, JpaS
     Integer countQtdMateriaisProduto(Integer idMaterial);
 
     Page<Produto> findByMateriaisProduto_Material_IdMaterial(Integer idMaterial, Pageable pageable);
+    Page<Produto> findByNomeContainingIgnoreCaseOrSkuContainingIgnoreCase(String nome, String sku, Pageable pageable);
 
     Optional<Produto> findByNome(String nome);
 
