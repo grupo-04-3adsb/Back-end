@@ -7,34 +7,63 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import tcatelie.microservice.auth.dto.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.dto.response.CustoOutrosResponseDTO;
+import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
+import tcatelie.microservice.auth.mapper.EnderecoMapper;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
-import tcatelie.microservice.auth.model.CustoOutros;
+import tcatelie.microservice.auth.mapper.UsuarioMapper;
 import tcatelie.microservice.auth.model.Pedido;
+import tcatelie.microservice.auth.model.Usuario;
 import tcatelie.microservice.auth.repository.PedidoRepository;
+import tcatelie.microservice.auth.repository.UserRepository;
 import tcatelie.microservice.auth.specification.PedidoSpecification;
+import tcatelie.microservice.auth.util.DateFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PedidoService {
 
     private final PedidoRepository repository;
+    private final UserRepository userRepository;
     private final PedidoMapper mapper;
     private final CustoOutrosService custoOutrosService;
+    private final ItemPedidoService itemPedidoService;
+    private final EnderecoMapper enderecoMapper;
+    private final UsuarioMapper usuarioMapper;
 
     private List<CustoOutrosResponseDTO> custosOutros = new ArrayList<>();
 
     public Pedido getPedidoById(Integer idPedido) {
         return repository.findById(idPedido)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+    }
+
+    public PedidoResponseDTO carregarCarrinhoUsuario(Integer idUsuario) {
+        Usuario usuario = userRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        Optional<Pedido> pedido = repository.findByStatusAndUsuario_IdUsuario(StatusPedido.CARRINHO, idUsuario);
+
+        if (pedido.isPresent()) {
+            return transformarPedido(pedido.get());
+        } else{
+            Pedido novoPedido = new Pedido();
+            novoPedido.setStatus(StatusPedido.CARRINHO);
+            novoPedido.setUsuario(usuario);
+
+            return transformarPedido(repository.save(novoPedido));
+        }
+
     }
 
     public Page<PedidoResponseDTO> getPedidos(PageRequest pageRequest) {
@@ -72,10 +101,61 @@ public class PedidoService {
 
         validaStatusPedido(pedidoRequestDTO, pedido);
 
+        StatusPedido statusAnterior = pedido.getStatus();
+
         pedido.setStatus(StatusPedido.valueOf(pedidoRequestDTO.getStatusPedido()));
 
-        if (pedido.getStatus().equals(StatusPedido.CONCLUIDO)) {
-            pedido.setDataConclusao(LocalDateTime.now());
+        switch (pedido.getStatus()) {
+            case CARRINHO:
+                pedido.setDataPedido(null);
+                pedido.setValorFrete(pedidoRequestDTO.getValorFrete());
+                pedido.setValorDesconto(pedido.getItens().stream().mapToDouble(
+                                item -> item.getProduto().getPreco() * (item.getProduto().getDesconto() / 100) * item.getQuantidade()
+                        ).sum()
+                );
+                pedido.setValorTotal(
+                        pedido.getItens().stream().mapToDouble(
+                                item -> (item.getProduto().getPreco())
+                                        + item.getPersonalizacoes().stream().mapToDouble(
+                                        personalizacao -> personalizacao.getOpcaoPersonalizacao().getAcrescimoOpcao()
+                                ).sum()
+                                        * item.getQuantidade()
+                        ).sum() + pedido.getValorFrete() - pedido.getValorDesconto()
+                );
+                pedido.getItens().stream().forEach(i -> {
+                    i.setProdutoFeito(false);
+                    i.setDesconto(i.getProduto().getDesconto());
+                    i.setValorDesconto(i.getProduto().getPreco() * (i.getProduto().getDesconto() / 100));
+                    i.setValorTotal(
+                            (i.getProduto().getPreco() + i.getPersonalizacoes().stream().mapToDouble(
+                                    personalizacao -> personalizacao.getOpcaoPersonalizacao().getAcrescimoOpcao()
+                            ).sum()) * i.getQuantidade() - i.getValorDesconto()
+                    );
+                    i.getPersonalizacoes().stream().forEach(p -> {
+                        p.setValorPersonalizacao(p.getOpcaoPersonalizacao().getAcrescimoOpcao());
+                    });
+                });
+                break;
+            case PENDENTE_PAGAMENTO:
+                pedido.setDataPedido(LocalDateTime.now());
+                break;
+            case PENDENTE:
+                break;
+            case EM_PREPARO:
+                pedido.getItens().stream().forEach(i -> i.setProdutoFeito(true));
+                pedido.getItens().stream().forEach(i -> {
+                    i.setCustoProducao((i.getProduto().getMateriaisProduto().stream().mapToDouble(
+                            materialProduto -> materialProduto.getMaterial().getPrecoUnitario() * materialProduto.getQtdMaterialNecessario()
+                    ).sum() +
+                            custosOutros.stream().mapToDouble(outroCusto -> outroCusto.getValor()).sum()
+                    ) * i.getQuantidade());
+                });
+                break;
+            case EM_ROTA:
+                pedido.setDataConclusao(LocalDateTime.now());
+                break;
+            default:
+                break;
         }
 
         repository.save(pedido);
@@ -133,31 +213,38 @@ public class PedidoService {
     public PedidoResponseDTO transformarPedido(Pedido pedido) {
         PedidoResponseDTO response = mapper.pedidoToPedidoResponseDTO(pedido);
 
-        if(custosOutros.isEmpty()){
+        if (custosOutros.isEmpty()) {
             custosOutros = custoOutrosService.findAll();
         }
 
-        if (pedido.getStatus().equals(StatusPedido.PENDENTE) ||
-                pedido.getStatus().equals(StatusPedido.PENDENTE_PAGAMENTO)) {
+        response.setItens(pedido.getItens().stream().map(itemPedidoService::transformarItemPedidoResponseDTO).toList());
+        response.setEnderecoEntrega(enderecoMapper.toEnderecoResponseDTO(pedido.getEnderecoEntrega()));
 
-            double totalCustoProducao = pedido.getItens().stream()
-                    .mapToDouble(item -> item.getProduto().getMateriaisProduto().stream()
-                            .mapToDouble(materialProduto ->
-                                    materialProduto.getMaterial().getPrecoUnitario() *
-                                            materialProduto.getQtdMaterialNecessario())
-                            .sum() * item.getQuantidade())
-                    .sum();
-
-            double totalCustoOutros = pedido.getItens().stream()
-                    .mapToDouble(item -> custosOutros.stream()
-                            .mapToDouble(outroCusto -> outroCusto.getValor())
-                            .sum() * item.getQuantidade())
-                    .sum();
-
-            response.setTotalCustoProducao(totalCustoProducao);
+        if (pedido.getUsuario() == null) {
+            UsuarioResponseDTO usuarioResponseDTO = new UsuarioResponseDTO();
+            usuarioResponseDTO.setNome(pedido.getNomeUsuario());
+            response.setCliente(usuarioResponseDTO);
+        } else {
+            response.setCliente(usuarioMapper.toUsuarioResponseDTO(pedido.getUsuario()));
         }
-
+        response.setTotalCustoProducao(
+                response.getItens().stream().mapToDouble(ItemPedidoResponseDTO::getCustoProducao).sum()
+        );
         response.setDataPedido(pedido.getDataPedido().toString());
+
+        response.setDataPedido(DateFormat.formatToCustomPattern(pedido.getDataPedido()));
+        response.setDataEntrega(DateFormat.formatToCustomPattern(pedido.getDataConclusao()));
+        response.setDataCancelamento(DateFormat.formatToCustomPattern(pedido.getDataCancelamento()));
+        response.setDataPagamento(DateFormat.formatToCustomPattern(pedido.getDataPagamento()));
+
+        response.setId(pedido.getId());
+        response.setFormaPgto(pedido.getFormaPgto());
+        response.setObservacao(pedido.getObservacao());
+        response.setValorFrete(pedido.getValorFrete());
+        response.setParcelas(1);
+        response.setValorTotal(pedido.getValorTotal());
+        response.setStatus(pedido.getStatus().name());
+        response.setResponsaveis(pedido.getResponsaveis().stream().map(responsavel -> usuarioMapper.toResponsavelResponseDTO(responsavel.getResponsavel())).toList());
 
         return response;
     }

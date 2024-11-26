@@ -25,4 +25,11 @@ public class ItemPedidoController {
 
         return ResponseEntity.ok().body("Item adicionado ao carrinho.");
     }
+
+    @PutMapping("{idItemPedido}")
+    public ResponseEntity concluirItemPedido(@PathVariable Integer idItemPedido) {
+        service.concluirItemPedido(idItemPedido);
+
+        return ResponseEntity.ok().body("Item concluído.");
+    }
 }
