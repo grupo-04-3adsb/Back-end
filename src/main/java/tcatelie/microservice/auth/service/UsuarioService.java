@@ -1,6 +1,7 @@
 package tcatelie.microservice.auth.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -151,6 +152,12 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public ResponseEntity<?> atualizarSenha(Integer id, RegisterDTO dto, Authentication auth){
+        AuthenticationDTO authDTO = new AuthenticationDTO(auth.getName(), dto.getSenha());
+        ResponseEntity<?> verificarSenha = verificarSenha(authDTO);
+        if(verificarSenha.getStatusCode().value() != 200){
+            return verificarSenha;
+        }
+
         ResponseEntity<?> response = verificarPermissoes(id, auth);
         if(response.getStatusCode().value() != 200){
             return response;
@@ -159,7 +166,6 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuarioAtual = (Usuario) response.getBody();
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
         if(!StringUtils.isEmpty(dto.getSenha())){
             String encrypdtedPassword = passwordEncoder.encode(dto.getSenha());
             usuarioAtual.setSenha(encrypdtedPassword);
@@ -167,6 +173,26 @@ public class UsuarioService implements UserDetailsService {
 
         repository.save(usuarioAtual);
         return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuarioAtual));
+    }
+
+    public ResponseEntity verificarSenha(AuthenticationDTO dto){
+        if (dto == null || StringUtils.isEmpty(dto.getEmail()) || StringUtils.isEmpty(dto.getSenha())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email e senha não podem ser vazios.");
+        }
+
+        Optional<UserDetails> optUser = repository.findByEmail(dto.getEmail());
+        if(optUser.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+        }
+
+        Usuario usuario = (Usuario) optUser.get();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        if(passwordEncoder.matches(dto.getSenha(), usuario.getSenha())) {
+            return ResponseEntity.status(HttpStatus.OK).body("Senha correta.");
+        }else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha incorreta");
+        }
     }
 
     public ResponseEntity<?> deletarUsuario(Integer id, Authentication authentication) {
