@@ -228,8 +228,12 @@ public class PedidoService {
             response.setCliente(usuarioMapper.toUsuarioResponseDTO(pedido.getUsuario()));
         }
         response.setTotalCustoProducao(
-                response.getItens().stream().mapToDouble(ItemPedidoResponseDTO::getCustoProducao).sum()
+                response.getItens()
+                        .stream()
+                        .mapToDouble(item -> item.getCustoProducao() != null ? item.getCustoProducao() : 0.0)
+                        .sum()
         );
+
         response.setDataPedido(pedido.getDataPedido().toString());
 
         response.setDataPedido(DateFormat.formatToCustomPattern(pedido.getDataPedido()));

@@ -52,8 +52,8 @@ public class PedidoController {
         return service.getPedidos(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)));
     }
 
-    @Operation(summary = "Cria um pedido",
-            description = "Cria um pedido",
+    @Operation(summary = "lista todos os pedidos",
+            description = "listao pedido",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Pedido criado"),
                     @ApiResponse(responseCode = "400", description = "Erro na requisição")
@@ -89,4 +89,5 @@ public class PedidoController {
     public ResponseEntity getPedidoCarrinho(@PathVariable Integer idCliente) {
         return ResponseEntity.ok(service.carregarCarrinhoUsuario(idCliente));
     }
+
 }

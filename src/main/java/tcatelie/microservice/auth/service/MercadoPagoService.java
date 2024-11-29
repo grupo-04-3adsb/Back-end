@@ -13,7 +13,9 @@ import com.mercadopago.exceptions.MPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.repository.PedidoRepository;
@@ -36,7 +38,12 @@ public class MercadoPagoService {
             throws MPException, MPApiException {
 
         Pedido pedido = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Pedido não encontrado"));
+
+        if(!pedido.getStatus().equals(StatusPedido.PENDENTE_PAGAMENTO)
+                && !pedido.getStatus().equals(StatusPedido.CARRINHO)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Pedido não está pendente de pagamento");
+        }
 
         PreferenceClient client = new PreferenceClient();
 

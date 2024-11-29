@@ -1,8 +1,8 @@
 INSERT INTO PEDIDO (NOME_USUARIO, TOTAL, VALOR_DESCONTO, VALOR_FRETE, NUM_PARCELA, VALOR_PARCELA, FORMA_PAGAMENTO,
                     STATUS, OBSERVACAO, DATA_PEDIDO, DATA_ENTREGA, DATA_PAGAMENTO, DATA_CANCELAMENTO, DATA_ATUALIZACAO,
                     FK_ENDERECO_ENTREGA, FK_USUARIO, DATA_CONCLUSAO)
-VALUES ('Cláudio Araújo', 0.01, 10.00, 20.00, 3, 83.33, '', 'Carrinho', 'Entrega rápida', NOW(),
-        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NULL, NOW(), 1, 2, NULL),
+VALUES ('Matheus Munari', 0.01, 10.00, 20.00, 3, 83.33, '', 'CARRINHO', 'Entrega rápida', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NULL, NOW(), 3, 2, NULL),
 
        ('Matheus Munari', 150.00, 15.00, 10.00, 5, 30.00, 'Cartão de Crédito', 'Pendente', 'Entrega rápida', NOW(),
         DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NOW(), NULL, NOW(), 3, 4, NULL),

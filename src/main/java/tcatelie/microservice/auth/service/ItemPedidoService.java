@@ -1,6 +1,8 @@
 package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,6 +36,8 @@ public class ItemPedidoService {
     private final OpcaoPersonalizacaoMapper opcaoPersonalizacaoMapper;
     private final ProdutoMapper produtoMapper;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemPedidoService.class);
+
     private List<CustoOutros> custosOutros;
 
     private void verificaCustoOutros() {
@@ -43,41 +47,94 @@ public class ItemPedidoService {
     }
 
     public void adicionarAoCarrinho(Integer idCliente, ItemPedidoRequestDTO itemPedidoRequestDTO) {
-        Optional<Pedido> pedidoOpt = pedidoRepository.findByStatusAndUsuario_IdUsuario(StatusPedido.CARRINHO, idCliente);
-        Usuario usuario = userRepository.findById(idCliente).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        Usuario usuario = userRepository.findById(idCliente)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        Pedido pedido;
-
-        if (pedidoOpt.isEmpty()) {
-            pedido = new Pedido();
-            pedido.setStatus(StatusPedido.CARRINHO);
-            pedido.setUsuario(usuario);
-            pedido.setEnderecoEntrega(usuario.getEnderecos().stream().filter(endereco -> endereco.isEnderecoPadrao()).findFirst().orElseThrow(
-                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Endereço de entrega não encontrado")));
-            pedido.setItens(new ArrayList<>());
-            pedido = pedidoRepository.save(pedido);
-        } else {
-            pedido = pedidoOpt.get();
-            if (pedido.getItens() == null) {
-                pedido.setItens(new ArrayList<>());
-            }
-        }
+        Pedido pedido = pedidoRepository.findByStatusAndUsuario_IdUsuario(StatusPedido.CARRINHO, idCliente)
+                .orElseGet(() -> criarNovoPedido(usuario));
 
         itemPedidoRequestDTO.setFkPedido(pedido.getId());
-        ItemPedido itemPedido = transformarItemPedido(itemPedidoRequestDTO);
-        itemPedido = repository.save(itemPedido);
 
-        if(pedido.getItens() == null) {
+        ItemPedido itemPedido = transformarItemPedido(itemPedidoRequestDTO);
+        List<PersonalizacaoItemPedido> personalizacoes = transformarPersonalizacaoItemPedido(itemPedidoRequestDTO, itemPedido);
+        if (personalizacoes != null) {
+            itemPedido.setPersonalizacoes(personalizacoes);
+        }
+
+        if (pedido.getItens() == null) {
             pedido.setItens(new ArrayList<>());
         }
 
-        pedido.getItens().add(itemPedido);
-        pedidoRepository.save(pedido);
+        validarUnicidadeItemPedido(itemPedido, pedido.getItens());
 
-        List<PersonalizacaoItemPedido> personalizacaoItemPedidos = transformarPersonalizacaoItemPedido(itemPedidoRequestDTO, itemPedido);
-        personalizacaoItemPedidos.forEach(personalizacaoItemPedidoRepository::save);
+        itemPedido.setPedido(pedido);
+
+        pedido.getItens().add(itemPedido);
+
+        repository.save(itemPedido);
+        pedidoRepository.save(pedido);
     }
+
+    private Pedido criarNovoPedido(Usuario usuario) {
+        Pedido pedido = new Pedido();
+        pedido.setStatus(StatusPedido.CARRINHO);
+        pedido.setUsuario(usuario);
+
+        Endereco enderecoEntrega = usuario.getEnderecos().stream()
+                .filter(Endereco::isEnderecoPadrao)
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Endereço de entrega não encontrado"));
+        pedido.setEnderecoEntrega(enderecoEntrega);
+
+        return pedidoRepository.save(pedido);
+    }
+
+    private void validarUnicidadeItemPedido(ItemPedido novoItem, List<ItemPedido> itens) {
+        for (ItemPedido item : itens) {
+            if (item.getProduto() != null && item.getProduto().getId().equals(novoItem.getProduto().getId())) {
+                List<PersonalizacaoItemPedido> personalizacoesExistentes = item.getPersonalizacoes();
+                List<PersonalizacaoItemPedido> personalizacoesNovas = novoItem.getPersonalizacoes();
+
+                if (personalizacoesExistentes != null && personalizacoesNovas != null) {
+                    boolean listasIguais = personalizacoesExistentes.size() == personalizacoesNovas.size() &&
+                            personalizacoesExistentes.stream()
+                                    .allMatch(pe -> personalizacoesNovas.stream()
+                                            .anyMatch(pn -> personalizacoesIguais(pe, pn))) &&
+                            personalizacoesNovas.stream()
+                                    .allMatch(pn -> personalizacoesExistentes.stream()
+                                            .anyMatch(pe -> personalizacoesIguais(pe, pn)));
+
+                    if (listasIguais) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT,
+                                "Item já adicionado ao carrinho com todas as personalizações iguais");
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean personalizacoesIguais(PersonalizacaoItemPedido p1, PersonalizacaoItemPedido p2) {
+        if (p1 == null || p2 == null) {
+            return false;
+        }
+        if (p1.getPersonalizacao() == null || p2.getPersonalizacao() == null) {
+            return false;
+        }
+        if (!p1.getPersonalizacao().getIdPersonalizacao()
+                .equals(p2.getPersonalizacao().getIdPersonalizacao())) {
+            return false;
+        }
+        if (p1.getOpcaoPersonalizacao() == null || p2.getOpcaoPersonalizacao() == null) {
+            return false;
+        }
+        if (!p1.getOpcaoPersonalizacao().getIdOpcaoPersonalizacao()
+                .equals(p2.getOpcaoPersonalizacao().getIdOpcaoPersonalizacao())) {
+            return false;
+        }
+        return (p1.getDescricaoPersonalizacao() != null && p1.getDescricaoPersonalizacao()
+                .equalsIgnoreCase(p2.getDescricaoPersonalizacao()));
+    }
+
 
     private ItemPedido transformarItemPedido(ItemPedidoRequestDTO itemPedidoRequestDTO) {
 
@@ -107,6 +164,7 @@ public class ItemPedidoService {
                         .opcaoPersonalizacao(opcaoPersonalizacaoRepository.findById(personalizacaoItemPedidoRequestDTO.getFkOpcaoPersonalizacao()).orElseThrow(
                                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Opção de personalização não encontrada")))
                         .itemPedido(itemPedido)
+                        .descricaoPersonalizacao(personalizacaoItemPedidoRequestDTO.getDescricaoPersonalizacao())
                         .build();
                 personalizacaoItemPedidos.add(personalizacaoItemPedido);
             });
@@ -245,6 +303,7 @@ public class ItemPedidoService {
                         .personalizacao(personalizacaoMapper.toPersonalizacaoResponseDTO(p.getPersonalizacao()))
                         .valorPersonalizacao(p.getOpcaoPersonalizacao().getAcrescimoOpcao())
                         .opcaoPersonalizacao(opcaoPersonalizacaoMapper.toOpcaoPersonalizacaoResponseDTO(p.getOpcaoPersonalizacao()))
+                        .descricaoPersonalizacao(p.getDescricaoPersonalizacao())
                         .build())
                 .toList();
     }
