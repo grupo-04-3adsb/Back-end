@@ -15,7 +15,7 @@ public class GoogleDriveConfig {
 
 	@Bean
 	public Drive googleDriveService() throws IOException {
-		InputStream credentialsStream = getClass().getResourceAsStream("/credentials/service-account.json");
+		InputStream credentialsStream = getClass().getResourceAsStream("/credentials/service_account.json");
 
 		GoogleCredential credential = GoogleCredential.fromStream(credentialsStream)
 				.createScoped(Collections.singleton(DriveScopes.DRIVE));

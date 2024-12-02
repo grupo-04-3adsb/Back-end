@@ -73,7 +73,7 @@ public class SubcategoriaService {
     }
 
     public Subcategoria findById(Integer id) throws IllegalArgumentException {
-        return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Sub-Categoria não encontrada com o id: " + id));
+        return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("SubCategoria não encontrada com o id: " + id));
     }
 
     public List<SubcategoriaResponseDTO> ListarSubscategorias() {
@@ -100,9 +100,7 @@ public class SubcategoriaService {
     }
 
     public void deletar(Integer id) {
-        if (repository.findById(id).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Subcategoria não encontrada");
-        }
+        Subcategoria subcategoria = findById(id);
 
         Integer qtdProdutos = produtoRepository.countBySubcategoria_IdSubcategoria(id);
 
@@ -110,7 +108,9 @@ public class SubcategoriaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Não é possível excluir a subcategoria %s pois ela possui %d produtos vinculados a ela!".formatted(repository.findById(id).get().getNomeSubcategoria(), qtdProdutos));
         }
 
-        repository.deleteById(id);
+        subcategoria.setSubcategoriaAtiva(false);
+
+        repository.save(subcategoria);
     }
 
     public Page<SubcategoriaResponseDTO> filtrar(SubcategoriaFiltroDTO filtroDTO, Pageable pageable) {

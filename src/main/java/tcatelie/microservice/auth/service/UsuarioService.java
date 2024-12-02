@@ -1,5 +1,6 @@
 package tcatelie.microservice.auth.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +22,10 @@ import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.enums.Status;
 import tcatelie.microservice.auth.enums.UserRole;
 import tcatelie.microservice.auth.mapper.UsuarioMapper;
+import tcatelie.microservice.auth.model.Pedido;
+import tcatelie.microservice.auth.model.ResponsavelPedido;
 import tcatelie.microservice.auth.model.Usuario;
+import tcatelie.microservice.auth.repository.PedidoRepository;
 import tcatelie.microservice.auth.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -29,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioService implements UserDetailsService {
 
     private final UserRepository repository;
@@ -36,13 +41,7 @@ public class UsuarioService implements UserDetailsService {
     private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
-    public UsuarioService(UserRepository repository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.repository = repository;
-        this.usuarioMapper = usuarioMapper;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-    }
+    private final PedidoRepository pedidoRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -225,4 +224,55 @@ public class UsuarioService implements UserDetailsService {
                 .toList();
     }
 
+    public List<ResponsavelResponseDTO> pesquisarAdmins(String nome) {
+        return repository
+                .findByRoleAndNomeContainingIgnoreCase(UserRole.ADMIN, nome)
+                .stream().map(usuarioMapper::toResponsavelResponseDTO)
+                .toList();
+    }
+
+    public ResponseEntity adicionarResponsavelPedido(Integer idPedido, Integer idUsuario) {
+        Usuario usuario = repository.findById(idUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
+
+        if (usuario.getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas administradores podem ser responsáveis");
+        }
+
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+
+        if (pedido.getResponsaveis()
+                .stream().anyMatch(responsavel -> responsavel
+                        .getResponsavel().getIdUsuario().equals(idUsuario))) {
+
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Responsável já é responsável deste pedido");
+        }
+
+        pedido.getResponsaveis().add(new ResponsavelPedido(
+                usuario, pedido, LocalDateTime.now(), LocalDateTime.now()
+        ));
+
+        pedidoRepository.save(pedido);
+
+        return ResponseEntity.ok().body("Responsável adicionado com sucesso");
+    }
+
+    public ResponseEntity removerResponsavelPedido(Integer idPedido, Integer idUsuario) {
+        Usuario usuario = repository.findById(idUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
+
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+
+        ResponsavelPedido responsavelPedido = pedido.getResponsaveis()
+                .stream().filter(responsavel -> responsavel
+                        .getResponsavel().getIdUsuario().equals(idUsuario)).findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
+
+        pedido.getResponsaveis().remove(responsavelPedido);
+        pedidoRepository.save(pedido);
+
+        return ResponseEntity.noContent().build();
+    }
 }

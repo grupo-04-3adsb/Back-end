@@ -43,8 +43,12 @@ public class Subcategoria {
     @Column(name = "data_hora_atualizacao")
     private LocalDateTime dthrAtualizacao;
 
+    @Column(name = "subcategoria_ativa")
+    private Boolean subcategoriaAtiva;
+
     @PrePersist
     protected void onCreate() {
+        this.subcategoriaAtiva = true;
         this.dthrCadastro = LocalDateTime.now();
         this.dthrAtualizacao = LocalDateTime.now();
     }

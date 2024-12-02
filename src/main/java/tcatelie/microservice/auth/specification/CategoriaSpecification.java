@@ -61,6 +61,8 @@ public class CategoriaSpecification {
                 ));
             }
 
+            predicates.add(criteriaBuilder.equal(root.get("categoriaAtiva"), true));
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

@@ -19,4 +19,6 @@ public interface UserRepository extends JpaRepository<Usuario, Integer>{
     boolean existsByCpf(String cpf);
 
     List<Usuario> findByRole(UserRole role);
+
+    List<Usuario> findByRoleAndNomeContainingIgnoreCase(UserRole role, String nome);
 }
