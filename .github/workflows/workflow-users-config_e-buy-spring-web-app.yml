@@ -22,6 +22,19 @@ jobs:
           java-version: '17'
           distribution: 'microsoft'
 
+      - name: Setup das variáveis de ambiente
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MERCADO_PAGO_A_TOKEN: ${{ secrets.MERCADO_PAGO_A_TOKEN }}
+          MELHOR_ENVIO_URL: ${{ secrets.MELHOR_ENVIO_URL }}
+          MELHOR_ENVIO_TOKEN: ${{ secrets.MELHOR_ENVIO_TOKEN }}
+        run: |
+          echo "Usando as variáveis de ambiente no step"
+          echo $DB_URL
+
       - name: Build with Maven
         run: mvn clean install
 
