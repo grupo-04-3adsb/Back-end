@@ -56,6 +56,8 @@ public class ImageUploadController {
             folderId = googleDriveService.organizeProductImages(nomeProduto);
         } else if (tipo.equals("opcaoPersonalizacao")) {
             folderId = googleDriveService.organizeOptionImages(nomeProduto);
+        } else if (tipo.equals("personalizacaoItem")) {
+            folderId = googleDriveService.organizePersonalizacaoItem(nomeProduto);
         }
 
         if (folderId != null) {

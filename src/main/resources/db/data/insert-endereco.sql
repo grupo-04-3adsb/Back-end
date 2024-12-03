@@ -22,4 +22,6 @@ VALUES ('Rua Londres', '68', 'Casa', 'Bairro Jardim das Nações', 'Diadema', 'S
        ('Rua E', '125', 'Casa 2', 'Bairro Oeste', 'São Paulo', 'SP', '05008-000', 'Brasil', 'Deixar na garagem', TRUE,
         'RUA', 9),
        ('Rua E', '126', 'Apto 505', 'Bairro Oeste', 'São Paulo', 'SP', '05009-000', 'Brasil',
-        'Deixar na caixa de correio', TRUE, 'RUA', 1);
+        'Deixar na caixa de correio', TRUE, 'RUA', 1),
+        ('Rua F', '127', 'Casa 3', 'Bairro Centro', 'São Paulo', 'SP', '06010-000', 'Brasil', 'Deixar na garagem', FALSE,
+         'RUA', 2);

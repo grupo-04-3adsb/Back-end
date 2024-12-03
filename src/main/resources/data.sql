@@ -1,16 +1,32 @@
-RUNSCRIPT FROM 'classpath:db/data/insert-categoria.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-subcategoria.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-material.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-produto.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-imagens-produto.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-personalizacoes.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-opcao-personalizacao.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-material-produto.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-usuarios.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-avaliacao.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-endereco.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-pedido.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-item-pedido.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-personalizacao-item-pedido.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-responsavel-pedido.sql';
-RUNSCRIPT FROM 'classpath:db/data/insert-custos-outros.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-categoria.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-subcategoria.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-material.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-produto.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-imagens-produto.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-personalizacoes.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-opcao-personalizacao.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-material-produto.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-usuarios.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-avaliacao.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-endereco.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-pedido.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-item-pedido.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-personalizacao-item-pedido.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-responsavel-pedido.sql';
+RUNSCRIPT
+FROM 'classpath:db/data/insert-custos-outros.sql';

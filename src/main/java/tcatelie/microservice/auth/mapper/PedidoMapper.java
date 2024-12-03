@@ -39,6 +39,7 @@ public interface PedidoMapper {
     @Mapping(source = "usuario", target = "cliente")
     @Mapping(target = "cliente.senha", ignore = true)
     @Mapping(target = "enderecoEntrega", source = "enderecoEntrega")
+    @Mapping(source = "codigoRastreio", target = "codigoRastreio")
     @Mapping(source = "responsaveis", target = "responsaveis", qualifiedByName = "responsavelToResponsavelResponseDTO")
     PedidoResponseDTO pedidoToPedidoResponseDTO(Pedido pedido);
 

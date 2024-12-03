@@ -46,7 +46,7 @@ public class ItemPedidoService {
         }
     }
 
-    public void adicionarAoCarrinho(Integer idCliente, ItemPedidoRequestDTO itemPedidoRequestDTO) {
+    public ItemPedidoResponseDTO adicionarAoCarrinho(Integer idCliente, ItemPedidoRequestDTO itemPedidoRequestDTO) {
         Usuario usuario = userRepository.findById(idCliente)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
@@ -73,6 +73,8 @@ public class ItemPedidoService {
 
         repository.save(itemPedido);
         pedidoRepository.save(pedido);
+
+        return transformarItemPedidoResponseDTO(itemPedido);
     }
 
     private Pedido criarNovoPedido(Usuario usuario) {
@@ -306,5 +308,18 @@ public class ItemPedidoService {
                         .descricaoPersonalizacao(p.getDescricaoPersonalizacao())
                         .build())
                 .toList();
+    }
+
+    public void removerItemPedido(Integer idItemPedido) {
+        ItemPedido itemPedido = repository.findById(idItemPedido).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item pedido não encontrado"));
+        repository.deleteById(itemPedido.getId());
+    }
+
+    public void alterarQuantidade(Integer idItemPedido, Integer quantidade) {
+        ItemPedido itemPedido = repository.findById(idItemPedido).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item pedido não encontrado"));
+        itemPedido.setQuantidade(quantidade);
+        repository.save(itemPedido);
     }
 }

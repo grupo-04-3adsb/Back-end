@@ -33,6 +33,9 @@ public class PedidoRequestDTO {
     @Schema(description = "Valor do frete do pedido", example = "100.00")
     private Double valorFrete;
 
+    @Schema(description = "Código de rastreio do pedido", example = "123456")
+    private String codigoRastreio;
+
     @Schema(name = "Itens no pedido")
     private List<ItemPedidoRequestDTO> itens;
 

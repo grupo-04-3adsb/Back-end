@@ -26,6 +26,7 @@ public class PedidoResponseDTO {
     private String dataEntrega;
     private String dataPagamento;
     private String dataCancelamento;
+    private String codigoRastreio;
     private UsuarioResponseDTO cliente;
     private EnderecoResponseDTO enderecoEntrega;
     private List<ItemPedidoResponseDTO> itens;

@@ -1,6 +1,7 @@
 package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -100,14 +101,12 @@ public class PedidoService {
         Pedido pedido = getPedidoById(idPedido);
 
         validaStatusPedido(pedidoRequestDTO, pedido);
-
         StatusPedido statusAnterior = pedido.getStatus();
 
         pedido.setStatus(StatusPedido.valueOf(pedidoRequestDTO.getStatusPedido()));
 
         switch (pedido.getStatus()) {
             case CARRINHO:
-                pedido.setDataPedido(null);
                 pedido.setValorFrete(pedidoRequestDTO.getValorFrete());
                 pedido.setValorDesconto(pedido.getItens().stream().mapToDouble(
                                 item -> item.getProduto().getPreco() * (item.getProduto().getDesconto() / 100) * item.getQuantidade()
@@ -157,6 +156,8 @@ public class PedidoService {
             default:
                 break;
         }
+
+        pedido.setCodigoRastreio(pedidoRequestDTO.getCodigoRastreio());
 
         repository.save(pedido);
         return ResponseEntity.noContent().build();
@@ -234,7 +235,7 @@ public class PedidoService {
                         .sum()
         );
 
-        response.setDataPedido(pedido.getDataPedido().toString());
+        response.setDataPedido(Optional.ofNullable(pedido.getDataPedido()).orElse(LocalDateTime.now()).toString());
 
         response.setDataPedido(DateFormat.formatToCustomPattern(pedido.getDataPedido()));
         response.setDataEntrega(DateFormat.formatToCustomPattern(pedido.getDataConclusao()));

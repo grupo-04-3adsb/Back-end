@@ -12,7 +12,7 @@ import tcatelie.microservice.auth.model.Avaliacao;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UsuarioMapper.class, ProdutoMapper.class})
 @Component
 public interface AvaliacaoMapper {
 
@@ -32,18 +32,11 @@ public interface AvaliacaoMapper {
     @Mapping(source = "descricao", target = "descricao")
     @Mapping(source = "notaAvaliacao", target = "nota")
     @Mapping(source = "avaliacaoAprovada", target = "aprovada")
-    @Mapping(source = "dataHoraAvaliacao", target = "dataAvaliacao", qualifiedByName = "localDateTimeToString")
+    @Mapping(source = "dataHoraAvaliacao", target = "dataAvaliacao")
     @Mapping(source = "produto.nome", target = "nomeProduto")
     @Mapping(source = "usuario.nome", target = "nomeUsuario")
     @Mapping(source = "idAvaliacao", target = "id")
+    @Mapping(source = "usuario", target = "usuario")
     AvaliacaoResponseDTO toResponseDTO(Avaliacao avaliacao);
 
-    @Named("localDateTimeToString")
-    default String localDateTimeToString(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return null;
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm | dd/MM/yyyy");
-        return dateTime.format(formatter);
-    }
 }
