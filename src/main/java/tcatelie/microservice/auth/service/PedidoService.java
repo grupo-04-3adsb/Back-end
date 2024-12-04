@@ -124,9 +124,12 @@ public class PedidoService {
                     i.setDesconto(i.getProduto().getDesconto());
                     i.setValorDesconto(i.getProduto().getPreco() * (i.getProduto().getDesconto() / 100));
                     i.setValorTotal(
-                            (i.getProduto().getPreco() + i.getPersonalizacoes().stream().mapToDouble(
-                                    personalizacao -> personalizacao.getOpcaoPersonalizacao().getAcrescimoOpcao()
-                            ).sum()) * i.getQuantidade() - i.getValorDesconto()
+                            itemPedidoService.calcularValorTotalCarrinho(i)
+                    );
+                    i.setValor(
+                            (i.getProduto().getPreco() - i.getProduto().getPreco() * (i.getProduto().getDesconto() / 100) +
+                            i.getPersonalizacoes().stream().mapToDouble(p -> p.getOpcaoPersonalizacao().getAcrescimoOpcao()).sum()
+                            )
                     );
                     i.getPersonalizacoes().stream().forEach(p -> {
                         p.setValorPersonalizacao(p.getOpcaoPersonalizacao().getAcrescimoOpcao());

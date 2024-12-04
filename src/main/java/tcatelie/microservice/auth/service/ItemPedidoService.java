@@ -270,13 +270,13 @@ public class ItemPedidoService {
                 .custoProducao(item.getCustoProducao());
     }
 
-    private double calcularValorTotalCarrinho(ItemPedido item) {
+    public double calcularValorTotalCarrinho(ItemPedido item) {
         double desconto = calcularValorDesconto(item);
         double acrescimos = item.getPersonalizacoes()
                 .stream()
                 .mapToDouble(p -> p.getOpcaoPersonalizacao().getAcrescimoOpcao())
                 .sum();
-        return (item.getProduto().getPreco() * item.getQuantidade() - desconto) + acrescimos;
+        return ((item.getProduto().getPreco() + acrescimos) * item.getQuantidade() - desconto);
     }
 
     private double calcularValorDesconto(ItemPedido item) {

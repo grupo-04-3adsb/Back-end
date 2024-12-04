@@ -3,6 +3,8 @@ package tcatelie.microservice.auth.observer;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tcatelie.microservice.auth.model.Produto;
 import tcatelie.microservice.auth.service.EmailService;
 
@@ -15,6 +17,7 @@ public class EmailNotificacao implements Observer {
 
     private String emailAdmin = "";
     private EmailService emailService;
+    private final Logger LOGGER = LoggerFactory.getLogger(EmailNotificacao.class);
 
     @Override
     public void update(String message, Produto produto) {
@@ -25,9 +28,9 @@ public class EmailNotificacao implements Observer {
 
         try {
             emailService.sendEmail(emailAdmin, "Novo Produto Cadastrado no Sistema", variables);
-            System.out.println("E-mail enviado com sucesso sobre o produto: " + produto.getNome());
+            LOGGER.info("E-mail enviado com sucesso sobre o produto: " + produto.getNome());
         } catch (MessagingException e) {
-            System.out.println("Erro ao enviar e-mail: " + e.getMessage());
+            LOGGER.warn("Erro ao enviar e-mail sobre o produto: " + produto.getNome());
         }
     }
 
