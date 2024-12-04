@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
+import tcatelie.microservice.auth.dto.request.EnderecoRequestDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.dto.response.CustoOutrosResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
@@ -17,6 +18,7 @@ import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.mapper.EnderecoMapper;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
 import tcatelie.microservice.auth.mapper.UsuarioMapper;
+import tcatelie.microservice.auth.model.Endereco;
 import tcatelie.microservice.auth.model.ItemPedido;
 import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.model.Usuario;
@@ -134,6 +136,22 @@ public class PedidoService {
                         p.setValorPersonalizacao(p.getOpcaoPersonalizacao().getAcrescimoOpcao());
                     });
                 });
+                if(pedidoRequestDTO.getEnderecoEntrega() == null){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço é obrigatório para o pedido");
+                }
+                Endereco endereco = new Endereco();
+                EnderecoRequestDTO requestEndereco = pedidoRequestDTO.getEnderecoEntrega();
+                endereco.setCep(requestEndereco.getCep());
+                endereco.setCidade(requestEndereco.getCidade());
+                endereco.setBairro(requestEndereco.getBairro());
+                endereco.setComplemento(requestEndereco.getComplemento());
+                endereco.setInstrucaoEntrega(requestEndereco.getInstrucaoEntrega());
+                endereco.setRua(requestEndereco.getRua());
+                endereco.setNumero(requestEndereco.getNumero());
+                endereco.setLogradouro(requestEndereco.getLogradouro());
+                endereco.setEstado(requestEndereco.getEstado());
+                endereco.setPais(requestEndereco.getPais());
+                pedido.setEnderecoEntrega(endereco);
                 break;
             case PENDENTE_PAGAMENTO:
                 pedido.setDataPedido(LocalDateTime.now());
