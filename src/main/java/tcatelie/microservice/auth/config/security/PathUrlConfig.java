@@ -38,11 +38,13 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/item-pedidos/{idItemPedido}"),
             new AntPathRequestMatcher("/item-pedidos"),
             new AntPathRequestMatcher("/produtos/pesquisar/nome-sku"),
-            new AntPathRequestMatcher("/calcular-fretes/**"),
+            new AntPathRequestMatcher("/calcular-fretes/pedido/{id}"),
+            new AntPathRequestMatcher("/calcular-fretes/{cep}", "POST"),
             new AntPathRequestMatcher("/item-pedidos/{idItemPedido}/quantidade"),
             new AntPathRequestMatcher("/produtos/sugerir-produtos"),
             new AntPathRequestMatcher("/pedidos/{idProduto}", "GET"),
             new AntPathRequestMatcher("/pedidos/carrinho/{idUsuario}"),
+            new AntPathRequestMatcher("/pedidos/{idPedido}", "PUT"),
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
@@ -65,7 +67,6 @@ public class PathUrlConfig {
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {
-            new AntPathRequestMatcher("/pedidos/**"),
             new AntPathRequestMatcher("/item-pedidos/**")
     };
 }
