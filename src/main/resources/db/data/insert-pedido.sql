@@ -30,4 +30,7 @@ VALUES ('Matheus Munari', 0.01, 10.00, 20.00, 3, 83.33, '', 'CARRINHO', 'Entrega
         DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NULL, NOW(), NOW(), 7, 10, DATEADD(DAY, FLOOR(RAND() * 365), NOW())),
 
        ('Matheus Kikuti', 250.00, 25.00, 12.00, 3, 83.33, 'Cartão de Débito', 'Concluído', 'Entrega normal', NOW(),
+        DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NOW(), NULL, NOW(), 9, 6, DATEADD(DAY, FLOOR(RAND() * 365), NOW())),
+
+       ('Matheus Kikuti', 250.00, 25.00, 12.00, 3, 83.33, 'Cartão de Débito', 'CARRINHO', 'Entrega normal', NOW(),
         DATEADD(DAY, FLOOR(RAND() * 365), NOW()), NOW(), NULL, NOW(), 9, 6, DATEADD(DAY, FLOOR(RAND() * 365), NOW()));

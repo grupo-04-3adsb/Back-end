@@ -90,4 +90,8 @@ public class PedidoController {
         return ResponseEntity.ok(service.carregarCarrinhoUsuario(idCliente));
     }
 
+    @GetMapping("/{idCliente}/ultimo")
+    public ResponseEntity buscarUltimoPedidoCliente(@PathVariable Integer idCliente){
+        return ResponseEntity.ok().body(service.listarUltimoPedido(idCliente));
+    }
 }

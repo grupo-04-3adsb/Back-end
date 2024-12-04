@@ -19,7 +19,6 @@ import tcatelie.microservice.auth.mapper.PedidoMapper;
 import tcatelie.microservice.auth.mapper.UsuarioMapper;
 import tcatelie.microservice.auth.model.ItemPedido;
 import tcatelie.microservice.auth.model.Pedido;
-import tcatelie.microservice.auth.model.PersonalizacaoItemPedido;
 import tcatelie.microservice.auth.model.Usuario;
 import tcatelie.microservice.auth.repository.ItemPedidoRepository;
 import tcatelie.microservice.auth.repository.PedidoRepository;
@@ -67,6 +66,7 @@ public class PedidoService {
             Pedido novoPedido = new Pedido();
             novoPedido.setStatus(StatusPedido.CARRINHO);
             novoPedido.setUsuario(usuario);
+            novoPedido.setResponsaveis(new ArrayList<>());
 
             return transformarPedido(repository.save(novoPedido));
         }
@@ -78,7 +78,6 @@ public class PedidoService {
         Page<Pedido> pedidos = repository.findByStatusIn(List.of(
                         StatusPedido.PENDENTE_PAGAMENTO,
                         StatusPedido.PENDENTE,
-                        StatusPedido.CONCLUIDO,
                         StatusPedido.CONCLUIDO,
                         StatusPedido.EM_PREPARO,
                         StatusPedido.EM_ROTA),
@@ -128,7 +127,7 @@ public class PedidoService {
                     );
                     i.setValor(
                             (i.getProduto().getPreco() - i.getProduto().getPreco() * (i.getProduto().getDesconto() / 100) +
-                            i.getPersonalizacoes().stream().mapToDouble(p -> p.getOpcaoPersonalizacao().getAcrescimoOpcao()).sum()
+                                    i.getPersonalizacoes().stream().mapToDouble(p -> p.getOpcaoPersonalizacao().getAcrescimoOpcao()).sum()
                             )
                     );
                     i.getPersonalizacoes().stream().forEach(p -> {
@@ -219,7 +218,12 @@ public class PedidoService {
             custosOutros = custoOutrosService.findAll();
         }
 
-        response.setItens(pedido.getItens().stream().map(itemPedidoService::transformarItemPedidoResponseDTO).toList());
+        if (pedido.getItens() == null || pedido.getItens().isEmpty()) {
+            response.setItens(new ArrayList<>());
+        } else {
+            response.setItens(pedido.getItens().stream().map(itemPedidoService::transformarItemPedidoResponseDTO).toList());
+        }
+
         response.setEnderecoEntrega(enderecoMapper.toEnderecoResponseDTO(pedido.getEnderecoEntrega()));
 
         if (pedido.getUsuario() == null) {
@@ -274,4 +278,11 @@ public class PedidoService {
         }).sum() + pedido.getValorFrete();
     }
 
+    public PedidoResponseDTO listarUltimoPedido(Integer idUsuario) {
+        Pedido pedido = repository.findLastPedidoByUsuarioId(idUsuario).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado")
+        );
+
+        return transformarPedido(pedido);
+    }
 }
