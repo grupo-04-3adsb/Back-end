@@ -73,7 +73,7 @@ public class Pedido {
     private String paymentId;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @JoinColumn(name = "fk_endereco_entrega", nullable = false)
+    @JoinColumn(name = "fk_endereco_entrega")
     private Endereco enderecoEntrega;
 
     @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
