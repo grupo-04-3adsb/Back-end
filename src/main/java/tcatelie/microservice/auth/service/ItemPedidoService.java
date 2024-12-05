@@ -289,7 +289,7 @@ public class ItemPedidoService {
         double custoMateriais = item.getProduto().getMateriaisProduto()
                 .stream()
                 .mapToDouble(m -> m.getMaterial().getPrecoUnitario() * m.getQtdMaterialNecessario())
-                .sum();
+                .sum() * item.getQuantidade();
         double custoOutros = item.getQuantidade() * custosOutros.stream().mapToDouble(CustoOutros::getValor).sum();
         return custoMateriais + custoOutros;
     }

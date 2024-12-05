@@ -36,6 +36,9 @@ public class PedidoRequestDTO {
     @Schema(description = "Código de rastreio do pedido", example = "123456")
     private String codigoRastreio;
 
+    @Schema(description = "Tempo de entrega do pedido", example = "10")
+    private Integer tempoEntrega;
+
     @Schema(name = "Itens no pedido")
     private List<ItemPedidoRequestDTO> itens;
 

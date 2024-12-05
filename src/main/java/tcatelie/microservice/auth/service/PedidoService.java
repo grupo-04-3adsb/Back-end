@@ -136,7 +136,7 @@ public class PedidoService {
                         p.setValorPersonalizacao(p.getOpcaoPersonalizacao().getAcrescimoOpcao());
                     });
                 });
-                if(pedidoRequestDTO.getEnderecoEntrega() == null){
+                if (pedidoRequestDTO.getEnderecoEntrega() == null) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço é obrigatório para o pedido");
                 }
                 Endereco endereco = new Endereco();
@@ -152,6 +152,7 @@ public class PedidoService {
                 endereco.setEstado(requestEndereco.getEstado());
                 endereco.setPais(requestEndereco.getPais());
                 pedido.setEnderecoEntrega(endereco);
+                pedido.setDataEntrega(LocalDateTime.now().plusDays(pedidoRequestDTO.getTempoEntrega()));
                 break;
             case PENDENTE_PAGAMENTO:
                 pedido.setDataPedido(LocalDateTime.now());
@@ -261,7 +262,7 @@ public class PedidoService {
         response.setDataPedido(Optional.ofNullable(pedido.getDataPedido()).orElse(LocalDateTime.now()).toString());
 
         response.setDataPedido(DateFormat.formatToCustomPattern(pedido.getDataPedido()));
-        response.setDataEntrega(DateFormat.formatToCustomPattern(pedido.getDataConclusao()));
+        response.setDataEntrega(DateFormat.format(pedido.getDataEntrega(), "dd/MM/yyyy"));
         response.setDataCancelamento(DateFormat.formatToCustomPattern(pedido.getDataCancelamento()));
         response.setDataPagamento(DateFormat.formatToCustomPattern(pedido.getDataPagamento()));
 
@@ -303,4 +304,5 @@ public class PedidoService {
 
         return transformarPedido(pedido);
     }
+
 }
