@@ -110,17 +110,17 @@ public class CalculoFreteApiService {
                 .collect(Collectors.toMap(Produto::getId, produto -> produto));
 
         double pesoTotal = 0.0;
-        int alturaTotal = 0;
-        int larguraMax = 0;
-        int comprimentoMax = 0;
+        double alturaTotal = 0;
+        double larguraMax = 0;
+        double comprimentoMax = 0;
 
         for (ItemPedidoRequestDTO item : carrinho.getItens()) {
             Produto produto = produtosMap.get(item.getFkProduto());
 
             String[] dimensoes = produto.getDimensao().split("x");
-            int altura = Integer.parseInt(dimensoes[0]);
-            int largura = Integer.parseInt(dimensoes[1]);
-            int comprimento = Integer.parseInt(dimensoes[2]);
+            double altura = Double.parseDouble(dimensoes[0]);
+            double largura = Double.parseDouble(dimensoes[1]);
+            double comprimento = Double.parseDouble(dimensoes[2]);
 
             alturaTotal += altura * item.getQuantidade();
             larguraMax = Math.max(larguraMax, largura);
@@ -140,9 +140,9 @@ public class CalculoFreteApiService {
         melhorEnvioPedidoRequestDTO.setProducts(List.of(
                 new ProductRequestDTO(
                         "1",
-                        larguraMax,
-                        alturaTotal,
-                        comprimentoMax,
+                        (int) Math.ceil(larguraMax),
+                        (int) Math.ceil(alturaTotal),
+                        (int) Math.ceil(comprimentoMax),
                         pesoFinal,
                         0.0,
                         1
