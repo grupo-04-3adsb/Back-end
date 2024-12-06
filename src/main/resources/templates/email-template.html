@@ -105,10 +105,10 @@
         </div>
 
         <div class="product-image">
-            <img th:src="${produto.urlImagemPrincipal}" alt="Imagem Principal do Produto"/>
+            <img th:src="@{${produto.urlImagemPrincipal}}" alt="Imagem Principal do Produto"/>
         </div>
 
-        <a class="btn" th:href="@{'http://localhost:5173/dashboard/produtos/gerenciar/' + ${produto.id}}">Ver Produto</a>
+        <a class="btn" th:href="@{'https://polite-rock-0260e7710.4.azurestaticapps.net' + ${produto.id}}">Ver Produto</a>
     </div>
     <div class="footer">
         <p>Este é um e-mail automático, por favor, não responda.</p>
