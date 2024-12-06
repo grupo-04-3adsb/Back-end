@@ -50,8 +50,12 @@ public class ItemPedidoService {
         Usuario usuario = userRepository.findById(idCliente)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
+        LOGGER.info("Adicionando item ao carrinho do usuário {}", idCliente);
+
         Pedido pedido = pedidoRepository.findByStatusAndUsuario_IdUsuario(StatusPedido.CARRINHO, idCliente)
                 .orElseGet(() -> criarNovoPedido(usuario));
+
+        LOGGER.info("Pedido encontrado: {}", pedido.getId());
 
         itemPedidoRequestDTO.setFkPedido(pedido.getId());
 
@@ -65,15 +69,18 @@ public class ItemPedidoService {
             pedido.setItens(new ArrayList<>());
         }
 
+        LOGGER.info("Validando unicidade do item no carrinho");
         validarUnicidadeItemPedido(itemPedido, pedido.getItens());
 
         itemPedido.setPedido(pedido);
 
         pedido.getItens().add(itemPedido);
 
+        LOGGER.info("Salvando item no carrinho");
         repository.save(itemPedido);
         pedidoRepository.save(pedido);
 
+        LOGGER.info("Item adicionado ao carrinho com sucesso");
         return transformarItemPedidoResponseDTO(itemPedido);
     }
 
@@ -85,7 +92,9 @@ public class ItemPedidoService {
         Endereco enderecoEntrega = usuario.getEnderecos().stream()
                 .filter(Endereco::isEnderecoPadrao)
                 .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Endereço de entrega não encontrado"));
+                .orElse(new Endereco());
+
+
         pedido.setEnderecoEntrega(enderecoEntrega);
 
         return pedidoRepository.save(pedido);
