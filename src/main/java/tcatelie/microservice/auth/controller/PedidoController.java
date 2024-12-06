@@ -13,6 +13,7 @@ import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
+import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.service.PedidoService;
 
 import java.util.List;
@@ -93,5 +94,10 @@ public class PedidoController {
     @GetMapping("/{idCliente}/ultimo")
     public ResponseEntity buscarUltimoPedidoCliente(@PathVariable Integer idCliente){
         return ResponseEntity.ok().body(service.listarUltimoPedido(idCliente));
+    }
+
+    @PutMapping("/{id}/codigo-rastreio")
+    public ResponseEntity atualizarCodigoRastreio(@PathVariable Integer id, @RequestBody PedidoRequestDTO request) {
+        return ResponseEntity.ok(service.atualizarCodigoRastreio(id, request.getCodigoRastreio()));
     }
 }

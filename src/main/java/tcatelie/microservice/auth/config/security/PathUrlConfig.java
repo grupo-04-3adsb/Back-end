@@ -65,6 +65,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/custos-outros"),
             new AntPathRequestMatcher("/usuarios/pesquisar-admins"),
             new AntPathRequestMatcher("/usuarios/responsavel"),
+            new AntPathRequestMatcher("/pedidos/{id}/codigo-rastreio")
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {
