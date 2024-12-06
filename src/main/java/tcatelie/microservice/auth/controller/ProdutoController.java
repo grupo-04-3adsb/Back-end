@@ -31,6 +31,8 @@ import tcatelie.microservice.auth.service.ProdutoService;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import java.util.Stack;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("produtos")
@@ -38,8 +40,91 @@ import java.io.IOException;
 public class ProdutoController {
 
     private final ProdutoService service;
-
     private final Logger logger = LoggerFactory.getLogger(ProdutoController.class);
+    private final Stack<ProdutoRequestDTO> pilhaProdutos = new Stack<>();
+
+    @Operation(
+            summary = "Adicionar produto à pilha",
+            description = "Adiciona um produto à pilha de produtos.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto adicionado à pilha com sucesso."),
+                    @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @PostMapping("/pilha/push")
+    public ResponseEntity<String> pushProdutoNaPilha(@RequestBody @Valid ProdutoRequestDTO produto) {
+        try {
+            pilhaProdutos.push(produto);
+            return ResponseEntity.ok("Produto adicionado à pilha com sucesso: " + produto);
+        } catch (Exception e) {
+            logger.error("Erro ao adicionar produto à pilha: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao adicionar produto à pilha.");
+        }
+    }
+
+    @Operation(
+            summary = "Remover produto do topo da pilha",
+            description = "Remove o produto no topo da pilha de produtos.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto removido da pilha com sucesso."),
+                    @ApiResponse(responseCode = "400", description = "A pilha está vazia."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @DeleteMapping("/pilha/pop")
+    public ResponseEntity<String> popProdutoDaPilha() {
+        if (pilhaProdutos.isEmpty()) {
+            return ResponseEntity.badRequest().body("A pilha está vazia. Não é possível remover um produto.");
+        }
+        ProdutoRequestDTO produtoRemovido = pilhaProdutos.pop();
+        return ResponseEntity.ok("Produto removido da pilha: " + produtoRemovido);
+    }
+
+    @Operation(
+            summary = "Visualizar o topo da pilha",
+            description = "Exibe o produto no topo da pilha sem removê-lo.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto no topo da pilha exibido com sucesso."),
+                    @ApiResponse(responseCode = "400", description = "A pilha está vazia."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/pilha/peek")
+    public ResponseEntity<String> peekProdutoNaPilha() {
+        if (pilhaProdutos.isEmpty()) {
+            return ResponseEntity.badRequest().body("A pilha está vazia.");
+        }
+        ProdutoRequestDTO produtoTopo = pilhaProdutos.peek();
+        return ResponseEntity.ok("Produto no topo da pilha: " + produtoTopo);
+    }
+
+    @Operation(
+            summary = "Obter tamanho da pilha",
+            description = "Retorna o número de produtos atualmente na pilha.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Tamanho da pilha retornado com sucesso."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/pilha/size")
+    public ResponseEntity<String> obterTamanhoPilha() {
+        return ResponseEntity.ok("Tamanho atual da pilha: " + pilhaProdutos.size());
+    }
+
+    @Operation(
+            summary = "Esvaziar a pilha",
+            description = "Remove todos os produtos da pilha.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pilha esvaziada com sucesso."),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @DeleteMapping("/pilha/clear")
+    public ResponseEntity<String> limparPilha() {
+        pilhaProdutos.clear();
+        return ResponseEntity.ok("Pilha esvaziada com sucesso.");
+    }
 
     @Operation(
             summary = "Cadastro de produtos",
