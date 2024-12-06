@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.request.ItemPedidoRequestDTO;
@@ -16,14 +18,20 @@ import tcatelie.microservice.auth.service.ItemPedidoService;
 public class ItemPedidoController {
 
     private final ItemPedidoService service;
+    private final Logger LOGGER = LoggerFactory.getLogger(ItemPedidoController.class);
 
     @PostMapping("{idUsuario}")
     public ResponseEntity adicionarAoCarrinho(@PathVariable Integer idUsuario,
                                               @RequestBody @Valid ItemPedidoRequestDTO itemPedidoRequestDTO) {
-
-        return ResponseEntity.ok().body(service.adicionarAoCarrinho(
-                idUsuario, itemPedidoRequestDTO
-        ));
+        try{
+            LOGGER.info("Adicionando item ao carrinho do usuário {}", idUsuario);
+            return ResponseEntity.ok().body(service.adicionarAoCarrinho(
+                    idUsuario, itemPedidoRequestDTO
+            ));
+        } catch (Exception e){
+            LOGGER.error("Erro ao adicionar item ao carrinho do usuário {}", idUsuario);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("{idItemPedido}")
