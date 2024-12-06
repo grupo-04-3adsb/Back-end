@@ -10,14 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import tcatelie.microservice.auth.model.ImagensProduto;
-import tcatelie.microservice.auth.model.OpcaoPersonalizacao;
-import tcatelie.microservice.auth.model.Produto;
-import tcatelie.microservice.auth.model.Usuario;
-import tcatelie.microservice.auth.repository.ImagensProdutoRepository;
-import tcatelie.microservice.auth.repository.OpcaoPersonalizacaoRepository;
-import tcatelie.microservice.auth.repository.ProdutoRepository;
-import tcatelie.microservice.auth.repository.UserRepository;
+import tcatelie.microservice.auth.model.*;
+import tcatelie.microservice.auth.repository.*;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -31,6 +25,7 @@ public class GoogleDriveApiService {
     private final UserRepository userRepository;
     private final OpcaoPersonalizacaoRepository opcaoPersonalizacaoRepository;
     private final ImagensProdutoRepository imagensProdutoRepository;
+    private final PersonalizacaoItemPedidoRepository personalizacaoItemPedidoRepository;
 
     @Getter
     private final String rootFolderId = "16yN_yD1JbDVQUssFowEu1DuUVfrgwJkq";
@@ -165,6 +160,23 @@ public class GoogleDriveApiService {
         return optionsFolderId;
     }
 
+    public String organizePersonalizacaoItem(String itemPedidoId) throws IOException{
+        String rootFolderId = getRootFolderId();
+        String personalizacaoFolderId = findFolderByName("itens_pedido", rootFolderId);
+
+        if (personalizacaoFolderId == null) {
+            personalizacaoFolderId = createFolder("itens_pedido", rootFolderId);
+        }
+
+        String itemFolderId = findFolderByName(itemPedidoId, personalizacaoFolderId);
+
+        if (itemFolderId == null) {
+            itemFolderId = createFolder(itemPedidoId, personalizacaoFolderId);
+        }
+
+        return itemFolderId;
+    }
+
     public void salvarUrlEntidade(String tipo, Integer idEntidade, String urlAcesso, String idImagemDrive) {
         if (tipo.equals("usuario")) {
             Usuario usuario = userRepository.findById(idEntidade).orElseThrow(
@@ -194,6 +206,14 @@ public class GoogleDriveApiService {
             imgProduto.setUrlImgAdicional(urlAcesso);
             imgProduto.setIdImgDrive(idImagemDrive);
             imagensProdutoRepository.save(imgProduto);
+        } else if(tipo.equals("personalizacaoItem")){
+            PersonalizacaoItemPedido personalizacaoItem = personalizacaoItemPedidoRepository.findById(idEntidade).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Personalização do item não encontrada com id %d".formatted(idEntidade))
+            );
+
+            personalizacaoItem.setDescricaoPersonalizacao(urlAcesso);
+            personalizacaoItem.setIdImgDrive(idImagemDrive);
+            personalizacaoItemPedidoRepository.save(personalizacaoItem);
         }
     }
 

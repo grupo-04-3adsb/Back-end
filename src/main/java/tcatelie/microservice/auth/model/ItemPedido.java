@@ -41,14 +41,14 @@ public class ItemPedido {
     @Column(name = "produto_feito")
     private Boolean produtoFeito;
 
-    @OneToMany(mappedBy = "itemPedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "itemPedido", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<PersonalizacaoItemPedido> personalizacoes;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_produto", nullable = false)
     private Produto produto;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_pedido", nullable = false)
     private Pedido pedido;
 }

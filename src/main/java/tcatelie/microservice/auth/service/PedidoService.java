@@ -7,19 +7,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import tcatelie.microservice.auth.dto.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
+import tcatelie.microservice.auth.dto.request.EnderecoRequestDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.dto.response.CustoOutrosResponseDTO;
+import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.mapper.EnderecoMapper;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
 import tcatelie.microservice.auth.mapper.UsuarioMapper;
+import tcatelie.microservice.auth.model.Endereco;
+import tcatelie.microservice.auth.model.ItemPedido;
 import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.model.Usuario;
+import tcatelie.microservice.auth.repository.ItemPedidoRepository;
 import tcatelie.microservice.auth.repository.PedidoRepository;
+import tcatelie.microservice.auth.repository.PersonalizacaoItemPedidoRepository;
 import tcatelie.microservice.auth.repository.UserRepository;
 import tcatelie.microservice.auth.specification.PedidoSpecification;
 import tcatelie.microservice.auth.util.DateFormat;
@@ -36,10 +41,13 @@ public class PedidoService {
     private final PedidoRepository repository;
     private final UserRepository userRepository;
     private final PedidoMapper mapper;
+    private final ItemPedidoRepository itemPedidoRepository;
+    private final PersonalizacaoItemPedidoRepository personalizacaoItemPedidoRepository;
     private final CustoOutrosService custoOutrosService;
     private final ItemPedidoService itemPedidoService;
     private final EnderecoMapper enderecoMapper;
     private final UsuarioMapper usuarioMapper;
+    private final ProdutoService produtoService;
 
     private List<CustoOutrosResponseDTO> custosOutros = new ArrayList<>();
 
@@ -56,10 +64,11 @@ public class PedidoService {
 
         if (pedido.isPresent()) {
             return transformarPedido(pedido.get());
-        } else{
+        } else {
             Pedido novoPedido = new Pedido();
             novoPedido.setStatus(StatusPedido.CARRINHO);
             novoPedido.setUsuario(usuario);
+            novoPedido.setResponsaveis(new ArrayList<>());
 
             return transformarPedido(repository.save(novoPedido));
         }
@@ -71,7 +80,6 @@ public class PedidoService {
         Page<Pedido> pedidos = repository.findByStatusIn(List.of(
                         StatusPedido.PENDENTE_PAGAMENTO,
                         StatusPedido.PENDENTE,
-                        StatusPedido.CONCLUIDO,
                         StatusPedido.CONCLUIDO,
                         StatusPedido.EM_PREPARO,
                         StatusPedido.EM_ROTA),
@@ -100,41 +108,51 @@ public class PedidoService {
         Pedido pedido = getPedidoById(idPedido);
 
         validaStatusPedido(pedidoRequestDTO, pedido);
-
         StatusPedido statusAnterior = pedido.getStatus();
 
         pedido.setStatus(StatusPedido.valueOf(pedidoRequestDTO.getStatusPedido()));
 
         switch (pedido.getStatus()) {
             case CARRINHO:
-                pedido.setDataPedido(null);
                 pedido.setValorFrete(pedidoRequestDTO.getValorFrete());
+                pedido.setValorTotal(calcularValorTotalPedidoAtualizado(pedidoRequestDTO));
                 pedido.setValorDesconto(pedido.getItens().stream().mapToDouble(
                                 item -> item.getProduto().getPreco() * (item.getProduto().getDesconto() / 100) * item.getQuantidade()
                         ).sum()
-                );
-                pedido.setValorTotal(
-                        pedido.getItens().stream().mapToDouble(
-                                item -> (item.getProduto().getPreco())
-                                        + item.getPersonalizacoes().stream().mapToDouble(
-                                        personalizacao -> personalizacao.getOpcaoPersonalizacao().getAcrescimoOpcao()
-                                ).sum()
-                                        * item.getQuantidade()
-                        ).sum() + pedido.getValorFrete() - pedido.getValorDesconto()
                 );
                 pedido.getItens().stream().forEach(i -> {
                     i.setProdutoFeito(false);
                     i.setDesconto(i.getProduto().getDesconto());
                     i.setValorDesconto(i.getProduto().getPreco() * (i.getProduto().getDesconto() / 100));
                     i.setValorTotal(
-                            (i.getProduto().getPreco() + i.getPersonalizacoes().stream().mapToDouble(
-                                    personalizacao -> personalizacao.getOpcaoPersonalizacao().getAcrescimoOpcao()
-                            ).sum()) * i.getQuantidade() - i.getValorDesconto()
+                            itemPedidoService.calcularValorTotalCarrinho(i)
+                    );
+                    i.setValor(
+                            (i.getProduto().getPreco() - i.getProduto().getPreco() * (i.getProduto().getDesconto() / 100) +
+                                    i.getPersonalizacoes().stream().mapToDouble(p -> p.getOpcaoPersonalizacao().getAcrescimoOpcao()).sum()
+                            )
                     );
                     i.getPersonalizacoes().stream().forEach(p -> {
                         p.setValorPersonalizacao(p.getOpcaoPersonalizacao().getAcrescimoOpcao());
                     });
                 });
+                if (pedidoRequestDTO.getEnderecoEntrega() == null) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço é obrigatório para o pedido");
+                }
+                Endereco endereco = new Endereco();
+                EnderecoRequestDTO requestEndereco = pedidoRequestDTO.getEnderecoEntrega();
+                endereco.setCep(requestEndereco.getCep());
+                endereco.setCidade(requestEndereco.getCidade());
+                endereco.setBairro(requestEndereco.getBairro());
+                endereco.setComplemento(requestEndereco.getComplemento());
+                endereco.setInstrucaoEntrega(requestEndereco.getInstrucaoEntrega());
+                endereco.setRua(requestEndereco.getRua());
+                endereco.setNumero(requestEndereco.getNumero());
+                endereco.setLogradouro(requestEndereco.getLogradouro());
+                endereco.setEstado(requestEndereco.getEstado());
+                endereco.setPais(requestEndereco.getPais());
+                pedido.setEnderecoEntrega(endereco);
+                pedido.setDataEntrega(LocalDateTime.now().plusDays(pedidoRequestDTO.getTempoEntrega()));
                 break;
             case PENDENTE_PAGAMENTO:
                 pedido.setDataPedido(LocalDateTime.now());
@@ -157,6 +175,8 @@ public class PedidoService {
             default:
                 break;
         }
+
+        pedido.setCodigoRastreio(pedidoRequestDTO.getCodigoRastreio());
 
         repository.save(pedido);
         return ResponseEntity.noContent().build();
@@ -217,7 +237,12 @@ public class PedidoService {
             custosOutros = custoOutrosService.findAll();
         }
 
-        response.setItens(pedido.getItens().stream().map(itemPedidoService::transformarItemPedidoResponseDTO).toList());
+        if (pedido.getItens() == null || pedido.getItens().isEmpty()) {
+            response.setItens(new ArrayList<>());
+        } else {
+            response.setItens(pedido.getItens().stream().map(itemPedidoService::transformarItemPedidoResponseDTO).toList());
+        }
+
         response.setEnderecoEntrega(enderecoMapper.toEnderecoResponseDTO(pedido.getEnderecoEntrega()));
 
         if (pedido.getUsuario() == null) {
@@ -234,10 +259,10 @@ public class PedidoService {
                         .sum()
         );
 
-        response.setDataPedido(pedido.getDataPedido().toString());
+        response.setDataPedido(Optional.ofNullable(pedido.getDataPedido()).orElse(LocalDateTime.now()).toString());
 
         response.setDataPedido(DateFormat.formatToCustomPattern(pedido.getDataPedido()));
-        response.setDataEntrega(DateFormat.formatToCustomPattern(pedido.getDataConclusao()));
+        response.setDataEntrega(DateFormat.format(pedido.getDataEntrega(), "dd/MM/yyyy"));
         response.setDataCancelamento(DateFormat.formatToCustomPattern(pedido.getDataCancelamento()));
         response.setDataPagamento(DateFormat.formatToCustomPattern(pedido.getDataPagamento()));
 
@@ -251,6 +276,33 @@ public class PedidoService {
         response.setResponsaveis(pedido.getResponsaveis().stream().map(responsavel -> usuarioMapper.toResponsavelResponseDTO(responsavel.getResponsavel())).toList());
 
         return response;
+    }
+
+    private Double calcularValorTotalPedidoAtualizado(PedidoRequestDTO pedido) {
+        return pedido.getItens().stream().mapToDouble(item -> {
+            ProdutoResponseDTO produto = produtoService.buscarProdutoPorId(item.getFkProduto());
+            double precoProduto = produto.getPreco();
+            double descontoProduto = produto.getDesconto() / 100;
+            double precoComDesconto = precoProduto - (precoProduto * descontoProduto);
+
+            ItemPedido itemPedido = itemPedidoRepository.findById(item.getId()).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item não encontrado")
+            );
+
+            double totalPersonalizacoes = itemPedido.getPersonalizacoes().stream().mapToDouble(
+                    personalizacao -> personalizacao.getOpcaoPersonalizacao().getAcrescimoOpcao()
+            ).sum();
+
+            return (precoComDesconto + totalPersonalizacoes) * item.getQuantidade();
+        }).sum() + pedido.getValorFrete();
+    }
+
+    public PedidoResponseDTO listarUltimoPedido(Integer idUsuario) {
+        Pedido pedido = repository.findLastPedidoByUsuarioId(idUsuario).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado")
+        );
+
+        return transformarPedido(pedido);
     }
 
 }

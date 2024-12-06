@@ -1,12 +1,11 @@
 package tcatelie.microservice.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.service.CalculoFreteApiService;
 
 @RestController
@@ -21,4 +20,16 @@ public class CalculoFreteController {
     public ResponseEntity calcularFretePedido(@PathVariable Integer id) {
         return service.calcularFretePedido(id);
     }
+
+    @Operation(
+            summary = "Calcular frete por CEP",
+            description = "Calcula o frete para um determinado CEP",
+            tags = {"Calcular Fretes"}
+    )
+    @PostMapping("/{cep}")
+    public ResponseEntity calcularFreteCep(@PathVariable String cep, @RequestBody PedidoRequestDTO carrinho) {
+        return service.calcularFrete(cep, carrinho);
+    }
+
+
 }

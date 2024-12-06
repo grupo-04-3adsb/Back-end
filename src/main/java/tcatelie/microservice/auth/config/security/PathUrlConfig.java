@@ -37,7 +37,15 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/pedidos/carrinho/{idUsuario}", "GET"),
             new AntPathRequestMatcher("/item-pedidos/{idItemPedido}"),
             new AntPathRequestMatcher("/item-pedidos"),
-            new AntPathRequestMatcher("/produtos/pesquisar/nome-sku")
+            new AntPathRequestMatcher("/produtos/pesquisar/nome-sku"),
+            new AntPathRequestMatcher("/calcular-fretes/pedido/{id}"),
+            new AntPathRequestMatcher("/calcular-fretes/{cep}", "POST"),
+            new AntPathRequestMatcher("/item-pedidos/{idItemPedido}/quantidade"),
+            new AntPathRequestMatcher("/produtos/sugerir-produtos"),
+            new AntPathRequestMatcher("/pedidos/{idProduto}", "GET"),
+            new AntPathRequestMatcher("/pedidos/carrinho/{idUsuario}"),
+            new AntPathRequestMatcher("/pedidos/{idPedido}", "PUT"),
+            new AntPathRequestMatcher("/pedidos/{id}/ultimo")
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
@@ -49,20 +57,17 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/subcategorias", "POST"),
             new AntPathRequestMatcher("/subcategorias/{id}", "PUT"),
             new AntPathRequestMatcher("/produtos/desativar/"),
-            new AntPathRequestMatcher("/produtos/{id}", "PUT"),
-            new AntPathRequestMatcher("/produtos", "PUT"),
             new AntPathRequestMatcher("/materiais/revisao", "POST"),
             new AntPathRequestMatcher("/produtos/listar-por-material/**"),
-            new AntPathRequestMatcher("/pedidos/**"),
             new AntPathRequestMatcher("/usuarios/admins", "GET"),
             new AntPathRequestMatcher("/pedidos/listar"),
+            new AntPathRequestMatcher("/pedidos", "POST"),
             new AntPathRequestMatcher("/custos-outros"),
             new AntPathRequestMatcher("/usuarios/pesquisar-admins"),
             new AntPathRequestMatcher("/usuarios/responsavel"),
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {
-            new AntPathRequestMatcher("/pedidos/**"),
             new AntPathRequestMatcher("/item-pedidos/**")
     };
 }

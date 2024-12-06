@@ -21,6 +21,7 @@ import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.repository.PedidoRepository;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 @Service
@@ -38,11 +39,11 @@ public class MercadoPagoService {
             throws MPException, MPApiException {
 
         Pedido pedido = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Pedido não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
 
-        if(!pedido.getStatus().equals(StatusPedido.PENDENTE_PAGAMENTO)
-                && !pedido.getStatus().equals(StatusPedido.CARRINHO)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Pedido não está pendente de pagamento");
+        if (!pedido.getStatus().equals(StatusPedido.PENDENTE_PAGAMENTO)
+                && !pedido.getStatus().equals(StatusPedido.CARRINHO)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pedido não está pendente de pagamento");
         }
 
         PreferenceClient client = new PreferenceClient();
@@ -69,46 +70,56 @@ public class MercadoPagoService {
     }
 
     public String criarPagamentoPix(Integer idPedido) throws MPException, MPApiException {
-        Pedido pedido = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        try {
 
-        Map<String, String> customHeaders = new HashMap<>();
-        customHeaders.put("x-idempotency-key", UUID.randomUUID().toString());
 
-        MPRequestOptions requestOptions = MPRequestOptions.builder()
-                .customHeaders(customHeaders)
-                .build();
+            Pedido pedido = pedidoRepository.findById(idPedido)
+                    .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
 
-        PaymentClient client = new PaymentClient();
+            Map<String, String> customHeaders = new HashMap<>();
+            customHeaders.put("x-idempotency-key", UUID.randomUUID().toString());
 
-        PaymentCreateRequest paymentCreateRequest = PaymentCreateRequest.builder()
-                .transactionAmount(BigDecimal.valueOf(pedido.getValorTotal()))
-                .paymentMethodId("pix")
-                .payer(
-                        PaymentPayerRequest.builder()
-                                .email(pedido.getUsuario().getEmail())
-                                .firstName(pedido.getUsuario().getNome())
-                                .build()
-                )
-                .externalReference(pedido.getId().toString())
-                .build();
+            MPRequestOptions requestOptions = MPRequestOptions.builder()
+                    .customHeaders(customHeaders)
+                    .build();
 
-        var paymentResponse = client.create(paymentCreateRequest, requestOptions);
+            PaymentClient client = new PaymentClient();
 
-        String paymentId = paymentResponse.getId().toString();
-        logger.info("Pagamento PIX criado com sucesso: {}", paymentId);
-        pedido.setStatus(StatusPedido.PENDENTE_PAGAMENTO);
-        pedido.setPaymentId(paymentId);
-        pedidoRepository.save(pedido);
+            PaymentCreateRequest paymentCreateRequest = PaymentCreateRequest.builder()
+                    .transactionAmount(
+                            BigDecimal.valueOf(pedido.getValorTotal()).setScale(2, RoundingMode.HALF_UP)
+                    )                    .paymentMethodId("pix")
+                    .payer(
+                            PaymentPayerRequest.builder()
+                                    .email(pedido.getUsuario().getEmail())
+                                    .firstName(pedido.getUsuario().getNome())
+                                    .build()
+                    )
+                    .externalReference(pedido.getId().toString())
+                    .build();
 
-        return paymentResponse.getId().toString();
+            var paymentResponse = client.create(paymentCreateRequest, requestOptions);
+
+            String paymentId = paymentResponse.getId().toString();
+            logger.info("Pagamento PIX criado com sucesso: {}", paymentId);
+            pedido.setStatus(StatusPedido.PENDENTE_PAGAMENTO);
+            pedido.setPaymentId(paymentId);
+            pedidoRepository.save(pedido);
+
+            return paymentResponse.getId().toString();
+        } catch (MPApiException e) {
+            logger.error("Erro ao criar pagamento PIX: Código de erro: {}, Mensagem: {}, Conteúdo da resposta: {}",
+                    e.getStatusCode(), e.getMessage(), e.getApiResponse().getContent());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Tivemos um problema ao criar o pagamento com PIX, tente novamente mais tarde.");
+        }
     }
 
     public boolean verificarPagamento(String idPagamento) {
         PaymentClient paymentClient = new PaymentClient();
         try {
 
-            if(idPagamento == null) {
+            if (idPagamento == null) {
                 logger.error("ID de pagamento nulo");
                 return false;
             }

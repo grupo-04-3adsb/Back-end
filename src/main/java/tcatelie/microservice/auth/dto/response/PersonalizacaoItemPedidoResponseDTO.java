@@ -14,4 +14,5 @@ public class PersonalizacaoItemPedidoResponseDTO {
     private Double valorPersonalizacao;
     private PersonalizacaoResponseDTO personalizacao;
     private OpcaoPersonalizacaoResponseDTO opcaoPersonalizacao;
+    private String idImgDrive;
 }

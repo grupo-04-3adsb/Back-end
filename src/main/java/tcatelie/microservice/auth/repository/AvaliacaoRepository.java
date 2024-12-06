@@ -1,5 +1,6 @@
 package tcatelie.microservice.auth.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,7 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Integer>, 
 
     @Query("SELECT AVG(a.notaAvaliacao) FROM Avaliacao a WHERE a.produto.id = :produtoId AND a.avaliacaoAprovada = true")
     Double calcularMediaNotaAprovada(@Param("produtoId") Integer produtoId);
+
+    @Query("SELECT a FROM Avaliacao a WHERE a.avaliacaoAprovada = true AND a.produto.id = :produtoId")
+    List<Avaliacao> findByProduto_IdAndAvaliacaoAprovadaTrue(@Param("produtoId") Integer produtoId, Pageable pageable);
 }

@@ -35,5 +35,9 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer>, JpaSpe
             @Param("startOfWeek") LocalDateTime startOfWeek,
             @Param("endOfWeek") LocalDateTime endOfWeek);
 
+
+    @Query("SELECT p FROM Pedido p WHERE p.usuario.id = :idUsuario AND p.status != 'CARRINHO' ORDER BY p.dataPedido DESC LIMIT 1")
+    Optional<Pedido> findLastPedidoByUsuarioId(@Param("idUsuario") Integer idUsuario);
+
     Optional<Pedido> findByStatusAndUsuario_IdUsuario(StatusPedido status, Integer idUsuario);
 }

@@ -14,15 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
+import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.request.ProdutosUpdateRequestDTO;
 import tcatelie.microservice.auth.dto.response.MercadoLivreProdutoResponseDTO;
@@ -312,6 +311,11 @@ public class ProdutoController {
         }
 
         return ResponseEntity.ok(pagina);
+    }
+
+    @PostMapping("/sugerir-produtos")
+    public ResponseEntity sugerirProdutos(@RequestBody PedidoRequestDTO carrinho, @RequestParam(defaultValue = "10") int limite) {
+        return service.sugerirProdutos(carrinho);
     }
 
 }

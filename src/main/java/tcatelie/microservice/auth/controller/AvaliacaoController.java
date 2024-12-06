@@ -31,7 +31,7 @@ public class AvaliacaoController {
 
     @GetMapping("/produto/{produtoId}")
     public ResponseEntity obterAvaliacoesPorProduto(@PathVariable Integer produtoId) {
-        return avaliacaoService.obterAvaliacoesPorProduto(produtoId);
+        return ResponseEntity.ok().body(avaliacaoService.obterAvaliacoesPorProduto(produtoId));
     }
 
     @GetMapping("/usuario/{usuarioId}")

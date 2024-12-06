@@ -1,5 +1,6 @@
 package tcatelie.microservice.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,10 @@ public class ItemPedidoController {
     @PostMapping("{idUsuario}")
     public ResponseEntity adicionarAoCarrinho(@PathVariable Integer idUsuario,
                                               @RequestBody @Valid ItemPedidoRequestDTO itemPedidoRequestDTO) {
-        service.adicionarAoCarrinho(
-                idUsuario, itemPedidoRequestDTO
-        );
 
-        return ResponseEntity.ok().body("Item adicionado ao carrinho.");
+        return ResponseEntity.ok().body(service.adicionarAoCarrinho(
+                idUsuario, itemPedidoRequestDTO
+        ));
     }
 
     @PutMapping("{idItemPedido}")
@@ -31,5 +31,29 @@ public class ItemPedidoController {
         service.concluirItemPedido(idItemPedido);
 
         return ResponseEntity.ok().body("Item concluído.");
+    }
+
+    @DeleteMapping("{idItemPedido}")
+    public ResponseEntity removerItemPedido(@PathVariable Integer idItemPedido) {
+        service.removerItemPedido(idItemPedido);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Alterar quantidade do item pedido",
+            description = "Altera a quantidade do item pedido.",
+            tags = {"ItemPedido"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Quantidade a ser alterada.",
+                    required = true
+            )
+    )
+    @PutMapping("{idItemPedido}/quantidade")
+    public ResponseEntity alterarQuantidade(@PathVariable Integer idItemPedido,
+                                            @RequestParam Integer quantidade) {
+        service.alterarQuantidade(idItemPedido, quantidade);
+
+        return ResponseEntity.ok().body("Quantidade alterada.");
     }
 }

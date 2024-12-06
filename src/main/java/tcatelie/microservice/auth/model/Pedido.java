@@ -72,6 +72,9 @@ public class Pedido {
     @Column(name = "id_pagamento")
     private String paymentId;
 
+    @Column(name = "codigo_rastreio")
+    private String codigoRastreio;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "fk_endereco_entrega")
     private Endereco enderecoEntrega;
