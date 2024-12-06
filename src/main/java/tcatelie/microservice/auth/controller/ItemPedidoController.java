@@ -26,17 +26,11 @@ public class ItemPedidoController {
     @PostMapping("{idUsuario}")
     public ResponseEntity adicionarAoCarrinho(@PathVariable Integer idUsuario,
                                               @RequestBody @Valid ItemPedidoRequestDTO itemPedidoRequestDTO) {
-        try{
             LOGGER.info("Adicionando item ao carrinho do usuário {}", idUsuario);
             ItemPedidoResponseDTO item = service.adicionarAoCarrinho(
-                    idUsuario, itemPedidoRequestDTO
-            );
+                    idUsuario, itemPedidoRequestDTO);
 
             return ResponseEntity.ok().body(item);
-        } catch (Exception e){
-            LOGGER.error("Erro ao adicionar item ao carrinho do usuário {}", e);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
     }
 
     @PutMapping("{idItemPedido}")
