@@ -305,4 +305,17 @@ public class PedidoService {
         return transformarPedido(pedido);
     }
 
+    public ResponseEntity atualizarCodigoRastreio(Integer idPedido, String codigoRastreio) {
+        Pedido pedido = getPedidoById(idPedido);
+
+        if(pedido.getStatus().equals(StatusPedido.EM_ROTA) || (pedido.getStatus().equals(StatusPedido.EM_PREPARO) &&
+                pedido.getItens().stream().allMatch(ItemPedido::getProdutoFeito))) {
+            pedido.setCodigoRastreio(codigoRastreio);
+            repository.save(pedido);
+            return ResponseEntity.noContent().build();
+        } else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pedido não está pronto para ser enviado");
+        }
+
+    }
 }

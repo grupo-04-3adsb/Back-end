@@ -111,6 +111,7 @@ public class ProdutoService {
         });
 
         produto.setPersonalizacoes(listaPersonalizacoes);
+        produto.setPersonalizacaoObrigatoria(requestDTO.getIsPersonalizacaoObrigatoria());
 
         produto.getImagensAdicionais().forEach(img -> img.setProduto(produto));
         return produto;
@@ -215,6 +216,7 @@ public class ProdutoService {
         produtoExistente.setPersonalizavel(requestDTO.getIsPersonalizavel());
         produtoExistente.setDimensao(requestDTO.getDimensao());
         produtoExistente.setPeso(requestDTO.getPeso());
+        produtoExistente.setPersonalizacaoObrigatoria(requestDTO.getIsPersonalizacaoObrigatoria());
 
         if (!produtoExistente.getUrlImagemPrincipal().equals(requestDTO.getUrlProduto())) {
             filesIds.add(produtoExistente.getIdImgDrive());
