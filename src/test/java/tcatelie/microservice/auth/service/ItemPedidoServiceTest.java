@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.request.ItemPedidoRequestDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
+import tcatelie.microservice.auth.mapper.ProdutoMapper;
 import tcatelie.microservice.auth.model.*;
 import tcatelie.microservice.auth.repository.*;
 
@@ -33,6 +34,9 @@ class ItemPedidoServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ProdutoMapper produtoMapper;
 
     @Mock
     private PersonalizacaoRepository personalizacaoRepository;
