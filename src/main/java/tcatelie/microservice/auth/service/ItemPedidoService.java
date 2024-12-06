@@ -92,7 +92,9 @@ public class ItemPedidoService {
         Endereco enderecoEntrega = usuario.getEnderecos().stream()
                 .filter(Endereco::isEnderecoPadrao)
                 .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Endereço de entrega não encontrado"));
+                .orElse(new Endereco());
+
+
         pedido.setEnderecoEntrega(enderecoEntrega);
 
         return pedidoRepository.save(pedido);

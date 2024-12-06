@@ -31,7 +31,7 @@ public class PedidoStatusScheduler {
 
             if (pago) {
                 logger.info("Pagamento do pedido {} foi confirmado", pedido.getId());
-                service.atualizarStatusPedido(pedido, StatusPedido.CONCLUIDO);
+                service.atualizarStatusPedido(pedido, StatusPedido.PENDENTE);
             } else {
                 service.atualizarStatusPedido(pedido, StatusPedido.PENDENTE_PAGAMENTO);
             }
