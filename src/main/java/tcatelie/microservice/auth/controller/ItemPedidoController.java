@@ -6,8 +6,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import tcatelie.microservice.auth.dto.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.request.ItemPedidoRequestDTO;
 import tcatelie.microservice.auth.service.ItemPedidoService;
 
@@ -25,12 +28,14 @@ public class ItemPedidoController {
                                               @RequestBody @Valid ItemPedidoRequestDTO itemPedidoRequestDTO) {
         try{
             LOGGER.info("Adicionando item ao carrinho do usuário {}", idUsuario);
-            return ResponseEntity.ok().body(service.adicionarAoCarrinho(
+            ItemPedidoResponseDTO item = service.adicionarAoCarrinho(
                     idUsuario, itemPedidoRequestDTO
-            ));
+            );
+
+            return ResponseEntity.ok().body(item);
         } catch (Exception e){
-            LOGGER.error("Erro ao adicionar item ao carrinho do usuário {}", idUsuario);
-            return ResponseEntity.badRequest().body(e.getMessage());
+            LOGGER.error("Erro ao adicionar item ao carrinho do usuário {}", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
