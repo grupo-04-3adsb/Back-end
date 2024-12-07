@@ -1,18 +1,16 @@
 package tcatelie.microservice.auth.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tcatelie.microservice.auth.dto.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 @Service
@@ -21,87 +19,130 @@ public class ExcelService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ExcelService.class);
 
-    public void gerarRelatorioPedidos(List<PedidoResponseDTO> pedidos, OutputStream outputStream){
+    public void gerarArquivoPedidosExcel(HttpServletResponse response, List<PedidoResponseDTO> pedidos) {
+        LOGGER.info("Gerando arquivo Excel de pedidos");
+        Workbook workbook = new XSSFWorkbook();
 
-        Workbook workbook = new HSSFWorkbook();
+        // Criar estilos personalizados
+        CellStyle headerStyle = createHeaderStyle(workbook);
+        CellStyle dataStyle = createDataStyle(workbook);
 
-        for(PedidoResponseDTO pedido : pedidos){
-            String sheetName = "Pedido " + pedido.getId() + " - " + pedido.getCliente().getNome();
-            Sheet sheet = workbook.createSheet(sheetName);
+        for (PedidoResponseDTO pedido : pedidos) {
+            // Criar uma nova aba para cada pedido
+            Sheet sheet = workbook.createSheet("Pedido " + pedido.getId());
 
-            createHeaderRow(sheet);
-
-            fillPedidoData(sheet, pedido);
-        }
-
-        try {
-            workbook.write(outputStream);
-            LOGGER.info("Relatório gerado com sucesso");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                workbook.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            // Cabeçalho
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"ID", "Cliente", "Status", "Valor Total", "Desconto", "Frete", "Data do Pedido", "Data Entrega", "Data Pagamento", "Data Cancelamento", "Código Rastreio", "Observação"};
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
             }
-        }
-    }
 
-    private void createHeaderRow(Sheet sheet) {
-        Row headerRow = sheet.createRow(0);
-        String[] headers = {
-                "ID", "Valor Total", "Valor Desconto", "Valor Frete", "Parcelas", "Forma de Pagamento", "Status",
-                "Data Pedido", "Data Entrega", "Cliente", "Endereço Entrega"
-        };
+            // Dados do pedido
+            Row dataRow = sheet.createRow(1);
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = dataRow.createCell(i);
+                switch (i) {
+                    case 0 -> cell.setCellValue(pedido.getId());
+                    case 1 -> cell.setCellValue(pedido.getCliente().getNome());
+                    case 2 -> cell.setCellValue(pedido.getStatus());
+                    case 3 -> cell.setCellValue(pedido.getValorTotal());
+                    case 4 -> cell.setCellValue(pedido.getValorDesconto());
+                    case 5 -> cell.setCellValue(pedido.getValorFrete());
+                    case 6 -> cell.setCellValue(pedido.getDataPedido());
+                    case 7 -> cell.setCellValue(pedido.getDataEntrega());
+                    case 8 -> cell.setCellValue(pedido.getDataPagamento());
+                    case 9 -> cell.setCellValue(pedido.getDataCancelamento());
+                    case 10 -> cell.setCellValue(pedido.getCodigoRastreio());
+                    case 11 -> cell.setCellValue(pedido.getObservacao());
+                }
+                cell.setCellStyle(dataStyle);
+            }
 
-        for (int i = 0; i < headers.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(headers[i]);
+            // Adicionar itens relacionados ao pedido
+            Row itemsHeaderRow = sheet.createRow(3);
+            String[] itemColumns = {"Item ID", "Produto", "Quantidade", "Preço Unitário", "Subtotal"};
+            for (int i = 0; i < itemColumns.length; i++) {
+                Cell cell = itemsHeaderRow.createCell(i);
+                cell.setCellValue(itemColumns[i]);
+                cell.setCellStyle(headerStyle);
+            }
 
-            CellStyle style = sheet.getWorkbook().createCellStyle();
-            Font font = sheet.getWorkbook().createFont();
-            font.setBold(true);
-            style.setFont(font);
-            cell.setCellStyle(style);
-        }
-    }
-
-    private void fillPedidoData(Sheet sheet, PedidoResponseDTO pedido) {
-        Row dataRow = sheet.createRow(1);
-
-        dataRow.createCell(0).setCellValue(pedido.getId());
-        dataRow.createCell(1).setCellValue(pedido.getValorTotal());
-        dataRow.createCell(2).setCellValue(pedido.getValorDesconto());
-        dataRow.createCell(3).setCellValue(pedido.getValorFrete());
-        dataRow.createCell(4).setCellValue(pedido.getParcelas());
-        dataRow.createCell(5).setCellValue(pedido.getFormaPgto());
-        dataRow.createCell(6).setCellValue(pedido.getStatus());
-        dataRow.createCell(7).setCellValue(pedido.getDataPedido());
-        dataRow.createCell(8).setCellValue(pedido.getDataEntrega());
-
-        if (pedido.getCliente() != null) {
-            dataRow.createCell(9).setCellValue(pedido.getCliente().getNome());
-        }
-
-        if (pedido.getEnderecoEntrega() != null) {
-            dataRow.createCell(10).setCellValue(
-                    pedido.getEnderecoEntrega().getRua() + ", " +
-                            pedido.getEnderecoEntrega().getNumero()
-            );
-        }
-
-        if (pedido.getItens() != null) {
-            int rowIndex = 2;
-
+            int itemRowNum = 4;
             for (ItemPedidoResponseDTO item : pedido.getItens()) {
-                Row itemRow = sheet.createRow(rowIndex++);
-                itemRow.createCell(0).setCellValue("Item " + item.getId());
-                itemRow.createCell(1).setCellValue(item.getQuantidade());
-                itemRow.createCell(2).setCellValue(item.getValor());
-                itemRow.createCell(3).setCellValue(item.getValorTotal());
-                itemRow.createCell(4).setCellValue(item.getProduto() != null ? item.getProduto().getNome() : "");
+                Row itemRow = sheet.createRow(itemRowNum++);
+                for (int i = 0; i < itemColumns.length; i++) {
+                    Cell cell = itemRow.createCell(i);
+                    switch (i) {
+                        case 0 -> cell.setCellValue(item.getId());
+                        case 1 -> cell.setCellValue(item.getProduto().getNome());
+                        case 2 -> cell.setCellValue(item.getQuantidade());
+                        case 3 -> cell.setCellValue(item.getValor());
+                        case 4 -> cell.setCellValue(item.getValorTotal());
+                    }
+                    cell.setCellStyle(dataStyle);
+                }
+            }
+
+            // Rodapé com total do pedido
+            Row totalRow = sheet.createRow(itemRowNum);
+            Cell totalLabelCell = totalRow.createCell(3);
+            totalLabelCell.setCellValue("Total:");
+            totalLabelCell.setCellStyle(headerStyle);
+
+            Cell totalValueCell = totalRow.createCell(4);
+            totalValueCell.setCellValue(pedido.getValorTotal());
+            totalValueCell.setCellStyle(dataStyle);
+
+            // Ajustar o tamanho das colunas
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
             }
         }
+
+        // Configurar a resposta HTTP
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=pedidos.xlsx");
+        try {
+            workbook.write(response.getOutputStream());
+            workbook.close();
+        } catch (IOException e) {
+            LOGGER.error("Erro ao gerar arquivo Excel.", e);
+        }
+    }
+
+    private CellStyle createHeaderStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+        Font font = workbook.createFont();
+        font.setFontHeightInPoints((short) 12);
+        font.setFontName("Arial");
+        font.setBold(true);
+        font.setColor(IndexedColors.WHITE.getIndex());
+        style.setFont(font);
+
+        return style;
+    }
+
+    private CellStyle createDataStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setAlignment(HorizontalAlignment.LEFT);
+
+        Font font = workbook.createFont();
+        font.setFontHeightInPoints((short) 10);
+        font.setFontName("Arial");
+        style.setFont(font);
+
+        return style;
     }
 }

@@ -10,16 +10,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
+import tcatelie.microservice.auth.service.ExcelService;
 import tcatelie.microservice.auth.service.PedidoService;
 
-import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -30,6 +35,7 @@ public class PedidoController {
 
     private final PedidoService service;
     private final PedidoMapper mapper;
+    private final ExcelService excelService;
     private final Logger LOGGER = LoggerFactory.getLogger(PedidoController.class);
 
     @Operation(summary = "Busca um pedido pelo id",
@@ -107,36 +113,33 @@ public class PedidoController {
     }
 
     @GetMapping("/export")
-    public ResponseEntity<String> exportPedidosToExcel(HttpServletResponse response,
-                                                       @RequestParam(value = "idPedido", required = false) Integer idPedido,
-                                                       @RequestParam(value = "nomeCliente", required = false) String nomeCliente,
-                                                       @RequestParam(value = "idResponsavel", required = false) Integer idResponsavel,
-                                                       @RequestParam(value = "status", required = false) String status) {
-        try {
-            LOGGER.info("Gerando arquivo Excel com pedidos...");
-            PedidoFiltroDTO filtro = new PedidoFiltroDTO();
+    public void exportPedidosToExcel(HttpServletResponse response,
+                                     @RequestParam(value = "idPedido", required = false) Integer idPedido,
+                                     @RequestParam(value = "nomeCliente", required = false) String nomeCliente,
+                                     @RequestParam(value = "idResponsavel", required = false) Integer idResponsavel,
+                                     @RequestParam(value = "status", required = false) String status) {
+        LOGGER.info("Gerando arquivo Excel com pedidos...");
+        PedidoFiltroDTO filtro = new PedidoFiltroDTO();
 
-            filtro.setIdPedido(idPedido);
-            filtro.setNomeCliente(nomeCliente);
+        filtro.setIdPedido(idPedido);
+        filtro.setNomeCliente(nomeCliente);
 
-            if (idResponsavel != null) {
-                filtro.setIdsResponsaveis(List.of(idResponsavel));
-            }
+        LocalDateTime startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay();
+        LocalDateTime endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).atTime(23, 59, 59);
 
-            if (status != null && !status.isEmpty()) {
-                filtro.setStatusList(List.of(status));
-            }
+        filtro.setDataPedidoInicio(startOfWeek);
+        filtro.setDataPedidoFim(endOfWeek);
 
-            String fileName = "pedidos.xls";
-            response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-            service.exportarArquivo(filtro, response);
-
-            return ResponseEntity.ok("Arquivo Excel gerado com sucesso.");
-        } catch (IOException e) {
-            LOGGER.error("Erro ao gerar arquivo Excel.", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao gerar arquivo Excel.");
+        if (idResponsavel != null) {
+            filtro.setIdsResponsaveis(List.of(idResponsavel));
         }
+
+        if (status != null && !status.isEmpty()) {
+            filtro.setStatusList(List.of(status));
+        }
+
+        List<PedidoResponseDTO> pedidos = service.findAll(filtro);
+        excelService.gerarArquivoPedidosExcel(response, pedidos);
     }
+
 }
