@@ -1,5 +1,6 @@
 package tcatelie.microservice.auth.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,7 @@ import tcatelie.microservice.auth.repository.UserRepository;
 import tcatelie.microservice.auth.specification.PedidoSpecification;
 import tcatelie.microservice.auth.util.DateFormat;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,7 @@ public class PedidoService {
     private final EnderecoMapper enderecoMapper;
     private final UsuarioMapper usuarioMapper;
     private final ProdutoService produtoService;
+    private final ExcelService excelService;
 
     private List<CustoOutrosResponseDTO> custosOutros = new ArrayList<>();
 
@@ -318,4 +321,13 @@ public class PedidoService {
         }
 
     }
+
+    public void exportarArquivo(PedidoFiltroDTO filtroDTO, HttpServletResponse response) throws IOException {
+        List<PedidoResponseDTO> pedidos = repository.findAll(PedidoSpecification.filterBy(filtroDTO)).stream()
+                .map(this::transformarPedido)
+                .toList();
+
+        excelService.gerarRelatorioPedidos(pedidos, response.getOutputStream());
+    }
+
 }

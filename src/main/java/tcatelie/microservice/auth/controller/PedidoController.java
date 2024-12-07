@@ -3,19 +3,23 @@ package tcatelie.microservice.auth.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
-import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.service.PedidoService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -26,6 +30,7 @@ public class PedidoController {
 
     private final PedidoService service;
     private final PedidoMapper mapper;
+    private final Logger LOGGER = LoggerFactory.getLogger(PedidoController.class);
 
     @Operation(summary = "Busca um pedido pelo id",
             description = "Retorna um pedido pelo id",
@@ -92,12 +97,46 @@ public class PedidoController {
     }
 
     @GetMapping("/{idCliente}/ultimo")
-    public ResponseEntity buscarUltimoPedidoCliente(@PathVariable Integer idCliente){
+    public ResponseEntity buscarUltimoPedidoCliente(@PathVariable Integer idCliente) {
         return ResponseEntity.ok().body(service.listarUltimoPedido(idCliente));
     }
 
     @PutMapping("/{id}/codigo-rastreio")
     public ResponseEntity atualizarCodigoRastreio(@PathVariable Integer id, @RequestBody PedidoRequestDTO request) {
         return ResponseEntity.ok(service.atualizarCodigoRastreio(id, request.getCodigoRastreio()));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<String> exportPedidosToExcel(HttpServletResponse response,
+                                                       @RequestParam(value = "idPedido", required = false) Integer idPedido,
+                                                       @RequestParam(value = "nomeCliente", required = false) String nomeCliente,
+                                                       @RequestParam(value = "idResponsavel", required = false) Integer idResponsavel,
+                                                       @RequestParam(value = "status", required = false) String status) {
+        try {
+            LOGGER.info("Gerando arquivo Excel com pedidos...");
+            PedidoFiltroDTO filtro = new PedidoFiltroDTO();
+
+            filtro.setIdPedido(idPedido);
+            filtro.setNomeCliente(nomeCliente);
+
+            if (idResponsavel != null) {
+                filtro.setIdsResponsaveis(List.of(idResponsavel));
+            }
+
+            if (status != null && !status.isEmpty()) {
+                filtro.setStatusList(List.of(status));
+            }
+
+            String fileName = "pedidos.xls";
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+            service.exportarArquivo(filtro, response);
+
+            return ResponseEntity.ok("Arquivo Excel gerado com sucesso.");
+        } catch (IOException e) {
+            LOGGER.error("Erro ao gerar arquivo Excel.", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao gerar arquivo Excel.");
+        }
     }
 }
