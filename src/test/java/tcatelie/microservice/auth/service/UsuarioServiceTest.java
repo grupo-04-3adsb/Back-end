@@ -87,7 +87,6 @@ class UsuarioServiceTest {
 				.nome("Cláudio Araújo")
 				.cpf("123.456.789-09")
 				.telefone("(11) 98765-4325")
-				.email("claudio@gmail.com")
 				.dataNascimento(LocalDate.of(1999, 12, 30))
 				.genero(Genero.MASCULINO)
 				.build();
