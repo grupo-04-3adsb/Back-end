@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
 import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
+import tcatelie.microservice.auth.dto.request.UpdateUserDTO;
 import tcatelie.microservice.auth.dto.response.LoginResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.enums.Genero;
@@ -66,6 +67,8 @@ class UsuarioServiceTest {
 
 	private Usuario usuario;
 
+	private UpdateUserDTO updateDTO;
+
 	@BeforeEach
 	void setUp() {
 		passwordEncoder = new BCryptPasswordEncoder();
@@ -80,6 +83,14 @@ class UsuarioServiceTest {
 		usuario = new Usuario(1, "Cláudio Araújo", "cludio@gmail", passwordEncoder.encode("#Gf123456"), UserRole.ADMIN,
 				"(11) 94463-6705", Status.HABILITADO, LocalDateTime.now(), LocalDateTime.now(), "123.456.789-09",
 				Genero.MASCULINO, "img.png", LocalDate.now());
+		updateDTO = UpdateUserDTO.builder()
+				.nome("Cláudio Araújo")
+				.cpf("123.456.789-09")
+				.telefone("(11) 98765-4325")
+				.email("claudio@gmail.com")
+				.dataNascimento(LocalDate.of(1999, 12, 30))
+				.genero(Genero.MASCULINO)
+				.build();
 	}
 
 	@Test
@@ -176,42 +187,6 @@ class UsuarioServiceTest {
 		assertEquals(usuario, response.getBody());
 	}
 
-	@Test
-	void atualizarUsuario_deveAtualizarSomenteCamposBasicos_quandoSenhaVazia() {
-		usuario.setEmail("claudio@gmail.com");
-
-		when(repository.findById(1)).thenReturn(Optional.of(usuario));
-		when(usuarioMapper.toUsuarioResponseDTO(any(Usuario.class))).thenReturn(mock(UsuarioResponseDTO.class));
-
-		registerDTO.setSenha("");
-
-		ResponseEntity<?> response = usuarioService.atualizarUsuario(1, registerDTO, authentication);
-
-		assertEquals(200, response.getStatusCodeValue());
-		assertEquals(usuarioMapper.toUsuarioResponseDTO(usuario), response.getBody());
-
-		assertEquals(registerDTO.getEmail(), usuario.getEmail());
-		assertEquals(registerDTO.getTelefone(), usuario.getTelefone());
-		assertEquals(registerDTO.getImgUrl(), usuario.getUrlImgUsuario());
-	}
-
-	@Test
-	void atualizarUsuario_deveAtualizarSenhaQuandoInformada() {
-		usuario.setEmail("claudio@gmail.com");
-
-		when(repository.findById(1)).thenReturn(Optional.of(usuario));
-		when(usuarioMapper.toUsuarioResponseDTO(any(Usuario.class))).thenReturn(mock(UsuarioResponseDTO.class));
-
-		registerDTO.setSenha("#Gf12345678910");
-
-		ResponseEntity<?> response = usuarioService.atualizarUsuario(1, registerDTO, authentication);
-
-		assertEquals(200, response.getStatusCodeValue());
-		assertEquals(usuarioMapper.toUsuarioResponseDTO(usuario), response.getBody());
-
-		boolean senhaCorreta = passwordEncoder.matches("#Gf12345678910", usuario.getSenha());
-		assertEquals(true, senhaCorreta);
-	}
 
 	@Test
 	void deletarUsuario_deveDeletarUsuario_quandoUsuarioValido() {

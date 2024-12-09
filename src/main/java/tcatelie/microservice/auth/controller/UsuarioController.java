@@ -2,18 +2,23 @@ package tcatelie.microservice.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
+import tcatelie.microservice.auth.dto.request.UpdateUserDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
+import tcatelie.microservice.auth.mapper.UsuarioMapper;
+import tcatelie.microservice.auth.model.Usuario;
 import tcatelie.microservice.auth.service.UsuarioService;
 
 @RestController
@@ -92,4 +97,8 @@ public class UsuarioController {
         return service.removerResponsavelPedido(idPedido, idUsuario);
     }
 
+	@GetMapping("/{id}")
+	public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Integer id){
+		return service.buscarPorId(id);
+	}
 }

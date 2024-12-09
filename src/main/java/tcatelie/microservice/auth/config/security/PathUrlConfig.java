@@ -46,11 +46,12 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/pedidos/carrinho/{idUsuario}"),
             new AntPathRequestMatcher("/pedidos/{idPedido}", "PUT"),
             new AntPathRequestMatcher("/pedidos/{id}/ultimo")
+            new AntPathRequestMatcher("/usuarios"),
+            new AntPathRequestMatcher("/usuarios/{id}")
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
             new AntPathRequestMatcher("/enderecos", "GET"),
-            new AntPathRequestMatcher("/enderecos/{id}", "PUT"),
             new AntPathRequestMatcher("/produtos", "POST"),
             new AntPathRequestMatcher("/materiais/{id}", "PUT"),
             new AntPathRequestMatcher("/categorias", "POST"),
@@ -71,5 +72,6 @@ public class PathUrlConfig {
 
     public static final AntPathRequestMatcher[] USER_URLS = {
             new AntPathRequestMatcher("/item-pedidos/**")
+            new AntPathRequestMatcher("/enderecos/{id}", "PUT"),
     };
 }
