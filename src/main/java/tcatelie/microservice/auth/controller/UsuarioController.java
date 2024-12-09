@@ -44,8 +44,8 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Você não tem permissão para realizar esta ação.", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado.", content = @Content(mediaType = "application/json"))})
     @PutMapping("/{id}")
-    public ResponseEntity atualizarUsuario(@Parameter(description = "ID do usuário a ser atualizado") Integer id,
-                                           @RequestBody @Valid RegisterDTO dto, Authentication authentication) {
+    public ResponseEntity atualizarUsuario(@PathVariable Integer id,
+                                           @RequestBody @Valid UpdateUserDTO dto, Authentication authentication) {
         return service.atualizarUsuario(id, dto, authentication);
     }
 
