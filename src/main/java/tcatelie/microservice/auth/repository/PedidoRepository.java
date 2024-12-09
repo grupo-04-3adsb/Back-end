@@ -39,5 +39,20 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer>, JpaSpe
     @Query("SELECT p FROM Pedido p WHERE p.usuario.id = :idUsuario AND p.status != 'CARRINHO' ORDER BY p.dataPedido DESC LIMIT 1")
     Optional<Pedido> findLastPedidoByUsuarioId(@Param("idUsuario") Integer idUsuario);
 
+    @Query("SELECT p FROM Pedido p " +
+            "JOIN p.responsaveis r " +
+            "JOIN p.usuario u " +
+            "WHERE (:status IS NULL OR p.status IN :status) " +
+            "AND (:idsResponsavel IS NULL OR r.responsavel.idUsuario IN :idsResponsavel) " +
+            "AND (:pesquisa IS NULL OR u.nome LIKE %:pesquisa% OR p.id = :pesquisa) " +
+            "AND ((p.status = 'CONCLUIDO' AND p.dataConclusao BETWEEN :startOfWeek AND :endOfWeek) " +
+            "     OR (p.status != 'CARRINHO' AND p.status != 'CONCLUIDO')) " +
+            "ORDER BY p.dataPedido DESC")
+    List<Pedido> listarPedidos(@Param("status") List<StatusPedido> status,
+                               @Param("idsResponsavel") List<Integer> idsResponsavel,
+                               @Param("pesquisa") String pesquisa,
+                               @Param("startOfWeek") LocalDateTime startOfWeek,
+                               @Param("endOfWeek") LocalDateTime endOfWeek);
+
     Optional<Pedido> findByStatusAndUsuario_IdUsuario(StatusPedido status, Integer idUsuario);
 }

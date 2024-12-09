@@ -3,7 +3,10 @@ package tcatelie.microservice.auth.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,9 +16,15 @@ import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
-import tcatelie.microservice.auth.model.Pedido;
+import tcatelie.microservice.auth.service.ExcelService;
 import tcatelie.microservice.auth.service.PedidoService;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -26,6 +35,8 @@ public class PedidoController {
 
     private final PedidoService service;
     private final PedidoMapper mapper;
+    private final ExcelService excelService;
+    private final Logger LOGGER = LoggerFactory.getLogger(PedidoController.class);
 
     @Operation(summary = "Busca um pedido pelo id",
             description = "Retorna um pedido pelo id",
@@ -92,7 +103,7 @@ public class PedidoController {
     }
 
     @GetMapping("/{idCliente}/ultimo")
-    public ResponseEntity buscarUltimoPedidoCliente(@PathVariable Integer idCliente){
+    public ResponseEntity buscarUltimoPedidoCliente(@PathVariable Integer idCliente) {
         return ResponseEntity.ok().body(service.listarUltimoPedido(idCliente));
     }
 
@@ -100,4 +111,35 @@ public class PedidoController {
     public ResponseEntity atualizarCodigoRastreio(@PathVariable Integer id, @RequestBody PedidoRequestDTO request) {
         return ResponseEntity.ok(service.atualizarCodigoRastreio(id, request.getCodigoRastreio()));
     }
+
+    @GetMapping("/export")
+    public void exportPedidosToExcel(HttpServletResponse response,
+                                     @RequestParam(value = "idPedido", required = false) Integer idPedido,
+                                     @RequestParam(value = "nomeCliente", required = false) String nomeCliente,
+                                     @RequestParam(value = "idResponsavel", required = false) Integer idResponsavel,
+                                     @RequestParam(value = "status", required = false) String status) {
+        LOGGER.info("Gerando arquivo Excel com pedidos...");
+        PedidoFiltroDTO filtro = new PedidoFiltroDTO();
+
+        filtro.setIdPedido(idPedido);
+        filtro.setNomeCliente(nomeCliente);
+
+        LocalDateTime startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay();
+        LocalDateTime endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).atTime(23, 59, 59);
+
+        filtro.setDataPedidoInicio(startOfWeek);
+        filtro.setDataPedidoFim(endOfWeek);
+
+        if (idResponsavel != null) {
+            filtro.setIdsResponsaveis(List.of(idResponsavel));
+        }
+
+        if (status != null && !status.isEmpty()) {
+            filtro.setStatusList(List.of(status));
+        }
+
+        List<PedidoResponseDTO> pedidos = service.findAll(filtro);
+        excelService.gerarArquivoPedidosExcel(response, pedidos);
+    }
+
 }

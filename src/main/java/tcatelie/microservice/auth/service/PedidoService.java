@@ -1,6 +1,7 @@
 package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -308,14 +309,26 @@ public class PedidoService {
     public ResponseEntity atualizarCodigoRastreio(Integer idPedido, String codigoRastreio) {
         Pedido pedido = getPedidoById(idPedido);
 
-        if(pedido.getStatus().equals(StatusPedido.EM_ROTA) || (pedido.getStatus().equals(StatusPedido.EM_PREPARO) &&
+        if (pedido.getStatus().equals(StatusPedido.EM_ROTA) || (pedido.getStatus().equals(StatusPedido.EM_PREPARO) &&
                 pedido.getItens().stream().allMatch(ItemPedido::getProdutoFeito))) {
             pedido.setCodigoRastreio(codigoRastreio);
             repository.save(pedido);
             return ResponseEntity.noContent().build();
-        } else{
+        } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pedido não está pronto para ser enviado");
         }
 
     }
+
+    public List<PedidoResponseDTO> listarPedidosFiltrados(PedidoFiltroDTO filtro) {
+        return repository.listarPedidos(filtro.getStatusList().stream().map(
+                                status -> StatusPedido.valueOf(status)
+                        ).toList()
+                        , filtro.getIdsResponsaveis(), StringUtils.isNotBlank(filtro.getNomeCliente()) ? filtro.getNomeCliente() : (filtro.getIdPedido() != null ? filtro.getIdPedido().toString() : null),
+                        filtro.getDataPedidoInicio()
+                        , filtro.getDataPedidoFim()).stream()
+                .map(this::transformarPedido)
+                .toList();
+    }
+
 }
