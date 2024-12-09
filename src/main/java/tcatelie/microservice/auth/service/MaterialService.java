@@ -17,6 +17,7 @@ import tcatelie.microservice.auth.model.Material;
 import tcatelie.microservice.auth.model.MaterialProduto;
 import tcatelie.microservice.auth.model.Produto;
 import tcatelie.microservice.auth.observer.Observer;
+import tcatelie.microservice.auth.repository.CustosOutrosRepository;
 import tcatelie.microservice.auth.repository.MaterialProdutoRepository;
 import tcatelie.microservice.auth.repository.MaterialRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
@@ -33,6 +34,7 @@ public class MaterialService {
     private final MaterialRepository materialRepository;
     private final ProdutoRepository produtoRepository;
     private final MaterialProdutoRepository materialProdutoRepository;
+    private final CustosOutrosRepository custosOutrosRepository;
 
     public MaterialResponseDTO cadastrar(MaterialRequestDTO dto) {
         Material materialEntidade = MaterialMapper.toEntity(dto);
@@ -97,6 +99,7 @@ public class MaterialService {
             produtos.forEach(produto -> {
                 materialEntidade.addObserver((Observer) produto);
                 produto.setRepository(produtoRepository);
+                produto.setCustosOutrosRepository(custosOutrosRepository);
             });
 
             materialEntidade.notifyObservers("O preço do material " + materialEntidade.getNomeMaterial() + " foi alterado.");

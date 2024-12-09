@@ -56,7 +56,7 @@ public class SecurityConfig {
 		CorsConfiguration corsConfig = new CorsConfiguration();
 
 		corsConfig.setAllowedOrigins(
-				Arrays.asList("http://localhost:5173", "http://localhost:5174","http://localhost:8080", "https://editor.swagger.io"));
+				Arrays.asList("*"));
 
 		corsConfig.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(),
 				HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name(), HttpMethod.HEAD.name()));
@@ -66,7 +66,7 @@ public class SecurityConfig {
 
 		corsConfig.setExposedHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION));
 
-		corsConfig.setAllowCredentials(true);
+		corsConfig.setAllowCredentials(false);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", corsConfig);

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
-import tcatelie.microservice.auth.dto.request.MaterialProdutoRequestDTO;
-import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
-import tcatelie.microservice.auth.dto.request.ProdutosUpdateRequestDTO;
+import tcatelie.microservice.auth.dto.request.*;
 import tcatelie.microservice.auth.dto.response.MaterialProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.MercadoLivreProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
@@ -57,6 +56,7 @@ public class ProdutoService {
     private final GoogleDriveApiService googleDriveApiService;
     private final ProdutoObserver produtoObserver;
     private final EmailService emailService;
+
     private static final Logger logger = LoggerFactory.getLogger(ProdutoService.class);
 
     public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO requestDTO) {
@@ -111,6 +111,7 @@ public class ProdutoService {
         });
 
         produto.setPersonalizacoes(listaPersonalizacoes);
+        produto.setPersonalizacaoObrigatoria(requestDTO.getIsPersonalizacaoObrigatoria());
 
         produto.getImagensAdicionais().forEach(img -> img.setProduto(produto));
         return produto;
@@ -170,10 +171,16 @@ public class ProdutoService {
     public ProdutoResponseDTO buscarProdutoPorId(Integer id) {
         Produto produto = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com o ID: " + id));
+
+        produto.setPersonalizacoes(produto.getPersonalizacoes().stream()
+                .filter(Personalizacao::getPersonalizacaoAtiva)
+                .collect(Collectors.toList()));
+
         return montarProdutoResponseDTO(produto, produto.getMateriaisProduto().stream()
                 .map(mp -> new MaterialProdutoRequestDTO(mp.getMaterial().getIdMaterial(), mp.getQtdMaterialNecessario()))
                 .collect(Collectors.toList()));
     }
+
 
     public Page<ProdutoResponseDTO> buscarTodosProdutosPaginados(Pageable pageable, ProdutoFiltroDTO produtoFiltroDTO) {
         Page<Produto> produtos = repository.findAll(ProdutoSpecification.filtrar(produtoFiltroDTO), pageable);
@@ -191,6 +198,13 @@ public class ProdutoService {
 
         validarRequest(requestDTO);
 
+        if (repository.findByNomeAndIdNot(requestDTO.getNome(), idProduto).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Produto já cadastrado com esse nome.");
+        }
+        if (repository.findBySkuAndIdNot(requestDTO.getSku(), idProduto).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Produto já cadastrado com esse sku.");
+        }
+
         List<String> filesIds = new ArrayList<>();
 
         produtoExistente.setNome(requestDTO.getNome());
@@ -201,6 +215,8 @@ public class ProdutoService {
         produtoExistente.setMargemLucro(requestDTO.getMargemLucro());
         produtoExistente.setPersonalizavel(requestDTO.getIsPersonalizavel());
         produtoExistente.setDimensao(requestDTO.getDimensao());
+        produtoExistente.setPeso(requestDTO.getPeso());
+        produtoExistente.setPersonalizacaoObrigatoria(requestDTO.getIsPersonalizacaoObrigatoria());
 
         if (!produtoExistente.getUrlImagemPrincipal().equals(requestDTO.getUrlProduto())) {
             filesIds.add(produtoExistente.getIdImgDrive());
@@ -242,17 +258,17 @@ public class ProdutoService {
                 .map(personalizacaoMapper::toPersonalizacaoWithOpcoes)
                 .collect(Collectors.toList());
 
-        List<Personalizacao> personalizacoesParaRemover = personalizacoesExistentes.stream()
-                .filter(pExistente -> personalizacoesRecebidas.stream()
-                        .noneMatch(pRecebida -> pRecebida.getIdPersonalizacao() != null
-                                && pRecebida.getIdPersonalizacao().equals(pExistente.getIdPersonalizacao())))
-                .collect(Collectors.toList());
+        personalizacoesExistentes.forEach(pExistente -> {
+            boolean aindaAtiva = personalizacoesRecebidas.stream()
+                    .anyMatch(pRecebida -> pRecebida.getIdPersonalizacao() != null
+                            && pRecebida.getIdPersonalizacao().equals(pExistente.getIdPersonalizacao()));
+            pExistente.setPersonalizacaoAtiva(aindaAtiva);
+        });
 
-        personalizacoesParaRemover.forEach(p -> p.getOpcoes().forEach(o -> filesIds.add(o.getIdImgDrive())));
-        produtoExistente.getPersonalizacoes().removeAll(personalizacoesParaRemover);
         personalizacoesRecebidas.forEach(p -> {
             if (p.getIdPersonalizacao() == null) {
                 p.setProduto(produtoExistente);
+                p.setPersonalizacaoAtiva(true);
                 produtoExistente.getPersonalizacoes().add(p);
             } else {
                 Personalizacao personalizacaoExistente = personalizacaoRepository.findById(p.getIdPersonalizacao())
@@ -260,18 +276,22 @@ public class ProdutoService {
 
                 personalizacaoExistente.setNomePersonalizacao(p.getNomePersonalizacao());
                 personalizacaoExistente.setTipoPersonalizacao(p.getTipoPersonalizacao());
+                personalizacaoExistente.setPersonalizacaoAtiva(true); // Certifica-se de que ela está ativa
 
                 List<OpcaoPersonalizacao> opcoesExistentes = personalizacaoExistente.getOpcoes();
                 List<OpcaoPersonalizacao> opcoesRecebidas = p.getOpcoes();
 
-                List<OpcaoPersonalizacao> opcoesParaRemover = opcoesExistentes.stream()
-                        .filter(oExistente -> opcoesRecebidas.stream()
-                                .noneMatch(oRecebida -> oRecebida.getIdOpcaoPersonalizacao() != null
-                                        && oRecebida.getIdOpcaoPersonalizacao().equals(oExistente.getIdOpcaoPersonalizacao())))
-                        .collect(Collectors.toList());
-
-                opcoesParaRemover.forEach(o -> filesIds.add(o.getIdImgDrive()));
-                personalizacaoExistente.getOpcoes().removeAll(opcoesParaRemover);
+                opcoesExistentes.forEach(oExistente -> {
+                    boolean opcaoAindaAtiva = opcoesRecebidas.stream()
+                            .anyMatch(oRecebida -> oRecebida.getIdOpcaoPersonalizacao() != null
+                                    && oRecebida.getIdOpcaoPersonalizacao().equals(oExistente.getIdOpcaoPersonalizacao()));
+                    if (!opcaoAindaAtiva) {
+                        filesIds.add(oExistente.getIdImgDrive());
+                    }
+                });
+                opcoesExistentes.removeIf(o -> opcoesRecebidas.stream()
+                        .noneMatch(oRecebida -> oRecebida.getIdOpcaoPersonalizacao() != null
+                                && oRecebida.getIdOpcaoPersonalizacao().equals(o.getIdOpcaoPersonalizacao())));
 
                 opcoesRecebidas.forEach(o -> {
                     if (o.getIdOpcaoPersonalizacao() == null) {
@@ -290,6 +310,7 @@ public class ProdutoService {
                 });
             }
         });
+
 
         atualizarMateriais(produtoExistente, requestDTO.getMateriais());
 
@@ -443,12 +464,12 @@ public class ProdutoService {
         }
     }
 
-    public void atualizarCategoriaSubcategoriaDoProduto(ProdutosUpdateRequestDTO dto){
+    public void atualizarCategoriaSubcategoriaDoProduto(ProdutosUpdateRequestDTO dto) {
 
         List<Produto> produtos = new ArrayList<>();
-        if(dto.getNomesProdutos().size() == 1 & dto.getNomesProdutos().get(0).equals("TODOS")){
+        if (dto.getNomesProdutos().size() == 1 & dto.getNomesProdutos().get(0).equals("TODOS")) {
             produtos = repository.findByCategoria_NomeCategoria(dto.getCategoriaAntiga());
-        } else{
+        } else {
             produtos = repository.findAllByNomeIn(dto.getNomesProdutos());
         }
 
@@ -475,6 +496,58 @@ public class ProdutoService {
         }
 
         return mapper.toResponseDTO(produto);
+    }
+
+    public Page<ProdutoResponseDTO> buscarPorNomeOuSku(String pesquisa, Pageable pageable) {
+        return repository.findByNomeContainingIgnoreCaseOrSkuContainingIgnoreCase(pesquisa, pesquisa, pageable)
+                .map(produto -> montarProdutoResponseDTO(produto, produto.getMateriaisProduto().stream()
+                        .map(mp -> new MaterialProdutoRequestDTO(mp.getMaterial().getIdMaterial(), mp.getQtdMaterialNecessario()))
+                        .collect(Collectors.toList())));
+    }
+
+    public ResponseEntity sugerirProdutos(PedidoRequestDTO pedido) {
+
+        List<ItemPedidoRequestDTO> itensCarrinho = pedido.getItens();
+
+        if (itensCarrinho.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<Produto> produtos = repository.findAllByIdIn(itensCarrinho.stream()
+                .map(ItemPedidoRequestDTO::getFkProduto)
+                .toList());
+
+        if (produtos.isEmpty()) {
+            logger.warn("Nenhum produto encontrado.");
+            return ResponseEntity.noContent().build();
+        }
+
+        List<Categoria> categorias = produtos.stream()
+                .map(Produto::getCategoria)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        List<Subcategoria> subcategorias = produtos.stream()
+                .map(Produto::getSubcategoria)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        if (categorias.isEmpty() && subcategorias.isEmpty()) {
+            logger.warn("Nenhuma categoria ou subcategoria encontrada.");
+            return ResponseEntity.noContent().build();
+        }
+
+        List<Produto> produtosSugeridos = repository.findByCategoriaInOrSubcategoriaIn(categorias, subcategorias, PageRequest.of(0, 10))
+                .getContent();
+
+        if (produtosSugeridos.isEmpty()) {
+            logger.warn("Nenhum produto sugerido encontrado.");
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(produtosSugeridos.stream().map(mapper::toResponseDTO).toList());
     }
 
 }

@@ -6,7 +6,7 @@ name: Build and deploy JAR app to Azure Web App - e-buy-spring-web-app
 on:
   push:
     branches:
-      - main
+      - develop-ebuy
   workflow_dispatch:
 
 jobs:
@@ -23,6 +23,14 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MERCADO_PAGO_A_TOKEN: ${{ secrets.MERCADO_PAGO_A_TOKEN }}
+          MELHOR_ENVIO_URL: ${{ secrets.MELHOR_ENVIO_URL }}
+          MELHOR_ENVIO_TOKEN: ${{ secrets.MELHOR_ENVIO_TOKEN }}
         run: mvn clean install
 
       - name: Upload artifact for deployment job

@@ -257,7 +257,7 @@ class UsuarioServiceTest {
 		googleAuthDTO.setGivenName("Araújo");
 
 		when(repository.findByEmail(googleAuthDTO.getEmail())).thenReturn(Optional.empty());
-		when(jwtService.generateToken(any(Usuario.class))).thenReturn("token");
+		when(jwtService.generateAccessToken(any(Usuario.class))).thenReturn("token");
 		when(usuarioMapper.toUsuarioResponseDTO(any(Usuario.class))).thenReturn(new UsuarioResponseDTO());
 		when(repository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
 
@@ -278,7 +278,7 @@ class UsuarioServiceTest {
 		usuarioExistente.setEmail("claudio@gmail.com");
 		when(repository.findByEmail(usuarioExistente.getEmail())).thenReturn(Optional.of(usuarioExistente));
 		when(repository.save(any(Usuario.class))).thenReturn(usuarioExistente);
-		when(jwtService.generateToken(any(Usuario.class))).thenReturn("token");
+		when(jwtService.generateAccessToken(any(Usuario.class))).thenReturn("token");
 
 		GoogleAuthDTO googleAuthDTO = new GoogleAuthDTO();
 		googleAuthDTO.setEmail("claudio@gmail.com");
@@ -320,7 +320,7 @@ class UsuarioServiceTest {
 		usuarioResponseDTO.setEmail("claudio@gmail.com");
 
 		when(repository.findByEmail(googleAuthDTO.getEmail())).thenReturn(Optional.of(usuario));
-		when(jwtService.generateToken(any(Usuario.class))).thenReturn("token");
+		when(jwtService.generateAccessToken(any(Usuario.class))).thenReturn("token");
 		when(usuarioMapper.toUsuarioResponseDTO(any(Usuario.class))).thenReturn(usuarioResponseDTO);
 
 		ResponseEntity<?> response = usuarioService.autenticacaoGoogle(googleAuthDTO, authenticationManager);

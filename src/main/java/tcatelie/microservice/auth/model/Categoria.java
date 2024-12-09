@@ -39,8 +39,12 @@ public class Categoria {
     @Column(name = "codigo_cor")
     private String codigoCor;
 
+    @Column(name = "categoria_ativa")
+    private Boolean categoriaAtiva;
+
     @PrePersist
     protected void onCreate() {
+        this.categoriaAtiva = true;
         this.dthrCadastro = LocalDateTime.now();
         this.dthrAtualizacao = LocalDateTime.now();
     }

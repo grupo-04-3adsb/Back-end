@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tcatelie.microservice.auth.model.Usuario;
 
 import java.time.LocalDateTime;
 
@@ -35,13 +36,16 @@ public class AvaliacaoResponseDTO {
     private String nomeUsuario;
 
     @Schema(description = "Data e hora em que a avaliação foi feita", example = "2024-11-08T14:30:00")
-    private LocalDateTime dataAvaliacao;
+    private String dataAvaliacao;
 
     @Schema(description = "ID do produto que foi avaliado", example = "456")
     private Integer produtoId;
 
     @Schema(description = "Nome do produto que foi avaliado", example = "Caderno")
     private String nomeProduto;
+
+    @Schema(description = "Usuário que fez a avaliação")
+    private UsuarioResponseDTO usuario;
 
     @Override
     public String toString() {

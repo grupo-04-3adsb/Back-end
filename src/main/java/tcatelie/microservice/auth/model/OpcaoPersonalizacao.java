@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -44,6 +45,9 @@ public class OpcaoPersonalizacao {
 
     @Column(name = "data_hora_atualizacao")
     private LocalDateTime dthrAtualizacao;
+
+    @OneToMany(mappedBy = "opcaoPersonalizacao", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<PersonalizacaoItemPedido> personalizacaoItemPedido;
 
     @PrePersist
     protected void onCreate() {

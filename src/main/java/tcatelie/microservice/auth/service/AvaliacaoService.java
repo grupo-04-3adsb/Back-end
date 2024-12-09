@@ -1,8 +1,10 @@
 package tcatelie.microservice.auth.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.request.AvaliacaoRequestDTO;
 import tcatelie.microservice.auth.dto.response.AvaliacaoResponseDTO;
 import tcatelie.microservice.auth.model.Avaliacao;
@@ -13,6 +15,7 @@ import tcatelie.microservice.auth.repository.ProdutoRepository;
 import tcatelie.microservice.auth.repository.UserRepository;
 import tcatelie.microservice.auth.mapper.AvaliacaoMapper;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -102,14 +105,14 @@ public class AvaliacaoService {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    public ResponseEntity obterAvaliacoesPorProduto(Integer produtoId) {
+    public List<AvaliacaoResponseDTO> obterAvaliacoesPorProduto(Integer produtoId) {
         if (!produtoRepository.existsById(produtoId)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Produto não encontrado.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado.");
         }
 
-        var avaliacoes = avaliacaoRepository.findByProduto_Id(produtoId);
-        var response = avaliacoes.stream().map(avaliacaoMapper::toResponseDTO).toList();
-        return ResponseEntity.ok(response);
+        List<Avaliacao> avaliacoes = avaliacaoRepository.findByProduto_IdAndAvaliacaoAprovadaTrue(produtoId, PageRequest.of(0, 10));
+        List<AvaliacaoResponseDTO> response = avaliacoes.stream().map(avaliacaoMapper::toResponseDTO).toList();
+        return response;
     }
 
     public ResponseEntity obterAvaliacoesPorUsuario(Integer usuarioId) {

@@ -50,7 +50,6 @@ public class ProdutoRequestDTO {
     private String urlProduto;
 
     @Schema(description = "Desconto aplicado ao produto", example = "5.00")
-    @Positive(message = "O valor do desconto deve ser maior que zero")
     private Double desconto;
 
     @Schema(description = "Categoria do produto", implementation = CategoriaRequestDTO.class)
@@ -64,6 +63,11 @@ public class ProdutoRequestDTO {
     @Schema(description = "Indica se o produto é personalizável", example = "true")
     @NotNull(message = "O campo personalizável não pode ser nulo")
     private Boolean isPersonalizavel;
+
+    @Schema(description = "Peso do produto", example = "0.500")
+    @Positive(message = "O peso do produto deve ser maior que zero")
+    @NotNull(message = "O peso do produto não pode ser nulo")
+    private Double peso;
 
     @Schema(description = "Indica se a personalização é obrigatória", example = "true")
     @NotNull(message = "O campo de personalização obrigatória não pode ser nulo")
