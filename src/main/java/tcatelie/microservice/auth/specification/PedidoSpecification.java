@@ -16,7 +16,7 @@ import java.util.List;
 
 public class PedidoSpecification {
 
-    public static Specification<Pedido> filterBy(PedidoFiltroDTO filtro) {
+    public static Specification<Pedido> filterBy(PedidoFiltroDTO filtro, List<StatusPedido> statusExcluidos) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -95,6 +95,9 @@ public class PedidoSpecification {
             }
             if (StringUtils.hasText(filtro.getPaymentId())) {
                 predicates.add(cb.equal(root.get("paymentId"), filtro.getPaymentId()));
+            }
+            if(!CollectionUtils.isEmpty(statusExcluidos)) {
+                predicates.add(cb.not(root.get("status").in(statusExcluidos)));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

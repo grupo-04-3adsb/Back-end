@@ -57,7 +57,7 @@ public class ExcelService {
         writeWorkbookToResponse(response, workbook);
     }
 
-    private  void fillMaterialData(Sheet sheet, List<ProdutoResponseDTO> produtos, CellStyle dataStyle, int rowIndex) {
+    private void fillMaterialData(Sheet sheet, List<ProdutoResponseDTO> produtos, CellStyle dataStyle, int rowIndex) {
         Row materialRow = sheet.createRow(rowIndex);
         Set<MaterialProdutoResponseDTO> materiais = produtos.stream().map(ProdutoResponseDTO::getMateriais).collect(HashSet::new, Set::addAll, Set::addAll);
 
@@ -82,18 +82,18 @@ public class ExcelService {
 
     private void fillPedidoData(Sheet sheet, PedidoResponseDTO pedido, CellStyle dataStyle) {
         Row dataRow = sheet.createRow(1);
-        dataRow.createCell(0).setCellValue(pedido.getId());
-        dataRow.createCell(1).setCellValue(pedido.getCliente().getNome());
-        dataRow.createCell(2).setCellValue(pedido.getStatus());
-        dataRow.createCell(3).setCellValue(pedido.getValorTotal());
-        dataRow.createCell(4).setCellValue(pedido.getValorDesconto());
-        dataRow.createCell(5).setCellValue(pedido.getValorFrete());
-        dataRow.createCell(6).setCellValue(pedido.getDataPedido());
-        dataRow.createCell(7).setCellValue(pedido.getDataEntrega());
-        dataRow.createCell(8).setCellValue(pedido.getDataPagamento());
-        dataRow.createCell(9).setCellValue(pedido.getDataCancelamento());
-        dataRow.createCell(10).setCellValue(pedido.getCodigoRastreio());
-        dataRow.createCell(11).setCellValue(pedido.getObservacao());
+        dataRow.createCell(0).setCellValue(pedido != null ? pedido.getId() : 0);
+        dataRow.createCell(1).setCellValue(pedido != null && pedido.getCliente() != null ? pedido.getCliente().getNome() : "");
+        dataRow.createCell(2).setCellValue(pedido != null ? pedido.getStatus() : "");
+        dataRow.createCell(3).setCellValue(pedido != null && pedido.getValorTotal() != null ? pedido.getValorTotal() : 0.0);
+        dataRow.createCell(4).setCellValue(pedido != null && pedido.getValorDesconto() != null ? pedido.getValorDesconto() : 0.0);
+        dataRow.createCell(5).setCellValue(pedido != null && pedido.getValorFrete() != null ? pedido.getValorFrete() : 0.0);
+        dataRow.createCell(6).setCellValue(pedido != null ? pedido.getDataPedido() : "");
+        dataRow.createCell(7).setCellValue(pedido != null ? pedido.getDataEntrega() : "");
+        dataRow.createCell(8).setCellValue(pedido != null ? pedido.getDataPagamento() : "");
+        dataRow.createCell(9).setCellValue(pedido != null ? pedido.getDataCancelamento() : "");
+        dataRow.createCell(10).setCellValue(pedido != null ? pedido.getCodigoRastreio() : "");
+        dataRow.createCell(11).setCellValue(pedido != null ? pedido.getObservacao() : "");
 
         for (Cell cell : dataRow) {
             cell.setCellStyle(dataStyle);

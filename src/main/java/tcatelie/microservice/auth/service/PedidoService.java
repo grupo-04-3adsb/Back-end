@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -100,7 +101,13 @@ public class PedidoService {
     }
 
     public List<PedidoResponseDTO> findAll(PedidoFiltroDTO filtroDTO) {
-        return repository.findAll(PedidoSpecification.filterBy(filtroDTO)).stream()
+        return repository.findAll(PedidoSpecification.filterBy(filtroDTO, List.of(StatusPedido.CARRINHO))).stream()
+                .map(this::transformarPedido)
+                .toList();
+    }
+
+    public List<PedidoResponseDTO> findAll(PedidoFiltroDTO filtroDTO, Pageable page) {
+        return repository.findAll(PedidoSpecification.filterBy(filtroDTO, List.of(StatusPedido.CARRINHO)), page).stream()
                 .map(this::transformarPedido)
                 .toList();
     }

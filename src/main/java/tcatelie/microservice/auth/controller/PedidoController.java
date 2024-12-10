@@ -127,9 +127,6 @@ public class PedidoController {
         LocalDateTime startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay();
         LocalDateTime endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).atTime(23, 59, 59);
 
-        filtro.setDataPedidoInicio(startOfWeek);
-        filtro.setDataPedidoFim(endOfWeek);
-
         if (idResponsavel != null) {
             filtro.setIdsResponsaveis(List.of(idResponsavel));
         }
@@ -138,7 +135,9 @@ public class PedidoController {
             filtro.setStatusList(List.of(status));
         }
 
-        List<PedidoResponseDTO> pedidos = service.findAll(filtro);
+        List<PedidoResponseDTO> pedidos = service.findAll(filtro, PageRequest.of(
+                0, 10, Sort.by(Sort.Direction.DESC, "id")
+        ));
         excelService.gerarArquivoPedidosExcel(response, pedidos);
     }
 
