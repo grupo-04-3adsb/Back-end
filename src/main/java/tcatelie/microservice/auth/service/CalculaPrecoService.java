@@ -17,11 +17,11 @@ public class CalculaPrecoService {
             .mapToDouble(material -> material.getMaterial().getPrecoUnitario() * material.getQtdMaterialNecessario()).sum();
 
     double valorCustosOutros = custosOutrosRepository.findAll().stream()
-            .mapToDouble(custoOutros -> custoOutros.getValor()).sum();
+            .mapToDouble(CustoOutros::getValor).sum();
 
     double totalProducao = valorProducao + valorCustosOutros;
-
     double margemLucro = produto.getMargemLucro() != null ? produto.getMargemLucro() : 0.0;
+
     return totalProducao * (1 + margemLucro / 100);
   }
 
@@ -95,6 +95,56 @@ public class CalculaPrecoService {
             .mapToDouble(custoOutros -> custoOutros.getValor()).sum();
 
     double totalProducao = valorProducao + valorCustosOutros + custoEditado.getValor();
+
+    double margemLucro = produto.getMargemLucro() != null ? produto.getMargemLucro() : 0.0;
+    return totalProducao * (1 + margemLucro / 100);
+  }
+
+  public Double calcularPrecoComMaterialNovo(Produto produto, double novoPrecoMaterial, double qtdMaterial) {
+    double valorProducao = produto.getMateriaisProduto().stream()
+            .mapToDouble(material -> material.getMaterial().getPrecoUnitario() * material.getQtdMaterialNecessario()).sum() + novoPrecoMaterial * qtdMaterial;
+
+    double valorCustosOutros = custosOutrosRepository.findAll().stream()
+            .mapToDouble(custoOutros -> custoOutros.getValor()).sum();
+
+    double totalProducao = valorProducao + valorCustosOutros;
+
+    double margemLucro = produto.getMargemLucro() != null ? produto.getMargemLucro() : 0.0;
+    return totalProducao * (1 + margemLucro / 100);
+  }
+
+  public Double calcularPrecoComMaterialEditado(Produto produto, Integer idMaterial, double novoPrecoMaterial, Integer qtdMaterial) {
+    double valorProducao = produto.getMateriaisProduto().stream()
+            .mapToDouble(material -> {
+                if(material.getMaterial().getIdMaterial().equals(idMaterial)){
+                    return novoPrecoMaterial * qtdMaterial;
+                }
+                return material.getMaterial().getPrecoUnitario() * material.getQtdMaterialNecessario();
+            }).sum();
+
+    double valorCustosOutros = custosOutrosRepository.findAll().stream()
+            .mapToDouble(custoOutros -> custoOutros.getValor()).sum();
+
+    double totalProducao = valorProducao + valorCustosOutros;
+
+    double margemLucro = produto.getMargemLucro() != null ? produto.getMargemLucro() : 0.0;
+    return totalProducao * (1 + margemLucro / 100);
+  }
+
+
+  public Double calcularPrecoComMaterialRemovido(Produto produto, Integer idMaterial) {
+    double valorProducao = produto.getMateriaisProduto().stream()
+            .mapToDouble(material -> {
+                if(material.getMaterial().getIdMaterial().equals(idMaterial)){
+                    return 0;
+                }
+                return material.getMaterial().getPrecoUnitario() * material.getQtdMaterialNecessario();
+            }).sum();
+
+    double valorCustosOutros = custosOutrosRepository.findAll().stream()
+            .mapToDouble(custoOutros -> custoOutros.getValor()).sum();
+
+    double totalProducao = valorProducao + valorCustosOutros;
 
     double margemLucro = produto.getMargemLucro() != null ? produto.getMargemLucro() : 0.0;
     return totalProducao * (1 + margemLucro / 100);
