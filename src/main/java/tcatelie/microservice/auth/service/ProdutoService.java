@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,9 +16,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.filter.ProdutoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.*;
+import tcatelie.microservice.auth.dto.response.CustoOutrosResponseDTO;
 import tcatelie.microservice.auth.dto.response.MaterialProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.MercadoLivreProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
+import tcatelie.microservice.auth.dto.revison.ProdutoRevisaoResponseDTO;
 import tcatelie.microservice.auth.mapper.ImagensAdicionaisMapper;
 import tcatelie.microservice.auth.mapper.OpcaoPersonalizacaoMapper;
 import tcatelie.microservice.auth.mapper.PersonalizacaoMapper;
@@ -56,8 +59,10 @@ public class ProdutoService {
     private final GoogleDriveApiService googleDriveApiService;
     private final ProdutoObserver produtoObserver;
     private final EmailService emailService;
+    private final CalculaPrecoService calculaPrecoService;
 
     private static final Logger logger = LoggerFactory.getLogger(ProdutoService.class);
+    private final CustoOutrosService custoOutrosService;
 
     public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO requestDTO) {
         validarRequest(requestDTO);
@@ -66,8 +71,9 @@ public class ProdutoService {
 
         Produto produto = criarProdutoComRelacoes(requestDTO);
         produto.setProdutoAtivo(true);
-        Produto produtoSalvo = repository.save(produto);
+        produto.setPreco(calculaPrecoService.calcularPrecoProduto(produto));
 
+        Produto produtoSalvo = repository.save(produto);
 
         Observer emailNotificacao = new EmailNotificacao("claudio.araujofo@sptech.school", emailService);
         produtoObserver.addObserver(emailNotificacao);
@@ -549,5 +555,47 @@ public class ProdutoService {
 
         return ResponseEntity.ok(produtosSugeridos.stream().map(mapper::toResponseDTO).toList());
     }
+
+  public Page<ProdutoRevisaoResponseDTO> buscarProdutosPrecoAtualizadoNovoCustoAdicional(Double novoCusto, Pageable pageable) {
+    Page<Produto> produtosPage = repository.findAll(pageable);
+    List<ProdutoRevisaoResponseDTO> produtos = produtosPage.getContent().stream().map(produto -> {
+      ProdutoRevisaoResponseDTO dto = new ProdutoRevisaoResponseDTO();
+      dto.setNomeProduto(produto.getNome());
+      dto.setPrecoNovo(calculaPrecoService.calcularPrecoNovoCustoOutro(produto, novoCusto));
+      dto.setPrecoAntigo(produto.getPreco());
+      return dto;
+    }).collect(Collectors.toList());
+
+    return new PageImpl<>(produtos, pageable, produtosPage.getTotalElements());
+  }
+
+  public Page<ProdutoRevisaoResponseDTO> buscarProdutosPrecoAtualizadoSemCustoOutros(Integer idCustoOutro, Pageable pageable) {
+    CustoOutros custoOutro = custoOutrosService.findById(idCustoOutro);
+    Page<Produto> produtosPage = repository.findAll(pageable);
+    List<ProdutoRevisaoResponseDTO> produtos = produtosPage.getContent().stream().map(produto -> {
+      ProdutoRevisaoResponseDTO dto = new ProdutoRevisaoResponseDTO();
+      dto.setNomeProduto(produto.getNome());
+      dto.setPrecoNovo(calculaPrecoService.calcularSemCustoOutro(produto, custoOutro));
+      dto.setPrecoAntigo(produto.getPreco());
+      return dto;
+    }).collect(Collectors.toList());
+
+    return new PageImpl<>(produtos, pageable, produtosPage.getTotalElements());
+  }
+
+  public Page<ProdutoRevisaoResponseDTO> buscarProdutosPrecoAtualizadoCustoOutrosEditado(Integer idCustoOutro, Double novoCusto, Pageable pageable) {
+    CustoOutros custoOutro = custoOutrosService.findById(idCustoOutro);
+    custoOutro.setValor(novoCusto);
+    Page<Produto> produtosPage = repository.findAll(pageable);
+    List<ProdutoRevisaoResponseDTO> produtos = produtosPage.getContent().stream().map(produto -> {
+      ProdutoRevisaoResponseDTO dto = new ProdutoRevisaoResponseDTO();
+      dto.setNomeProduto(produto.getNome());
+      dto.setPrecoNovo(calculaPrecoService.calcularPrecoComCustoOutroEditado(produto, custoOutro));
+      dto.setPrecoAntigo(produto.getPreco());
+      return dto;
+    }).collect(Collectors.toList());
+
+    return new PageImpl<>(produtos, pageable, produtosPage.getTotalElements());
+  }
 
 }

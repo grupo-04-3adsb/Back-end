@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -27,4 +29,16 @@ public class CustoOutrosFiltroDTO {
 
     @Schema(description = "Data e hora da criação do custo de outros", example = "2021-08-01T00:00:00")
     private String dataHoraCriacao;
+
+    @Schema(description = "Data e hora da atualização do custo de outros", example = "2021-08-01T00:00:00")
+    private LocalDateTime dataHoraAtualizacaoInicio;
+
+    @Schema(description = "Data e hora da atualização do custo de outros", example = "2021-08-01T00:00:00")
+    private LocalDateTime dataHoraAtualizacaoFim;
+
+    @Schema(description = "Data e hora da criação do custo de outros", example = "2021-08-01T00:00:00")
+    private LocalDateTime dataHoraCriacaoInicio;
+
+    @Schema(description = "Data e hora da criação do custo de outros", example = "2021-08-01T00:00:00")
+    private LocalDateTime dataHoraCriacaoFim;
 }

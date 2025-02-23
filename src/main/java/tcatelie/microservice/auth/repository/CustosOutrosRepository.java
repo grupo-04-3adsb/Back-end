@@ -14,7 +14,11 @@ public interface CustosOutrosRepository extends JpaRepository<CustoOutros, Integ
             "(:#{#filtro.valorMin} IS NULL OR c.valor >= :#{#filtro.valorMin}) AND " +
             "(:#{#filtro.valorMax} IS NULL OR c.valor <= :#{#filtro.valorMax}) AND " +
             "(:#{#filtro.dataHoraAtualizacao} IS NULL OR c.dataHoraAtualizacao = :#{#filtro.dataHoraAtualizacao}) AND " +
-            "(:#{#filtro.dataHoraCriacao} IS NULL OR c.dataHoraCriacao = :#{#filtro.dataHoraCriacao})"
+            "(:#{#filtro.dataHoraCriacao} IS NULL OR c.dataHoraCriacao = :#{#filtro.dataHoraCriacao}) AND " +
+            "(:#{#filtro.dataHoraAtualizacaoInicio} IS NULL OR c.dataHoraAtualizacao >= :#{#filtro.dataHoraAtualizacaoInicio}) AND " +
+            "(:#{#filtro.dataHoraAtualizacaoFim} IS NULL OR c.dataHoraAtualizacao <= :#{#filtro.dataHoraAtualizacaoFim}) AND " +
+            "(:#{#filtro.dataHoraCriacaoInicio} IS NULL OR c.dataHoraCriacao >= :#{#filtro.dataHoraCriacaoInicio}) AND " +
+            "(:#{#filtro.dataHoraCriacaoFim} IS NULL OR c.dataHoraCriacao <= :#{#filtro.dataHoraCriacaoFim})"
     )
     Page<CustoOutros> findAll(CustoOutrosFiltroDTO filtro, Pageable page);
 }
