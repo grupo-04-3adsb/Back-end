@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import tcatelie.microservice.auth.dto.filter.CustoOutrosFiltroDTO;
 import tcatelie.microservice.auth.model.CustoOutros;
 
+import java.util.Optional;
+
 public interface CustosOutrosRepository extends JpaRepository<CustoOutros, Integer> {
 
     @Query("SELECT c FROM CustoOutros c WHERE " +
@@ -21,4 +23,8 @@ public interface CustosOutrosRepository extends JpaRepository<CustoOutros, Integ
             "(:#{#filtro.dataHoraCriacaoFim} IS NULL OR c.dataHoraCriacao <= :#{#filtro.dataHoraCriacaoFim})"
     )
     Page<CustoOutros> findAll(CustoOutrosFiltroDTO filtro, Pageable page);
+
+    boolean existsByDescricao(String descricao);
+
+    boolean existsByDescricaoAndIdCustoOutrosNot(String descricao, Integer idCustoOutros);
 }

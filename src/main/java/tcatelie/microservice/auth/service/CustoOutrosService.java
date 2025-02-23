@@ -43,10 +43,19 @@ public class CustoOutrosService {
         return repository.findAll().stream().map(mapper::toResponseDTO).toList();
     }
 
+    private boolean verificaUnicidadeDescricao(String descricao){
+        return repository.existsByDescricao(descricao);
+    }
+
     public void cadastrarCustoOutro(CustoOutrosRequestDTO custo){
         if(StringUtils.isBlank(custo.getDescricao()) || custo.getValor() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Descrição e valor são obrigatórios");
         }
+
+        if(verificaUnicidadeDescricao(custo.getDescricao())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Já existe um custo de outros com essa descrição");
+        }
+
         CustoOutros custoOutros = mapper.toEntity(custo);
 
         List<Produto> produtos = produtoRepository.findAll();
@@ -64,6 +73,10 @@ public class CustoOutrosService {
         CustoOutros custoOutros = findById(id);
         if(StringUtils.isNotBlank(custo.getDescricao())){
             custoOutros.setDescricao(custo.getDescricao());
+        }
+
+        if(repository.existsByDescricaoAndIdCustoOutrosNot(custo.getDescricao(), id)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Já existe um custo de outros com essa descrição");
         }
 
         boolean isPrecoDiferente = custo.getValor() != null && !custo.getValor().equals(custoOutros.getValor());
