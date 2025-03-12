@@ -70,6 +70,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/pedidos/export"),
             new AntPathRequestMatcher("/produtos/busca-novo-custo/**"),
             new AntPathRequestMatcher("/produtos/buscar-sem-custo-outros/"),
+            new AntPathRequestMatcher("/parametros-gerais/**"),
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {

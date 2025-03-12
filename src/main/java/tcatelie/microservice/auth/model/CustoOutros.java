@@ -36,6 +36,10 @@ public class CustoOutros {
     @Column(name = "data_hora_criacao")
     private LocalDateTime dataHoraCriacao;
 
+    public CustoOutros(Double valor){
+        this.valor = valor;
+    }
+
     @PreUpdate
     public void preUpdate() {
         dataHoraAtualizacao = LocalDateTime.now();

@@ -395,4 +395,27 @@ public class ProdutoController {
     return service.buscarProdutosPrecoAtualizadoCustoOutrosEditado(idCustoOutro, novoCustoOutro, PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)));
   }
 
+  @Operation(
+          summary = "Buscar produtos com o preço atualizado após atualização no valor da projecao de vendas",
+          description = "Este endpoint permite buscar produtos com o preço atualizado após atualização no valor da projecao de vendas.",
+          responses = {
+                  @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso.",
+                          content = @Content(mediaType = "application/json",
+                                  schema = @Schema(implementation = ProdutoResponseDTO.class))),
+                  @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+          }
+  )
+  @GetMapping("/busca-novo-custos/projecao-vendas")
+  public Page<ProdutoRevisaoResponseDTO> buscarProdutosComPrecoAtualizadoAposAtual(
+          @RequestParam(required = true) Double novoValorProjecaoVendas,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int size,
+          @RequestParam(defaultValue = "id") String sortBy,
+          @RequestParam(defaultValue = "asc") String sortOrder) {
+    return service.buscarProdutosPrecoAtualizadoProjecaoVendasAlterada(
+            novoValorProjecaoVendas,
+            PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)
+            )
+    );
+  }
 }
