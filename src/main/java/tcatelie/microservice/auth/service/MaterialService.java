@@ -35,6 +35,7 @@ public class MaterialService {
     private final ProdutoRepository produtoRepository;
     private final MaterialProdutoRepository materialProdutoRepository;
     private final CustosOutrosRepository custosOutrosRepository;
+    private final CalculaPrecoService calculaPrecoService;
 
     public MaterialResponseDTO cadastrar(MaterialRequestDTO dto) {
         Material materialEntidade = MaterialMapper.toEntity(dto);
@@ -97,12 +98,11 @@ public class MaterialService {
                     .collect(Collectors.toList());
 
             produtos.forEach(produto -> {
-                materialEntidade.addObserver((Observer) produto);
-                produto.setRepository(produtoRepository);
-                produto.setCustosOutrosRepository(custosOutrosRepository);
+                Double novoPreco = calculaPrecoService.calcularPrecoProduto(produto);
+                produto.setPreco(novoPreco);
+                produtoRepository.save(produto);
             });
 
-            materialEntidade.notifyObservers("O preço do material " + materialEntidade.getNomeMaterial() + " foi alterado.");
         }
 
         return MaterialMapper.toMaterialDetalhadoResponseDTO(materialSalvo);

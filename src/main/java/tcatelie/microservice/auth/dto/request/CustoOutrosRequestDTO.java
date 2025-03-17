@@ -1,6 +1,8 @@
 package tcatelie.microservice.auth.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,9 +18,11 @@ public class CustoOutrosRequestDTO {
     @Schema(description = "ID do custo de outros", example = "1")
     private Integer id;
 
+    @NotBlank
     @Schema(description = "Nome do custo de outros", example = "Custo de outros 1")
     private String descricao;
 
+    @NotNull
     @Schema(description = "Valor do custo de outros", example = "100.00")
     private Double valor;
 

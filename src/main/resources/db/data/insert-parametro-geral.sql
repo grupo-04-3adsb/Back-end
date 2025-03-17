@@ -1,0 +1,2 @@
+INSERT INTO parametro_geral(parametro_geral_id, parametro_geral_valor, parametro_geral_descricao, parametro_geral_tipo)
+VALUES ('PROJECAO_VENDAS', '100','Valor utilizado para diluir os custos outros no preço dos produtos.', 'NEGOCIO');

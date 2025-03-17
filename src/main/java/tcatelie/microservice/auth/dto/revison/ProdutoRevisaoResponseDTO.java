@@ -22,4 +22,13 @@ public class ProdutoRevisaoResponseDTO {
     @Schema(description = "Nova margem de lucro do produto.")
     private Double margemDeLucroNova;
 
+    @Schema(description = "Preço antigo do produto.")
+    private Double precoAntigo;
+
+    @Schema(description = "Novo preço do produto.")
+    private Double precoNovo;
+
+    @Schema(description = "Porcentagem de desconto antiga do produto.")
+    private Double porcentagemDescontoAntiga;
+
 }
