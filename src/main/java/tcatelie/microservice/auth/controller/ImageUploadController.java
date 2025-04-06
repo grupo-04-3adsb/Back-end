@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import tcatelie.microservice.auth.service.AzureBlobStorageService;
 import tcatelie.microservice.auth.service.GoogleDriveApiService;
 
 import java.io.File;
@@ -27,6 +28,7 @@ import java.io.IOException;
 public class ImageUploadController {
 
     private final GoogleDriveApiService googleDriveService;
+    private final AzureBlobStorageService azureBlobStorageService;
 
     @Operation(summary = "Upload de imagem", description = "Faz upload de uma imagem para o Google Drive e atualiza a url na imagem e retorna a URL pública da imagem.")
     @ApiResponses(value = {
@@ -117,6 +119,16 @@ public class ImageUploadController {
             return ResponseEntity.ok("Pasta do produto e seus arquivos foram removidos com sucesso.");
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Erro ao remover a pasta do produto: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/upload-azure")
+    public ResponseEntity<String> uploadToAzure(@RequestParam("file") MultipartFile file) {
+        try {
+            String fileUrl = azureBlobStorageService.uploadFile(file);
+            return ResponseEntity.ok(fileUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Erro ao fazer upload para o Azure: " + e.getMessage());
         }
     }
 
