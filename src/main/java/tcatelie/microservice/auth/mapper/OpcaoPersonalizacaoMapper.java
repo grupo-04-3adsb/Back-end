@@ -6,15 +6,16 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
 import tcatelie.microservice.auth.dto.request.OpcaoPersonalizacaoRequestDTO;
 import tcatelie.microservice.auth.dto.response.OpcaoPersonalizacaoResponseDTO;
+import tcatelie.microservice.auth.mapper.helper.ImageUrlMapperHelper;
 import tcatelie.microservice.auth.model.OpcaoPersonalizacao;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {ImageUrlMapperHelper.class})
 @Component
 public interface OpcaoPersonalizacaoMapper {
 
     OpcaoPersonalizacaoMapper INSTANCE = Mappers.getMapper(OpcaoPersonalizacaoMapper.class);
 
-    @Mapping(target = "urlImagemOpcao", source = "urlImagemOpcao")
+    @Mapping(target = "urlImagemOpcao", source = "urlImagemOpcao", qualifiedByName = "formatImageUrl")
     @Mapping(target = "acrescimoOpcao", source = "acrescimoOpcao")
     @Mapping(target = "descricao", source = "descricaoProduto")
     @Mapping(target = "idImgDrive", source = "idDrive")

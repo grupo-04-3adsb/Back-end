@@ -39,7 +39,7 @@ public class ImageUploadController {
             @ApiResponse(responseCode = "500", description = "Erro interno",
                     content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class)))
     })
-    @PostMapping("/image")
+    @PostMapping("/image-drive")
     public ResponseEntity<String> uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("tipo") String tipo,
@@ -122,10 +122,27 @@ public class ImageUploadController {
         }
     }
 
-    @PostMapping("/upload-azure")
-    public ResponseEntity<String> uploadToAzure(@RequestParam("file") MultipartFile file) {
+    @Operation(summary = "Upload de imagem", description = "Faz upload de uma imagem para o Azure Blob Storage e atualiza a URL na entidade correspondente.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Upload bem-sucedido",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "400", description = "Tipo de arquivo não suportado",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class)))
+    })
+    @PostMapping("/image")
+    public ResponseEntity<String> uploadImageToAzure(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("tipo") String tipo,
+            @RequestParam("nomeProduto") String nomeProduto,
+            @RequestParam("idEntidade") Integer idEntidade) {
+
         try {
-            String fileUrl = azureBlobStorageService.uploadFile(file);
+            String virtualPath = azureBlobStorageService.resolveVirtualPath(tipo, nomeProduto, idEntidade, file);
+            String fileUrl = azureBlobStorageService.uploadFile(file, virtualPath);
+
+            azureBlobStorageService.salvarUrlEntidade(tipo, idEntidade, fileUrl, virtualPath);
             return ResponseEntity.ok(fileUrl);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Erro ao fazer upload para o Azure: " + e.getMessage());
