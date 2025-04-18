@@ -495,3 +495,45 @@ VALUES ('Custos Outros - Luz, Net - R$ 240', 0.38),
 
 INSERT INTO parametro_geral(parametro_geral_id, parametro_geral_valor, parametro_geral_descricao, parametro_geral_tipo, usuario_criacao)
 VALUES ('PROJECAO_VENDAS', '100','Valor utilizado para diluir os custos outros no preço dos produtos.', 'NEGOCIO', 'Sistema');
+
+INSERT INTO faq (titulo, resposta) VALUES
+('Como faço para trocar a senha?', 'Para trocar a senha, acesse o menu de configurações e clique em "Alterar senha".'),
+('Quais formas de pagamento são aceitas?', 'Aceitamos cartões de crédito, débito, boleto bancário e Pix.'),
+('Qual o prazo de entrega dos produtos?', 'O prazo de entrega varia conforme a localização e o método de envio escolhido. Consulte o prazo estimado no momento da compra.'),
+('Como posso rastrear meu pedido?', 'Após a confirmação do envio, você receberá um código de rastreamento por e-mail para acompanhar seu pedido no site da transportadora.'),
+('Posso devolver um produto?', 'Sim, aceitamos devoluções dentro do prazo de 7 dias corridos após o recebimento. O produto deve estar em perfeitas condições e com a embalagem original.'),
+('O site é seguro para compras?', 'Sim, utilizamos criptografia SSL para garantir a segurança de suas informações durante a compra.');
+
+INSERT INTO pagina_info(pagina_info_id, pagina_info_titulo, pagina_info_descricao, pagina_info_destino) VALUES
+(1, 'Sobre a TCAteliê', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc tincidunt ultricies. Nullam nec purus nec nunc tincidunt ultricies. Nullam nec purus nec nunc tincidunt ultricies. Nullam nec purus nec nunc tincidunt ultricies.', '/sobre');
+
+INSERT INTO banner(banner_id, banner_titulo, banner_descricao, banner_button_text, banner_button_link, banner_imagem, banner_ativo, pagina_info_id) VALUES
+(1, 'Conheça nossa história', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc tincidunt ultricies.', 'Saiba mais', '/sobre', 'https://img.elo7.com.br/product/zoom/FCE084/quadro-paisagem-quadro-paisagem.jpg', true, 1);
+
+INSERT INTO conteudo_dinamico(conteudo_dinamico_id, conteudo_dinamico_titulo, conteudo_dinamico_descricao, conteudo_dinamico_button_text, conteudo_dinamico_button_link, conteudo_dinamico_ativo, conteudo_dinamico_html, pagina_info_id) VALUES
+(1, "XPTO1", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially", null, null, true, null, 1),
+(2, "XPTO2", "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially", null, null, true, null, 1),
+(3, "NOSSO ESPAÇO CRIATIVO", "Conheça o ambiente onde ideias ganham vida e cada detalhe é cuidadosamente trabalhado.", null, null, true, null, 1);
+
+INSERT INTO conteudo_dinamico_imagens (conteudo_dinamico_id, imagem) VALUES
+(1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVcPmdJqd5n62CDtn2csHXdmz8Bf4k7eKVBQ&s'),
+(2, 'https://cdn.vnda.com.br/tucumbrasil/2024/12/10/12_25_36_176_12_12_8_854_roupas_indc3adgenas_019.jpg?v=1733847128'),
+(3, 'https://www.escoladefeltro.com.br/wp-content/uploads/2021/08/atelie-de-artesanato-capa.jpg');
+
+INSERT INTO valores(valores_id, valores_titulo, valores_descricao, valores_ativo) VALUES
+(1, 'Qualidade', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc tincidunt ultricies.', true),
+(2, 'Comprometimento', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc tincidunt ultricies.', true),
+(3, 'Inovação', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc tincidunt ultricies.', true);
+
+INSERT INTO depoimento (depoimento_nome, depoimento_descricao, depoimento_rede_social, depoimento_ativo, depoimento_data_usuario, depoimento_imagem)
+VALUES
+('Ana Souza', 'Adorei o serviço! Super recomendo a todos. A experiência foi excelente e o atendimento muito atencioso.', 'FACEBOOK', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Carlos Silva', 'Estou muito satisfeito com o produto. Ele superou minhas expectativas e chegou no prazo.', 'INSTAGRAM', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Fernanda Oliveira', 'A qualidade do produto é incrível. Foi exatamente o que eu esperava. Comprarei novamente.', 'TWITTER', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Juliana Costa', 'Fiquei muito feliz com o resultado. A entrega foi rápida e o produto chegou impecável.', 'LINKEDIN', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Rodrigo Pereira', 'Comprei várias vezes e sempre fico muito satisfeito. Recomendo muito a loja.', 'FACEBOOK', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Maria Lima', 'Excelente atendimento. A equipe é muito atenciosa e o produto é de alta qualidade.', 'INSTAGRAM', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Lucas Almeida', 'O serviço foi além das minhas expectativas. Entrega rápida e suporte excelente.', 'TWITTER', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Patricia Mendes', 'Muito bom. Super recomendo para quem busca qualidade e praticidade. Muito feliz com a compra.', 'LINKEDIN', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Paulo Martins', 'Amei o produto! A compra foi simples e o atendimento online foi muito eficiente.', 'FACEBOOK', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+('Isabela Rodrigues', 'Comprei de presente para minha amiga e ela adorou. Muito bom, com certeza irei comprar mais.', 'INSTAGRAM', TRUE, NOW(), 'https://plus.unsplash.com/premium_photo-1741194732682-21f3046cf1a6?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
