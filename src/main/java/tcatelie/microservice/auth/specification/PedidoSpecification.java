@@ -75,6 +75,9 @@ public class PedidoSpecification {
             if (filtro.getValorParcelaMax() != null) {
                 predicates.add(cb.lessThanOrEqualTo(root.get("valorParcela"), filtro.getValorParcelaMax()));
             }
+            if(filtro.getIdPedido() != null) {
+                predicates.add(cb.equal(root.get("id"), filtro.getIdPedido()));
+            }
             if (StringUtils.hasText(filtro.getFormaPgto())) {
                 predicates.add(cb.equal(root.get("formaPgto"), filtro.getFormaPgto()));
             }

@@ -30,7 +30,6 @@ public class GoogleDriveApiService {
     @Getter
     private final String rootFolderId = "16yN_yD1JbDVQUssFowEu1DuUVfrgwJkq";
 
-
     public String findFolderByName(String folderName, String parentFolderId) throws IOException {
         String query = String.format("mimeType='application/vnd.google-apps.folder' and name='%s' and '%s' in parents", folderName, parentFolderId);
 
@@ -61,7 +60,8 @@ public class GoogleDriveApiService {
     }
 
     public String getPublicUrl(String fileId) {
-        return "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w1000";
+        long timestamp = System.currentTimeMillis(); // Obtém um valor único
+        return "https://drive.google.com/uc?export=view&id=" + fileId + "&t=" + timestamp;
     }
 
     public void makeFilePublic(String fileId) throws IOException {

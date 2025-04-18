@@ -19,6 +19,8 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer>, JpaSpe
 
     Page<Pedido> findByStatusIn(List<StatusPedido> status, Pageable pageable);
 
+    Optional<Pedido> findByPaymentId(String paymentId);
+
     @Query("SELECT p FROM Pedido p "
             + "JOIN p.responsaveis r "
             + "WHERE (:idPedido IS NULL OR p.id = :idPedido) "

@@ -2,6 +2,7 @@ package tcatelie.microservice.auth.dto.filter;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Filtro de pedido")
@@ -76,4 +78,21 @@ public class PedidoFiltroDTO {
     private LocalDateTime dataFimConclusao;
     @Schema(description = "Id do pagamento", example = "1")
     private String paymentId;
+
+    @Schema(description = "Campo de ordenação", example = "id")
+    private String sortBy = "id";
+    @Schema(description = "Direção da ordenação", example = "ASC")
+    private String sortOrder = "ASC";
+    @Schema(description = "Número da página", example = "0")
+    private Integer page = 0;
+    @Schema(description = "Tamanho da página", example = "10")
+    private Integer size = 10;
+    @Schema(description = "Id dos produtos", example = "[1,2,3]")
+    private List<Integer> idsProdutos;
+    @Schema(description = "Id das categorias", example = "[1,2,3]")
+    private List<Integer> idsCategorias;
+    @Schema(description = "Id das subcategorias", example = "[1,2,3]")
+    private List<Integer> idsSubcategorias;
+    @Schema(description = "Status Excluídos", example = "[\"CANCELADO\"]")
+    private List<String> statusExcluidos;
 }
