@@ -29,10 +29,15 @@ public class MercadoPagoService {
 
     private final Logger logger = LoggerFactory.getLogger(MercadoPagoService.class);
     private final PedidoRepository pedidoRepository;
+    private final PedidoService pedidoService;
 
-    public MercadoPagoService(@Value("${mercadopago.access.token}") String accessToken, PedidoRepository pedidoRepository) {
+    @Value("${mercado.pago.env}")
+    private String env;
+
+    public MercadoPagoService(@Value("${mercadopago.access.token}") String accessToken, PedidoRepository pedidoRepository, PedidoService pedidoService) {
         MercadoPagoConfig.setAccessToken(accessToken);
         this.pedidoRepository = pedidoRepository;
+        this.pedidoService = pedidoService;
     }
 
     public String criarPagamento(Integer idPedido)
@@ -51,12 +56,16 @@ public class MercadoPagoService {
         List<PreferenceItemRequest> items = new ArrayList<>();
 
         pedido.getItens().forEach(itemPedido -> {
-            PreferenceItemRequest item =
-                    PreferenceItemRequest.builder()
-                            .title(itemPedido.getProduto().getNome())
-                            .quantity(itemPedido.getQuantidade())
-                            .unitPrice(BigDecimal.valueOf(itemPedido.getValor()))
-                            .build();
+            BigDecimal valor = "TEST".equalsIgnoreCase(env)
+                    ? BigDecimal.valueOf(0.01)
+                    : BigDecimal.valueOf(itemPedido.getValor());
+
+            PreferenceItemRequest item = PreferenceItemRequest.builder()
+                    .title(itemPedido.getProduto().getNome())
+                    .quantity(itemPedido.getQuantidade())
+                    .unitPrice(valor)
+                    .build();
+
             items.add(item);
         });
 
@@ -85,9 +94,13 @@ public class MercadoPagoService {
 
             PaymentClient client = new PaymentClient();
 
+            Double valorPedido = env.equalsIgnoreCase("TEST")
+                    ? 0.01
+                    : pedido.getValorTotal();
+
             PaymentCreateRequest paymentCreateRequest = PaymentCreateRequest.builder()
                     .transactionAmount(
-                            BigDecimal.valueOf(pedido.getValorTotal()).setScale(2, RoundingMode.HALF_UP)
+                            BigDecimal.valueOf(valorPedido).setScale(2, RoundingMode.HALF_UP)
                     )                    .paymentMethodId("pix")
                     .payer(
                             PaymentPayerRequest.builder()
@@ -112,6 +125,25 @@ public class MercadoPagoService {
                     e.getStatusCode(), e.getMessage(), e.getApiResponse().getContent());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Tivemos um problema ao criar o pagamento com PIX, tente novamente mais tarde.");
+        }
+    }
+
+    public void atualizarPedido(String idPagamento){
+        try{
+            boolean pago = verificarPagamento(idPagamento);
+            Pedido pedido = pedidoRepository.findByPaymentId(idPagamento)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+
+            if (pago) {
+                logger.info("Pagamento do pedido {} foi confirmado", pedido.getId());
+                pedidoService.atualizarStatusPedido(pedido, StatusPedido.PENDENTE);
+            } else {
+                pedidoService.atualizarStatusPedido(pedido, StatusPedido.PENDENTE_PAGAMENTO);
+            }
+        } catch (ResponseStatusException e) {
+            logger.error("Erro ao atualizar pedido: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao atualizar pedido: {}", e.getMessage());
         }
     }
 

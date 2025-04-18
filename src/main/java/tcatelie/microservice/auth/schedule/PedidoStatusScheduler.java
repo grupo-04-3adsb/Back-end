@@ -21,20 +21,20 @@ public class PedidoStatusScheduler {
     private final PedidoService service;
     private final MercadoPagoService mercadoPagoService;
 
-    @Scheduled(fixedRate = 60000)
-    public void verificarStatusPagamento() {
-        logger.info("Verificando status de pagamento dos pedidos");
-        List<Pedido> pedidosPendentes = service.buscarPedidosPorStatus(StatusPedido.PENDENTE_PAGAMENTO);
-
-        for (Pedido pedido : pedidosPendentes) {
-            boolean pago = mercadoPagoService.verificarPagamento(pedido.getPaymentId());
-
-            if (pago) {
-                logger.info("Pagamento do pedido {} foi confirmado", pedido.getId());
-                service.atualizarStatusPedido(pedido, StatusPedido.PENDENTE);
-            } else {
-                service.atualizarStatusPedido(pedido, StatusPedido.PENDENTE_PAGAMENTO);
-            }
-        }
-    }
+//    @Scheduled(fixedRate = 60000)
+//    public void verificarStatusPagamento() {
+//        logger.info("Verificando status de pagamento dos pedidos");
+//        List<Pedido> pedidosPendentes = service.buscarPedidosPorStatus(StatusPedido.PENDENTE_PAGAMENTO);
+//
+//        for (Pedido pedido : pedidosPendentes) {
+//            boolean pago = mercadoPagoService.verificarPagamento(pedido.getPaymentId());
+//
+//            if (pago) {
+//                logger.info("Pagamento do pedido {} foi confirmado", pedido.getId());
+//                service.atualizarStatusPedido(pedido, StatusPedido.PENDENTE);
+//            } else {
+//                service.atualizarStatusPedido(pedido, StatusPedido.PENDENTE_PAGAMENTO);
+//            }
+//        }
+//    }
 }

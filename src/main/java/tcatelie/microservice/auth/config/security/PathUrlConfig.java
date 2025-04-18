@@ -47,7 +47,12 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/pedidos/{idPedido}", "PUT"),
             new AntPathRequestMatcher("/pedidos/{id}/ultimo"),
             new AntPathRequestMatcher("/usuarios"),
-            new AntPathRequestMatcher("/usuarios/{id}")
+            new AntPathRequestMatcher("/usuarios/{id}"),
+            new AntPathRequestMatcher("/faq/all"),
+            new AntPathRequestMatcher("/pagina-infos"),
+            new AntPathRequestMatcher("/valores"),
+            new AntPathRequestMatcher("/depoimentos"),
+            new AntPathRequestMatcher("/api/v1/mercadopago/webhook"),
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {

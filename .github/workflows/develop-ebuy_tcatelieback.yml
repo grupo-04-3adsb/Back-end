@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy JAR app to Azure Web App - e-buy-spring-web-app
+name: Build and deploy JAR app to Azure Web App - tcatelieback
 
 on:
   push:
@@ -52,15 +52,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3C6445B552E743D5A62E996A765B3873 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3DBB0719F79C4B00BE69F1AC5EEA7F6B }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_753CC6F1BD9D41DF9B08D4B9EE9E349B }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A2C37AE0C12547489ADBE655716B1B3D }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DED046870F6B42CEA43A2C251B5701E9 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E6331CD4AFB445D693ED3A605E3E4DC7 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'e-buy-spring-web-app'
+          app-name: 'tcatelieback'
           slot-name: 'Production'
           package: '*.jar'
           

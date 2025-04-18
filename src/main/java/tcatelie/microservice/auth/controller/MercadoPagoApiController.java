@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tcatelie.microservice.auth.dto.response.WebhookPayloadDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.repository.PedidoRepository;
@@ -94,5 +95,19 @@ public class MercadoPagoApiController {
             logger.error("Erro ao processar notificação de pagamento", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @PostMapping("/webhook")
+    public ResponseEntity<String> handleWebhook(@RequestBody WebhookPayloadDTO payload){
+        logger.info("Recebendo webhook do mercado pago: {}", payload);
+
+        String idPayment = payload.getData().get("id");
+
+        if (idPayment != null && "payment".equals(payload.getType())){
+            logger.info("Verificando pedido para atualizar status de pagamento.");
+            mercadoPagoService.atualizarPedido(idPayment);
+        }
+
+        return ResponseEntity.ok("Webhook recebido com sucesso");
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import tcatelie.microservice.auth.service.AzureBlobStorageService;
 import tcatelie.microservice.auth.service.GoogleDriveApiService;
 
 import java.io.File;
@@ -27,6 +28,7 @@ import java.io.IOException;
 public class ImageUploadController {
 
     private final GoogleDriveApiService googleDriveService;
+    private final AzureBlobStorageService azureBlobStorageService;
 
     @Operation(summary = "Upload de imagem", description = "Faz upload de uma imagem para o Google Drive e atualiza a url na imagem e retorna a URL pública da imagem.")
     @ApiResponses(value = {
@@ -37,7 +39,7 @@ public class ImageUploadController {
             @ApiResponse(responseCode = "500", description = "Erro interno",
                     content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class)))
     })
-    @PostMapping("/image")
+    @PostMapping("/image-drive")
     public ResponseEntity<String> uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("tipo") String tipo,
@@ -117,6 +119,33 @@ public class ImageUploadController {
             return ResponseEntity.ok("Pasta do produto e seus arquivos foram removidos com sucesso.");
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Erro ao remover a pasta do produto: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Upload de imagem", description = "Faz upload de uma imagem para o Azure Blob Storage e atualiza a URL na entidade correspondente.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Upload bem-sucedido",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "400", description = "Tipo de arquivo não suportado",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class)))
+    })
+    @PostMapping("/image")
+    public ResponseEntity<String> uploadImageToAzure(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("tipo") String tipo,
+            @RequestParam("nomeProduto") String nomeProduto,
+            @RequestParam("idEntidade") Integer idEntidade) {
+
+        try {
+            String virtualPath = azureBlobStorageService.resolveVirtualPath(tipo, nomeProduto, idEntidade, file);
+            String fileUrl = azureBlobStorageService.uploadFile(file, virtualPath);
+
+            azureBlobStorageService.salvarUrlEntidade(tipo, idEntidade, fileUrl, virtualPath);
+            return ResponseEntity.ok(fileUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Erro ao fazer upload para o Azure: " + e.getMessage());
         }
     }
 

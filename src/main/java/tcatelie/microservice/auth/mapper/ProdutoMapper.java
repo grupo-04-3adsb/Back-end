@@ -7,6 +7,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
 import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
+import tcatelie.microservice.auth.mapper.helper.ImageUrlMapperHelper;
 import tcatelie.microservice.auth.model.Produto;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,8 @@ import java.time.format.DateTimeFormatter;
 
 @Mapper(componentModel = "spring", uses = {
         ImagensAdicionaisMapper.class,
-        PersonalizacaoMapper.class
+        PersonalizacaoMapper.class,
+        ImageUrlMapperHelper.class
 })
 @Component
 public interface ProdutoMapper {
@@ -32,7 +34,7 @@ public interface ProdutoMapper {
     @Mapping(source = "peso", target = "peso")
     Produto toProduto(ProdutoRequestDTO requestDTO);
 
-    @Mapping(source = "urlImagemPrincipal", target = "urlProduto")
+    @Mapping(source = "urlImagemPrincipal", target = "urlProduto", qualifiedByName = "formatImageUrl")
     @Mapping(source = "categoria", target = "categoria")
     @Mapping(source = "subcategoria", target = "subcategoria")
     @Mapping(source = "personalizavel", target = "isPersonalizavel")
