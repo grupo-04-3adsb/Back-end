@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
+import tcatelie.microservice.auth.dto.response.PedidoCardInfoResponseDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
+import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.service.ExcelService;
 import tcatelie.microservice.auth.service.PedidoService;
 
@@ -57,89 +59,36 @@ public class PedidoController {
                     @ApiResponse(responseCode = "400", description = "Erro na requisição")
             })
     @GetMapping
-    public Page<PedidoResponseDTO> getPedidos(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "10") Integer size,
-            @RequestParam(value = "sort", defaultValue = "id") String sortBy,
-            @RequestParam(value = "direction", defaultValue = "ASC") String sortOrder,
-            @RequestParam(value = "idPedido", required = false) Integer idPedido,
-            @RequestParam(value = "nomeCliente", required = false) String nomeCliente,
-            @RequestParam(value = "idCliente", required = false) Integer idCliente,
-            @RequestParam(value = "dataInicio", required = false) LocalDateTime dataInicio,
-            @RequestParam(value = "dataFim", required = false) LocalDateTime dataFim,
-            @RequestParam(value = "dataEntregaInicio", required = false) LocalDateTime dataEntregaInicio,
-            @RequestParam(value = "dataEntregaFim", required = false) LocalDateTime dataEntregaFim,
-            @RequestParam(value = "dataPagamentoInicio", required = false) LocalDateTime dataPagamentoInicio,
-            @RequestParam(value = "dataPagamentoFim", required = false) LocalDateTime dataPagamentoFim,
-            @RequestParam(value = "idsResponsaveis", required = false) List<Integer> idsResponsaveis,
-            @RequestParam(value = "status", required = false) List<String> status,
-            @RequestParam(value = "statusExcluidos", required = false) List<String> statusExcluidos,
-            @RequestParam(value = "valorTotalMin", required = false) Double valorTotalMin,
-            @RequestParam(value = "valorTotalMax", required = false) Double valorTotalMax,
-            @RequestParam(value = "valorDescontoMin", required = false) Double valorDescontoMin,
-            @RequestParam(value = "valorDescontoMax", required = false) Double valorDescontoMax,
-            @RequestParam(value = "valorFreteMin", required = false) Double valorFreteMin,
-            @RequestParam(value = "valorFreteMax", required = false) Double valorFreteMax,
-            @RequestParam(value = "parcelasMin", required = false) Integer parcelasMin,
-            @RequestParam(value = "parcelasMax", required = false) Integer parcelasMax,
-            @RequestParam(value = "valorParcelaMin", required = false) Double valorParcelaMin,
-            @RequestParam(value = "valorParcelaMax", required = false) Double valorParcelaMax,
-            @RequestParam(value = "formaPgto", required = false) String formaPgto,
-            @RequestParam(value = "observacao", required = false) String observacao,
-            @RequestParam(value = "dataCancelamentoInicio", required = false) LocalDateTime dataCancelamentoInicio,
-            @RequestParam(value = "dataCancelamentoFim", required = false) LocalDateTime dataCancelamentoFim,
-            @RequestParam(value = "dataAtualizacaoInicio", required = false) LocalDateTime dataAtualizacaoInicio,
-            @RequestParam(value = "dataAtualizacaoFim", required = false) LocalDateTime dataAtualizacaoFim,
-            @RequestParam(value = "dataInicioConclusao", required = false) LocalDateTime dataInicioConclusao,
-            @RequestParam(value = "dataFimConclusao", required = false) LocalDateTime dataFimConclusao,
-            @RequestParam(value = "paymentId", required = false) String paymentId,
-            @RequestParam(value = "idsProdutos", required = false) List<Integer> idsProdutos,
-            @RequestParam(value = "idsCategorias", required = false) List<Integer> idsCategorias,
-            @RequestParam(value = "idsSubcategorias", required = false) List<Integer> idsSubcategorias
-    ) {
-        PedidoFiltroDTO filtro = PedidoFiltroDTO.builder()
-                .idPedido(idPedido)
-                .nomeCliente(nomeCliente)
-                .idCliente(idCliente)
-                .dataPedidoInicio(dataInicio)
-                .dataPedidoFim(dataFim)
-                .dataEntregaInicio(dataEntregaInicio)
-                .dataEntregaFim(dataEntregaFim)
-                .dataPagamentoInicio(dataPagamentoInicio)
-                .dataPagamentoFim(dataPagamentoFim)
-                .idsResponsaveis(idsResponsaveis)
-                .statusList(status)
-                .valorTotalMin(valorTotalMin)
-                .valorTotalMax(valorTotalMax)
-                .valorDescontoMin(valorDescontoMin)
-                .valorDescontoMax(valorDescontoMax)
-                .valorFreteMin(valorFreteMin)
-                .valorFreteMax(valorFreteMax)
-                .parcelasMin(parcelasMin)
-                .parcelasMax(parcelasMax)
-                .valorParcelaMin(valorParcelaMin)
-                .valorParcelaMax(valorParcelaMax)
-                .formaPgto(formaPgto)
-                .observacao(observacao)
-                .dataCancelamentoInicio(dataCancelamentoInicio)
-                .dataCancelamentoFim(dataCancelamentoFim)
-                .dataAtualizacaoInicio(dataAtualizacaoInicio)
-                .dataAtualizacaoFim(dataAtualizacaoFim)
-                .dataInicioConclusao(dataInicioConclusao)
-                .dataFimConclusao(dataFimConclusao)
-                .paymentId(paymentId)
-                .sortBy(sortBy)
-                .sortOrder(sortOrder)
-                .page(page)
-                .size(size)
-                .idsProdutos(idsProdutos)
-                .idsCategorias(idsCategorias)
-                .idsSubcategorias(idsSubcategorias)
-                .statusExcluidos(statusExcluidos)
-                .build();
+    public Page<PedidoResponseDTO> getPedidos(@ModelAttribute PedidoFiltroDTO filtro) {
+        PageRequest pageRequest = PageRequest.of(
+                filtro.getPage(),
+                filtro.getSize(),
+                Sort.by(Sort.Direction.fromString(filtro.getSortOrder()), filtro.getSortBy())
+        );
 
-        return service.getPedidos(filtro, PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortBy)));
+        Page<Pedido> pedidos = service.getPedidos(filtro, pageRequest);
+        return pedidos.map(p -> service.transformarPedido(p));
     }
+
+    @Operation(summary = "Busca todos os pedidos com informações resumidas",
+            description = "Retorna todos os pedidos",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pedidos encontrados"),
+                    @ApiResponse(responseCode = "400", description = "Erro na requisição")
+            })
+    @GetMapping("/resumido")
+    public Page<PedidoCardInfoResponseDTO> getCardPedidos(@ModelAttribute PedidoFiltroDTO filtro) {
+        PageRequest pageRequest = PageRequest.of(
+                filtro.getPage(),
+                filtro.getSize(),
+                Sort.by(Sort.Direction.fromString(filtro.getSortOrder()), filtro.getSortBy())
+        );
+
+        Page<Pedido> pedidos = service.getPedidos(filtro, pageRequest);
+        return pedidos.map(p -> service.transformarPedidoCardInfo(p));
+    }
+
+
 
     @Operation(summary = "lista todos os pedidos",
             description = "listao pedido",
