@@ -14,16 +14,14 @@ import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.EnderecoRequestDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.dto.response.CustoOutrosResponseDTO;
+import tcatelie.microservice.auth.dto.response.PedidoCardInfoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.mapper.EnderecoMapper;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
 import tcatelie.microservice.auth.mapper.UsuarioMapper;
-import tcatelie.microservice.auth.model.Endereco;
-import tcatelie.microservice.auth.model.ItemPedido;
-import tcatelie.microservice.auth.model.Pedido;
-import tcatelie.microservice.auth.model.Usuario;
+import tcatelie.microservice.auth.model.*;
 import tcatelie.microservice.auth.repository.ItemPedidoRepository;
 import tcatelie.microservice.auth.repository.PedidoRepository;
 import tcatelie.microservice.auth.repository.PersonalizacaoItemPedidoRepository;
@@ -77,13 +75,11 @@ public class PedidoService {
 
   }
 
-  public Page<PedidoResponseDTO> getPedidos(PedidoFiltroDTO filtro, PageRequest pageRequest) {
+  public Page<Pedido> getPedidos(PedidoFiltroDTO filtro, PageRequest pageRequest) {
 
-    Page<Pedido> pedidos = repository.findAll(PedidoSpecification.filterBy(filtro, filtro.getStatusExcluidos() == null ? List.of() : filtro.getStatusExcluidos().stream().map(
+    return repository.findAll(PedidoSpecification.filterBy(filtro, filtro.getStatusExcluidos() == null ? List.of() : filtro.getStatusExcluidos().stream().map(
             StatusPedido::valueOf
     ).toList()), pageRequest);
-
-    return pedidos.map(this::transformarPedido);
   }
 
   public List<Pedido> buscarPedidosPorStatus(StatusPedido status) {
@@ -277,6 +273,24 @@ public class PedidoService {
     response.setValorTotal(pedido.getValorTotal());
     response.setStatus(pedido.getStatus().name());
     response.setResponsaveis(pedido.getResponsaveis().stream().map(responsavel -> usuarioMapper.toResponsavelResponseDTO(responsavel.getResponsavel())).toList());
+
+    return response;
+  }
+
+  public PedidoCardInfoResponseDTO transformarPedidoCardInfo(Pedido pedido){
+    PedidoCardInfoResponseDTO response = new PedidoCardInfoResponseDTO();
+
+    response.setDataPedido(DateFormat.formatToCustomPattern(pedido.getDataPedido()));
+    response.setDataEntrega(DateFormat.format(pedido.getDataEntrega(), "dd/MM/yyyy"));
+    response.setId(pedido.getId());
+    response.setValorTotal(pedido.getValorTotal());
+    response.setEmailCliente(pedido.getUsuario().getEmail());
+    response.setNomeUsuario(pedido.getNomeUsuario());
+    response.setStatus(pedido.getStatus().name());
+    response.setResponsaveis(pedido.getResponsaveis().stream().map(responsavel -> usuarioMapper.toResponsavelResponseDTO(responsavel.getResponsavel())).toList());
+    response.setQtdItens(pedido.getItens().stream().mapToInt(ItemPedido::getQuantidade).sum());
+    response.setCategorias(pedido.getItens().stream().map(ItemPedido::getProduto).map(Produto::getCategoria).map(Categoria::getNomeCategoria).toList());
+    response.setSubcategorias(pedido.getItens().stream().map(ItemPedido::getProduto).map(Produto::getSubcategoria).map(Subcategoria::getNomeSubcategoria).toList());
 
     return response;
   }
