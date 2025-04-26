@@ -57,4 +57,16 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer>, JpaSpe
                                @Param("endOfWeek") LocalDateTime endOfWeek);
 
     Optional<Pedido> findByStatusAndUsuario_IdUsuario(StatusPedido status, Integer idUsuario);
+
+    List<Pedido> findByStatusAndDataConclusaoBetween(
+            StatusPedido status,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    );
+
+    Integer countByStatusAndDataConclusaoBetween(
+            StatusPedido status,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    );
 }
