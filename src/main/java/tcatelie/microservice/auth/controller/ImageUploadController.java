@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,9 @@ public class ImageUploadController {
 
     private final GoogleDriveApiService googleDriveService;
     private final AzureBlobStorageService azureBlobStorageService;
+
+    @Value("${azure.blob.storage.token.sas}")
+    private String BLOB_STORAGE_TOKEN_SAS;
 
     @Operation(summary = "Upload de imagem", description = "Faz upload de uma imagem para o Google Drive e atualiza a url na imagem e retorna a URL pública da imagem.")
     @ApiResponses(value = {
@@ -143,7 +147,7 @@ public class ImageUploadController {
             String fileUrl = azureBlobStorageService.uploadFile(file, virtualPath);
 
             azureBlobStorageService.salvarUrlEntidade(tipo, idEntidade, fileUrl, virtualPath);
-            return ResponseEntity.ok(fileUrl);
+            return ResponseEntity.ok(fileUrl + "?" + BLOB_STORAGE_TOKEN_SAS);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Erro ao fazer upload para o Azure: " + e.getMessage());
         }
