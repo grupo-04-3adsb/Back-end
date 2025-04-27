@@ -1,15 +1,18 @@
 package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import tcatelie.microservice.auth.dto.kpi.CategoriaKPIDTO;
 import tcatelie.microservice.auth.dto.kpi.ChartDTO;
 import tcatelie.microservice.auth.dto.kpi.DatasetDTO;
-import tcatelie.microservice.auth.dto.kpi.ProjecaoVenda;
 import tcatelie.microservice.auth.dto.kpi.ProjecaoVendaDTO;
 import tcatelie.microservice.auth.enums.Periodo;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.model.ParametroGeral;
 import tcatelie.microservice.auth.model.Pedido;
+import tcatelie.microservice.auth.repository.CategoriaRepository;
 import tcatelie.microservice.auth.repository.PedidoRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
 
@@ -29,6 +32,8 @@ public class KPIsService {
   private final ProdutoRepository produtoRepository;
 
   private final ParametroGeralService parametroGeralService;
+
+  private final CategoriaRepository categoriaRepository;
 
   public ChartDTO gerarDadosGraficoVendasPeriodo(
           Periodo periodo
@@ -141,12 +146,18 @@ public class KPIsService {
     List<String> labels = new ArrayList<>();
     List<DatasetDTO> datasets = new ArrayList<>();
 
-    for (StatusPedido status : StatusPedido.values()) {
+    List<StatusPedido> statusList = List.of(StatusPedido.CONCLUIDO,
+            StatusPedido.EM_PREPARO,
+            StatusPedido.EM_ROTA,
+            StatusPedido.PENDENTE,
+            StatusPedido.CANCELADO);
+
+    for (StatusPedido status : statusList) {
       labels.add(status.getDescricao());
       DatasetDTO<Integer> dataset = new DatasetDTO();
       dataset.setLabel(status.getDescricao());
 
-      Integer quantidade = pedidoRepository.countByStatusAndDataConclusaoBetween(status, dataInicio, dataFim);
+      Integer quantidade = pedidoRepository.countByStatusAndDataPedidoBetween(status, dataInicio, dataFim);
 
       dataset.setData(List.of(quantidade));
       datasets.add(dataset);
@@ -171,10 +182,19 @@ public class KPIsService {
     Double porcentagemAtingida = (qtdPedidosConcluidos / valorProjecao) * 100;
 
     ProjecaoVendaDTO projecaoVenda = new ProjecaoVendaDTO();
-    projecaoVenda.setExpectativa(qtdPedidosConcluidos);
+    projecaoVenda.setExpectativa(valorProjecao.intValue());
     projecaoVenda.setPorcentagem(porcentagemAtingida);
     projecaoVenda.setQuantidade(qtdPedidosConcluidos);
 
     return projecaoVenda;
+  }
+
+  public CategoriaKPIDTO buscarCategoriaMaisVendida() {
+    Integer qtdPedidosConcluidos = pedidoRepository.countByStatus(StatusPedido.CONCLUIDO);
+    CategoriaKPIDTO kpi = categoriaRepository.buscarCategoriaMaisVendida().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma categoria encontrada"));
+
+    Double porcentagem = (kpi.getQuantidadeVendas() / (double) qtdPedidosConcluidos) * 100;
+    kpi.setPorcentagemTotalQtdVendas(porcentagem);
+    return kpi;
   }
 }

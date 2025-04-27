@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import tcatelie.microservice.auth.dto.kpi.CategoriaKPIDTO;
 import tcatelie.microservice.auth.dto.kpi.ChartDTO;
+import tcatelie.microservice.auth.dto.kpi.ProjecaoVendaDTO;
 import tcatelie.microservice.auth.enums.Periodo;
 import tcatelie.microservice.auth.service.KPIsService;
 
@@ -44,5 +46,15 @@ public class KPIsController {
     return kpisService.gerarDadosGraficoSetorStatusPedido(inicioDateTime, fimDateTime);
   }
 
+  @GetMapping("/projecao-venda")
+  public ProjecaoVendaDTO gerarDadosProjecaoVenda() {
+
+    return kpisService.getProjecaoVendaPorcentagemAtingida();
+  }
+
+  @GetMapping("/categoria-vendas")
+  public CategoriaKPIDTO gerarDadosGraficoCategoriaVendas() {
+    return kpisService.buscarCategoriaMaisVendida();
+  }
 }
 
