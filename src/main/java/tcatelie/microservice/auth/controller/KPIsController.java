@@ -1,6 +1,9 @@
 package tcatelie.microservice.auth.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.kpi.CategoriaKPIDTO;
 import tcatelie.microservice.auth.dto.kpi.ChartDTO;
+import tcatelie.microservice.auth.dto.kpi.ProdutoKPIDTO;
 import tcatelie.microservice.auth.dto.kpi.ProjecaoVendaDTO;
 import tcatelie.microservice.auth.enums.Periodo;
 import tcatelie.microservice.auth.service.KPIsService;
@@ -55,6 +59,14 @@ public class KPIsController {
   @GetMapping("/categoria-vendas")
   public CategoriaKPIDTO gerarDadosGraficoCategoriaVendas() {
     return kpisService.buscarCategoriaMaisVendida();
+  }
+
+  @GetMapping("/produto-vendas")
+  public Page<ProdutoKPIDTO> buscaProdutosKPIInfos(
+          @RequestParam(defaultValue = "0") Integer page,
+          @RequestParam(defaultValue = "10") Integer size
+  ){
+    return kpisService.buscarProdutosMaisVendidos(PageRequest.of(page, size));
   }
 }
 

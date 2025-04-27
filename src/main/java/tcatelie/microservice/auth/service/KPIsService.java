@@ -1,13 +1,12 @@
 package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import tcatelie.microservice.auth.dto.kpi.CategoriaKPIDTO;
-import tcatelie.microservice.auth.dto.kpi.ChartDTO;
-import tcatelie.microservice.auth.dto.kpi.DatasetDTO;
-import tcatelie.microservice.auth.dto.kpi.ProjecaoVendaDTO;
+import tcatelie.microservice.auth.dto.kpi.*;
 import tcatelie.microservice.auth.enums.Periodo;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.model.ParametroGeral;
@@ -196,5 +195,11 @@ public class KPIsService {
     Double porcentagem = (kpi.getQuantidadeVendas() / (double) qtdPedidosConcluidos) * 100;
     kpi.setPorcentagemTotalQtdVendas(porcentagem);
     return kpi;
+  }
+
+  public Page<ProdutoKPIDTO> buscarProdutosMaisVendidos(
+          Pageable page
+  ) {
+    return produtoRepository.buscarProdutosMaisVendidos(StatusPedido.CONCLUIDO, page);
   }
 }
