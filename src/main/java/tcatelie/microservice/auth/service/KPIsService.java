@@ -2,6 +2,7 @@ package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -190,7 +191,11 @@ public class KPIsService {
 
   public CategoriaKPIDTO buscarCategoriaMaisVendida() {
     Integer qtdPedidosConcluidos = pedidoRepository.countByStatus(StatusPedido.CONCLUIDO);
-    CategoriaKPIDTO kpi = categoriaRepository.buscarCategoriaMaisVendida().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma categoria encontrada"));
+    CategoriaKPIDTO kpi = categoriaRepository.buscarCategoriaMaisVendida(PageRequest.of(0, 1)).getContent().get(0);
+
+    if(kpi == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma categoria encontrada.");
+    }
 
     Double porcentagem = (kpi.getQuantidadeVendas() / (double) qtdPedidosConcluidos) * 100;
     kpi.setPorcentagemTotalQtdVendas(porcentagem);

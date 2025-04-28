@@ -31,7 +31,7 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Integer>, 
               GROUP BY c.idCategoria
               ORDER BY COUNT(DISTINCT p.id) DESC
           """)
-  Optional<CategoriaKPIDTO> buscarCategoriaMaisVendida();
+  Page<CategoriaKPIDTO> buscarCategoriaMaisVendida(Pageable page);
 
 
 }
