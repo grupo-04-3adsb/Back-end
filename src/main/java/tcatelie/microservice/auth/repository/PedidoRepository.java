@@ -15,58 +15,69 @@ import java.util.Optional;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Integer>, JpaSpecificationExecutor<Pedido> {
 
-    List<Pedido> findByStatus(StatusPedido status);
+  List<Pedido> findByStatus(StatusPedido status);
 
-    Page<Pedido> findByStatusIn(List<StatusPedido> status, Pageable pageable);
+  Page<Pedido> findByStatusIn(List<StatusPedido> status, Pageable pageable);
 
-    Optional<Pedido> findByPaymentId(String paymentId);
+  Optional<Pedido> findByPaymentId(String paymentId);
 
-    @Query("SELECT p FROM Pedido p "
-            + "JOIN p.responsaveis r "
-            + "WHERE (:idPedido IS NULL OR p.id = :idPedido) "
-            + "AND (:nomeCliente IS NULL OR p.usuario.nome LIKE %:nomeCliente%) "
-            + "AND (:idResponsavel IS NULL OR r.responsavel.idUsuario = :idResponsavel) "
-            + "AND ((:statusList IS NULL OR p.status IN :statusList) "
-            + "    OR (p.status = :concluidoStatus AND p.dataEntrega BETWEEN :startOfWeek AND :endOfWeek))")
-    List<Pedido> findAll(
-            @Param("idPedido") Integer idPedido,
-            @Param("nomeCliente") String nomeCliente,
-            @Param("idResponsavel") Integer idResponsavel,
-            @Param("statusList") List<String> statusList,
-            @Param("concluidoStatus") String concluidoStatus,
-            @Param("startOfWeek") LocalDateTime startOfWeek,
-            @Param("endOfWeek") LocalDateTime endOfWeek);
+  @Query("SELECT p FROM Pedido p "
+          + "JOIN p.responsaveis r "
+          + "WHERE (:idPedido IS NULL OR p.id = :idPedido) "
+          + "AND (:nomeCliente IS NULL OR p.usuario.nome LIKE %:nomeCliente%) "
+          + "AND (:idResponsavel IS NULL OR r.responsavel.idUsuario = :idResponsavel) "
+          + "AND ((:statusList IS NULL OR p.status IN :statusList) "
+          + "    OR (p.status = :concluidoStatus AND p.dataEntrega BETWEEN :startOfWeek AND :endOfWeek))")
+  List<Pedido> findAll(
+          @Param("idPedido") Integer idPedido,
+          @Param("nomeCliente") String nomeCliente,
+          @Param("idResponsavel") Integer idResponsavel,
+          @Param("statusList") List<String> statusList,
+          @Param("concluidoStatus") String concluidoStatus,
+          @Param("startOfWeek") LocalDateTime startOfWeek,
+          @Param("endOfWeek") LocalDateTime endOfWeek);
 
 
-    @Query("SELECT p FROM Pedido p WHERE p.usuario.id = :idUsuario AND p.status != 'CARRINHO' ORDER BY p.dataPedido DESC LIMIT 1")
-    Optional<Pedido> findLastPedidoByUsuarioId(@Param("idUsuario") Integer idUsuario);
+  @Query("SELECT p FROM Pedido p WHERE p.usuario.id = :idUsuario AND p.status != 'CARRINHO' ORDER BY p.dataPedido DESC LIMIT 1")
+  Optional<Pedido> findLastPedidoByUsuarioId(@Param("idUsuario") Integer idUsuario);
 
-    @Query("SELECT p FROM Pedido p " +
-            "JOIN p.responsaveis r " +
-            "JOIN p.usuario u " +
-            "WHERE (:status IS NULL OR p.status IN :status) " +
-            "AND (:idsResponsavel IS NULL OR r.responsavel.idUsuario IN :idsResponsavel) " +
-            "AND (:pesquisa IS NULL OR u.nome LIKE %:pesquisa% OR p.id = :pesquisa) " +
-            "AND ((p.status = 'CONCLUIDO' AND p.dataConclusao BETWEEN :startOfWeek AND :endOfWeek) " +
-            "     OR (p.status != 'CARRINHO' AND p.status != 'CONCLUIDO')) " +
-            "ORDER BY p.dataPedido DESC")
-    List<Pedido> listarPedidos(@Param("status") List<StatusPedido> status,
-                               @Param("idsResponsavel") List<Integer> idsResponsavel,
-                               @Param("pesquisa") String pesquisa,
-                               @Param("startOfWeek") LocalDateTime startOfWeek,
-                               @Param("endOfWeek") LocalDateTime endOfWeek);
+  @Query("SELECT p FROM Pedido p " +
+          "JOIN p.responsaveis r " +
+          "JOIN p.usuario u " +
+          "WHERE (:status IS NULL OR p.status IN :status) " +
+          "AND (:idsResponsavel IS NULL OR r.responsavel.idUsuario IN :idsResponsavel) " +
+          "AND (:pesquisa IS NULL OR u.nome LIKE %:pesquisa% OR p.id = :pesquisa) " +
+          "AND ((p.status = 'CONCLUIDO' AND p.dataConclusao BETWEEN :startOfWeek AND :endOfWeek) " +
+          "     OR (p.status != 'CARRINHO' AND p.status != 'CONCLUIDO')) " +
+          "ORDER BY p.dataPedido DESC")
+  List<Pedido> listarPedidos(@Param("status") List<StatusPedido> status,
+                             @Param("idsResponsavel") List<Integer> idsResponsavel,
+                             @Param("pesquisa") String pesquisa,
+                             @Param("startOfWeek") LocalDateTime startOfWeek,
+                             @Param("endOfWeek") LocalDateTime endOfWeek);
 
-    Optional<Pedido> findByStatusAndUsuario_IdUsuario(StatusPedido status, Integer idUsuario);
+  Optional<Pedido> findByStatusAndUsuario_IdUsuario(StatusPedido status, Integer idUsuario);
 
-    List<Pedido> findByStatusAndDataConclusaoBetween(
-            StatusPedido status,
-            LocalDateTime startDate,
-            LocalDateTime endDate
-    );
+  List<Pedido> findByStatusAndDataConclusaoBetween(
+          StatusPedido status,
+          LocalDateTime startDate,
+          LocalDateTime endDate
+  );
 
-    Integer countByStatusAndDataConclusaoBetween(
-            StatusPedido status,
-            LocalDateTime startDate,
-            LocalDateTime endDate
-    );
+  Integer countByStatusAndDataPedidoBetween(
+          StatusPedido status,
+          LocalDateTime startDate,
+          LocalDateTime endDate
+  );
+
+  Integer countByStatusAndDataConclusaoBetween(
+          StatusPedido status,
+          LocalDateTime startDate,
+          LocalDateTime endDate
+  );
+
+  Integer countByStatus(
+          StatusPedido status
+  );
+
 }

@@ -5,10 +5,14 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.models.BlobHttpHeaders;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.thymeleaf.util.StringUtils;
 import tcatelie.microservice.auth.model.*;
 import tcatelie.microservice.auth.repository.*;
 
@@ -19,7 +23,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AzureBlobStorageService {
 
-  private static final String BLOB_CONTAINER_SAS_URL = "https://tcateliestorage.blob.core.windows.net/images?sv=2024-11-04&ss=bf&srt=sco&sp=rwdlaciytfx&se=2026-01-02T00:35:09Z&st=2025-04-06T16:35:09Z&spr=https&sig=GkEUWUV%2FoA7aWKyfV1jOicMdGqhafBIJVo%2B9Y23Wop4%3D";
+  @Value("${azure.blob.storage.url}")
+  private String BLOB_STORAGE_URL;
+
+  @Value("${azure.blob.storage.token.sas}")
+  private String BLOB_STORAGE_TOKEN_SAS;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AzureBlobStorageService.class);
 
   private final ProdutoRepository produtoRepository;
   private final UserRepository userRepository;
@@ -29,7 +39,7 @@ public class AzureBlobStorageService {
 
   public String uploadFile(MultipartFile file, String virtualPath) throws IOException {
     BlobContainerClient containerClient = new BlobContainerClientBuilder()
-            .endpoint(BLOB_CONTAINER_SAS_URL)
+            .endpoint(BLOB_STORAGE_URL + "/images?" + BLOB_STORAGE_TOKEN_SAS)
             .buildClient();
 
     BlobHttpHeaders headers = new BlobHttpHeaders()
@@ -72,34 +82,69 @@ public class AzureBlobStorageService {
     return filename.substring(filename.lastIndexOf(".")).toLowerCase();
   }
 
+  private void removeFile(String virtualPath) {
+    try {
+      if (StringUtils.isEmpty(virtualPath)) {
+        LOGGER.warn("O caminho virtual está vazio ou nulo, não é possível remover o arquivo.");
+        return;
+      }
+
+      LOGGER.info("Removendo arquivo: {}", virtualPath);
+
+      BlobContainerClient containerClient = new BlobContainerClientBuilder()
+              .endpoint(BLOB_STORAGE_URL + "/images?" + BLOB_STORAGE_TOKEN_SAS)
+              .buildClient();
+
+      BlobClient blobClient = containerClient.getBlobClient(virtualPath);
+      blobClient.delete();
+    }catch (Exception e){
+      LOGGER.error("Erro ao remover o arquivo: {}", e.getMessage());
+    }
+  }
+
   public void salvarUrlEntidade(String tipo, Integer idEntidade, String urlAcesso, String blobPath) {
     if (tipo.equals("usuario")) {
       Usuario usuario = userRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+      removeFile(usuario.getIdImgDrive());
+
       usuario.setUrlImgUsuario(urlAcesso);
       usuario.setIdImgDrive(blobPath);
       userRepository.save(usuario);
     } else if (tipo.equals("produto")) {
       Produto produto = produtoRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+
+      removeFile(produto.getIdImgDrive());
+
       produto.setUrlImagemPrincipal(urlAcesso);
       produto.setIdImgDrive(blobPath);
       produtoRepository.save(produto);
     } else if (tipo.equals("opcaoPersonalizacao")) {
       OpcaoPersonalizacao opcao = opcaoPersonalizacaoRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Opção não encontrada"));
+
+      removeFile(opcao.getIdImgDrive());
+
       opcao.setUrlImagemOpcao(urlAcesso);
       opcao.setIdImgDrive(blobPath);
       opcaoPersonalizacaoRepository.save(opcao);
     } else if (tipo.equals("imagem-adicional")) {
       ImagensProduto imgProduto = imagensProdutoRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Imagem adicional não encontrada"));
+
+      removeFile(imgProduto.getIdImgDrive());
+
       imgProduto.setUrlImgAdicional(urlAcesso);
       imgProduto.setIdImgDrive(blobPath);
       imagensProdutoRepository.save(imgProduto);
     } else if (tipo.equals("personalizacaoItem")) {
       PersonalizacaoItemPedido personalizacaoItem = personalizacaoItemPedidoRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Personalização do item não encontrada"));
+
+      removeFile(personalizacaoItem.getIdImgDrive());
+
       personalizacaoItem.setDescricaoPersonalizacao(urlAcesso);
       personalizacaoItem.setIdImgDrive(blobPath);
       personalizacaoItemPedidoRepository.save(personalizacaoItem);
