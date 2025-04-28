@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tcatelie.microservice.auth.dto.kpi.ChartDTO;
 import tcatelie.microservice.auth.dto.kpi.DatasetDTO;
-import tcatelie.microservice.auth.dto.kpi.ProjecaoVenda;
 import tcatelie.microservice.auth.dto.kpi.ProjecaoVendaDTO;
 import tcatelie.microservice.auth.enums.Periodo;
 import tcatelie.microservice.auth.enums.StatusPedido;
