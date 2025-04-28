@@ -76,6 +76,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/busca-novo-custo/**"),
             new AntPathRequestMatcher("/produtos/buscar-sem-custo-outros/"),
             new AntPathRequestMatcher("/parametros-gerais/**"),
+            new AntPathRequestMatcher("/kpis/**"),
             new AntPathRequestMatcher("/pedidos/resumido")
     };
 
