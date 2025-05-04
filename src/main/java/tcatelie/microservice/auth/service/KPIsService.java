@@ -15,6 +15,7 @@ import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.repository.CategoriaRepository;
 import tcatelie.microservice.auth.repository.PedidoRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
+import tcatelie.microservice.auth.util.CreateImageUrl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,6 +35,8 @@ public class KPIsService {
   private final ParametroGeralService parametroGeralService;
 
   private final CategoriaRepository categoriaRepository;
+
+  private final CreateImageUrl createImageUrl;
 
   public ChartDTO gerarDadosGraficoVendasPeriodo(
           Periodo periodo
@@ -205,6 +208,9 @@ public class KPIsService {
   public Page<ProdutoKPIDTO> buscarProdutosMaisVendidos(
           Pageable page
   ) {
-    return produtoRepository.buscarProdutosMaisVendidos(StatusPedido.CONCLUIDO, page);
+    return produtoRepository.buscarProdutosMaisVendidos(StatusPedido.CONCLUIDO, page).map(p -> {
+      p.setUrlImagemPrincipal(createImageUrl.getCompleteImageUrl(p.getUrlImagemPrincipal()));
+      return p;
+    });
   }
 }

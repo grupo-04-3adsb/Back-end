@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import tcatelie.microservice.auth.dto.request.ParametroGeralRequestDTO;
 import tcatelie.microservice.auth.dto.response.ParametroGeralResponseDTO;
+import tcatelie.microservice.auth.mapper.ParametroGeralMapper;
 import tcatelie.microservice.auth.service.ParametroGeralService;
 
 import java.util.List;
@@ -60,5 +61,10 @@ public class ParametroGeralController {
   @DeleteMapping("/{name}")
   public void delete(@PathVariable String name) {
     service.delete(name);
+  }
+
+  @GetMapping("/{name}")
+  public ParametroGeralResponseDTO findByName(@PathVariable String name) {
+    return ParametroGeralMapper.INSTANCE.toResponseDTO(service.findByName(name));
   }
 }

@@ -14,4 +14,7 @@ public class LoginResponseDTO{
 
     @Schema(description = "Token JWT")
     private String token;
+
+    @Schema(description = "Token de atualização")
+    private String refreshToken;
 }

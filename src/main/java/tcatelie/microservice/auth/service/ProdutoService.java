@@ -614,5 +614,8 @@ public class ProdutoService {
     });
   }
 
+  public Double calculaPrecoProdutoNovo(ProdutoRequestDTO novoProduto){
+      return calculaPrecoService.calculaPrecoNovoProduto(novoProduto);
+  }
 
 }

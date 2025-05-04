@@ -157,9 +157,9 @@ public class PedidoService {
         pedido.setDataPedido(LocalDateTime.now());
         break;
       case PENDENTE:
+        pedido.getItens().stream().forEach(i -> i.setProdutoFeito(false));
         break;
       case EM_PREPARO:
-        pedido.getItens().stream().forEach(i -> i.setProdutoFeito(true));
         pedido.getItens().stream().forEach(i -> {
           i.setCustoProducao((i.getProduto().getMateriaisProduto().stream().mapToDouble(
                   materialProduto -> materialProduto.getMaterial().getPrecoUnitario() * materialProduto.getQtdMaterialNecessario()
@@ -169,6 +169,7 @@ public class PedidoService {
         });
         break;
       case EM_ROTA:
+        pedido.getItens().stream().forEach(i -> i.setProdutoFeito(true));
         pedido.setDataConclusao(LocalDateTime.now());
         break;
       default:
