@@ -76,6 +76,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer>, JpaS
         JOIN p.subcategoria s
         WHERE pe.status = :status
         GROUP BY p.id, p.nome, c.nomeCategoria, s.nomeSubcategoria, p.dthrCadastro, p.urlImagemPrincipal
+        ORDER BY SUM(ip.quantidade) DESC
     """)
   Page<ProdutoKPIDTO> buscarProdutosMaisVendidos(
           StatusPedido status,

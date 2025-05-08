@@ -52,7 +52,7 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/pagina-infos"),
             new AntPathRequestMatcher("/valores"),
             new AntPathRequestMatcher("/depoimentos"),
-            new AntPathRequestMatcher("/api/v1/mercadopago/webhook"),
+            new AntPathRequestMatcher("/api/v1/mercadopago/webhook")
     };
 
     public static final AntPathRequestMatcher[] ADMIN_URLS = {
@@ -77,7 +77,9 @@ public class PathUrlConfig {
             new AntPathRequestMatcher("/produtos/buscar-sem-custo-outros/"),
             new AntPathRequestMatcher("/parametros-gerais/**"),
             new AntPathRequestMatcher("/kpis/**"),
-            new AntPathRequestMatcher("/pedidos/resumido")
+            new AntPathRequestMatcher("/pedidos/resumido"),
+            new AntPathRequestMatcher("/produtos/preco-novo"),
+            new AntPathRequestMatcher("/custos-outros/valor-diluido"),
     };
 
     public static final AntPathRequestMatcher[] USER_URLS = {

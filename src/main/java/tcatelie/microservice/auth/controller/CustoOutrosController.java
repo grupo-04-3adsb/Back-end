@@ -142,4 +142,21 @@ public class CustoOutrosController {
         service.removerCustoOutro(id);
     }
 
+    @GetMapping("valor-diluido")
+    @Operation(
+            summary = "Buscar valor custos outros diluidos",
+            description = "Buscar valor custos diluidos",
+            tags = {"custos-outros"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Valor Custos diluidos encontrado"
+                    )
+            }
+    )
+    public Double buscarValorCustosDiluidos(){
+        logger.info("Buscando valor custos diluidos");
+        return service.buscarValorCustosDiluidos();
+    }
+
 }

@@ -418,4 +418,9 @@ public class ProdutoController {
             )
     );
   }
+
+  @PostMapping("/preco-novo")
+  public Double buscarPrecoNovo(@RequestBody ProdutoRequestDTO produtoRequestDTO) {
+    return service.calculaPrecoProdutoNovo(produtoRequestDTO);
+  }
 }
