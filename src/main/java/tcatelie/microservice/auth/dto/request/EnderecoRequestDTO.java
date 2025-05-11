@@ -15,7 +15,7 @@ import tcatelie.microservice.auth.enums.Logradouro;
 @Schema(description = "Request DTO para envio do endereço.")
 public class EnderecoRequestDTO {
 
-	private Integer idEnderco;
+	private Integer idEndereco;
 
 	@NotBlank
 	@Schema(description = "Nome da rua onde o endereço está localizado.", example = "Avenida Paulista")

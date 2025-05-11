@@ -39,6 +39,9 @@ public interface UsuarioMapper {
 
   @Named("responsavelToResponsavelResponseDTO")
   default List<ResponsavelResponseDTO> responsavelToResponsavelResponseDTO(List<ResponsavelPedido> responsaveis) {
+    if (responsaveis == null || responsaveis.isEmpty()) {
+      return List.of();
+    }
     return responsaveis.stream().map(responsavel -> {
       Usuario usuarioResponsavel = responsavel.getResponsavel();
       return this.toResponsavelResponseDTO(usuarioResponsavel);
@@ -46,7 +49,6 @@ public interface UsuarioMapper {
   }
 
   @Mappings({
-
           @Mapping(source = "idUsuario", target = "idResponsavel"),
           @Mapping(source = "nome", target = "nome"),
           @Mapping(source = "email", target = "email"),

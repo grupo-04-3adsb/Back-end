@@ -2,6 +2,7 @@ package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
+import tcatelie.microservice.auth.dto.filter.UsuarioFiltroDTO;
 import tcatelie.microservice.auth.dto.request.UpdateUserDTO;
 import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
 import tcatelie.microservice.auth.dto.response.LoginResponseDTO;
@@ -30,6 +32,7 @@ import tcatelie.microservice.auth.model.ResponsavelPedido;
 import tcatelie.microservice.auth.model.Usuario;
 import tcatelie.microservice.auth.repository.PedidoRepository;
 import tcatelie.microservice.auth.repository.UserRepository;
+import tcatelie.microservice.auth.specification.UsuarioSpecification;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -322,5 +325,10 @@ public class UsuarioService implements UserDetailsService {
     usuario.setSenha(senhaCriptografada);
     usuario.setDthrAtualizacao(LocalDateTime.now());
     repository.save(usuario);
+  }
+
+  public Page<UsuarioResponseDTO> getUsuariosPaginados(UsuarioFiltroDTO filtro) {
+    return repository.findAll(UsuarioSpecification.getFilterUser(filtro), filtro.toPageable())
+            .map(usuarioMapper::toUsuarioResponseDTO);
   }
 }

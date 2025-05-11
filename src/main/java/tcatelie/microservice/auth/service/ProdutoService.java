@@ -33,6 +33,7 @@ import tcatelie.microservice.auth.repository.OpcaoPersonalizacaoRepository;
 import tcatelie.microservice.auth.repository.PersonalizacaoRepository;
 import tcatelie.microservice.auth.repository.ProdutoRepository;
 import tcatelie.microservice.auth.specification.ProdutoSpecification;
+import tcatelie.microservice.auth.util.CreateImageUrl;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class ProdutoService {
   private final ProdutoObserver produtoObserver;
   private final EmailService emailService;
   private final CalculaPrecoService calculaPrecoService;
+  private final CreateImageUrl createImageUrl;
 
   private static final Logger logger = LoggerFactory.getLogger(ProdutoService.class);
   private final CustoOutrosService custoOutrosService;
@@ -186,6 +188,10 @@ public class ProdutoService {
             .collect(Collectors.toList()));
   }
 
+  public Produto buscarEntidadeProdutoPorId(Integer id) {
+    return repository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com o ID: " + id));
+  }
 
   public Page<ProdutoResponseDTO> buscarTodosProdutosPaginados(Pageable pageable, ProdutoFiltroDTO produtoFiltroDTO) {
     Page<Produto> produtos = repository.findAll(ProdutoSpecification.filtrar(produtoFiltroDTO), pageable);
@@ -200,6 +206,9 @@ public class ProdutoService {
   public ProdutoResponseDTO atualizarProduto(Integer idProduto, ProdutoRequestDTO requestDTO) throws IOException {
     Produto produtoExistente = repository.findById(idProduto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com o ID: " + idProduto));
+
+    produtoExistente.setUrlImagemPrincipal(createImageUrl.limparParametrosDaUrl(produtoExistente.getUrlImagemPrincipal()));
+    requestDTO.setUrlProduto(createImageUrl.limparParametrosDaUrl(requestDTO.getUrlProduto()));
 
     validarRequest(requestDTO);
 
@@ -236,7 +245,10 @@ public class ProdutoService {
 
     List<ImagensProduto> imagensExistentes = produtoExistente.getImagensAdicionais();
     List<ImagensProduto> imagensRecebidas = requestDTO.getImagensAdicionais().stream()
-            .map(imagensAdicionaisMapper::toModel)
+            .map(imagensAdicionaisMapper::toModel).map(i -> {
+              i.setUrlImgAdicional(createImageUrl.limparParametrosDaUrl(i.getUrlImgAdicional()));
+              return i;
+            })
             .collect(Collectors.toList());
 
     List<ImagensProduto> imagensParaRemover = imagensExistentes.stream()
@@ -259,8 +271,13 @@ public class ProdutoService {
 
     List<Personalizacao> personalizacoesExistentes = produtoExistente.getPersonalizacoes();
     List<Personalizacao> personalizacoesRecebidas = requestDTO.getPersonalizacoes().stream()
-            .map(personalizacaoMapper::toPersonalizacaoWithOpcoes)
-            .collect(Collectors.toList());
+            .map(personalizacaoMapper::toPersonalizacaoWithOpcoes).map(p -> {
+              p.getOpcoes().forEach(o -> {
+                o.setUrlImagemOpcao(createImageUrl.limparParametrosDaUrl(o.getUrlImagemOpcao()));
+              });
+              return p;
+            })
+            .toList();
 
     personalizacoesExistentes.forEach(pExistente -> {
       boolean aindaAtiva = personalizacoesRecebidas.stream()
@@ -614,8 +631,8 @@ public class ProdutoService {
     });
   }
 
-  public Double calculaPrecoProdutoNovo(ProdutoRequestDTO novoProduto){
-      return calculaPrecoService.calculaPrecoNovoProduto(novoProduto);
+  public Double calculaPrecoProdutoNovo(ProdutoRequestDTO novoProduto) {
+    return calculaPrecoService.calculaPrecoNovoProduto(novoProduto);
   }
 
 }

@@ -16,6 +16,7 @@ import tcatelie.microservice.auth.dto.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.dto.response.PedidoCardInfoResponseDTO;
+import tcatelie.microservice.auth.dto.revison.PedidoRevisaoResponseDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
 import tcatelie.microservice.auth.model.Pedido;
@@ -167,4 +168,13 @@ public class PedidoController {
         excelService.gerarArquivoPedidosExcel(response, pedidos);
     }
 
+    @PostMapping("/revisao-pedido")
+    public ResponseEntity<PedidoRevisaoResponseDTO> gerarRevisaoPedido(@RequestBody PedidoRequestDTO pedido) {
+        return service.gerarRevisaoPedido(pedido);
+    }
+
+    @PostMapping
+    public ResponseEntity criarPedido(@RequestBody PedidoRequestDTO pedido) {
+        return service.cadastrarPedidoManual(pedido);
+    }
 }

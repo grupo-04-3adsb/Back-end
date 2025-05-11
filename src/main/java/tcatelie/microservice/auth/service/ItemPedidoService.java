@@ -15,6 +15,7 @@ import tcatelie.microservice.auth.mapper.PersonalizacaoMapper;
 import tcatelie.microservice.auth.mapper.ProdutoMapper;
 import tcatelie.microservice.auth.model.*;
 import tcatelie.microservice.auth.repository.*;
+import tcatelie.microservice.auth.util.CreateImageUrl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class ItemPedidoService {
     private final PersonalizacaoMapper personalizacaoMapper;
     private final OpcaoPersonalizacaoMapper opcaoPersonalizacaoMapper;
     private final ProdutoMapper produtoMapper;
+    private final CreateImageUrl createImageUrl;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemPedidoService.class);
 
@@ -314,7 +316,7 @@ public class ItemPedidoService {
                         .personalizacao(personalizacaoMapper.toPersonalizacaoResponseDTO(p.getPersonalizacao()))
                         .valorPersonalizacao(p.getOpcaoPersonalizacao().getAcrescimoOpcao())
                         .opcaoPersonalizacao(opcaoPersonalizacaoMapper.toOpcaoPersonalizacaoResponseDTO(p.getOpcaoPersonalizacao()))
-                        .descricaoPersonalizacao(p.getDescricaoPersonalizacao())
+                        .descricaoPersonalizacao(createImageUrl.getCompleteImageUrl(p.getDescricaoPersonalizacao()))
                         .build())
                 .toList();
     }
