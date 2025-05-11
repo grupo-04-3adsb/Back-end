@@ -16,6 +16,7 @@ import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.EnderecoRequestDTO;
 import tcatelie.microservice.auth.dto.request.ItemPedidoRequestDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
+import tcatelie.microservice.auth.dto.request.PersonalizacaoItemPedidoRequestDTO;
 import tcatelie.microservice.auth.dto.response.CustoOutrosResponseDTO;
 import tcatelie.microservice.auth.dto.response.PedidoCardInfoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
@@ -334,6 +335,26 @@ public class PedidoService {
     }).sum() + pedido.getValorFrete();
   }
 
+  /**
+   * Calcula o valor total dos itens do pedido aplicando o desconto apenas sobre o valor do produto
+   * e somando separadamente o valor das personalizações.
+   *
+   * <p>Para cada item no pedido, o cálculo segue esta fórmula:</p>
+   *
+   * <pre>
+   *   valor_total_item = (preco_produto_com_desconto * quantidade) + (soma_personalizacoes * quantidade)
+   * </pre>
+   * <p>
+   * Onde:
+   * - <b>preco_produto_com_desconto</b> = precoProduto - (precoProduto * (desconto / 100))
+   * - <b>soma_personalizacoes</b> = soma de todos os valores de personalização aplicados ao item
+   * - <b>quantidade</b> = quantidade do produto no pedido
+   *
+   * <p>Importante: o valor das personalizações <b>não é afetado pelo desconto</b>.</p>
+   *
+   * @param itens Lista de itens do pedido com seus respectivos produtos e personalizações
+   * @return Valor total do pedido, somando os produtos com desconto e personalizações
+   */
   private Double calcularValorTotalDesconto(List<ItemPedidoRequestDTO> itens) {
     return itens.stream().mapToDouble(item -> {
       ProdutoResponseDTO produto = produtoService.buscarProdutoPorId(item.getFkProduto());
@@ -342,7 +363,10 @@ public class PedidoService {
       double descontoProduto = produto.getDesconto() / 100;
       double precoComDesconto = precoProduto - (precoProduto * descontoProduto);
 
-      return precoComDesconto * item.getQuantidade();
+      double totalPersonalizacoes = item.getPersonalizacoes()
+              .stream().mapToDouble(PersonalizacaoItemPedidoRequestDTO::getValorPersonalizacao).sum() * item.getQuantidade();
+
+      return (precoComDesconto * item.getQuantidade()) + totalPersonalizacoes;
     }).sum();
   }
 
@@ -485,7 +509,7 @@ public class PedidoService {
       );
       pedido.setNomeUsuario(cliente.getNome());
     } else {
-      if(userRepository.existsByEmail(novoPedido.getEmailCliente())){
+      if (userRepository.existsByEmail(novoPedido.getEmailCliente())) {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cliente já existe com esse e-mail");
       }
 
@@ -542,13 +566,17 @@ public class PedidoService {
 
     novoPedido.getItens().forEach(i -> {
       ItemPedido item = new ItemPedido();
-      item.setProduto(produtoService.buscarEntidadeProdutoPorId(i.getFkProduto()));
+      Produto produto = produtoService.buscarEntidadeProdutoPorId(i.getFkProduto());
+      item.setProduto(produto);
       item.setQuantidade(i.getQuantidade());
-      item.setValor(i.getValor());
-      item.setValorTotal(i.getValorTotal());
+
+      item.setValor(produto.getPreco());
+
+      item.setValorTotal(calcularValorTotalDesconto(List.of(i)));
       item.setCustoProducao(calcularValorTotalProducaoItem(i));
       item.setDesconto(i.getDesconto());
       item.setPersonalizacoes(new ArrayList<>());
+      item.setProdutoFeito(i.getProdutoFeito());
       item.setPedido(pedido);
       if (i.getPersonalizacoes() != null) {
         i.getPersonalizacoes().forEach(p -> {
@@ -573,7 +601,7 @@ public class PedidoService {
       itens.add(item);
     });
 
-    if(novoPedido.getIdsResponsaveis() != null && !novoPedido.getIdsResponsaveis().isEmpty()) {
+    if (novoPedido.getIdsResponsaveis() != null && !novoPedido.getIdsResponsaveis().isEmpty()) {
       pedido.setResponsaveis(new ArrayList<>());
       novoPedido.getIdsResponsaveis().forEach(r -> {
         ResponsavelPedido responsavel = new ResponsavelPedido();
@@ -585,7 +613,7 @@ public class PedidoService {
       });
     }
 
-    if(novoPedido.getPrazoEntrega() == null) {
+    if (novoPedido.getPrazoEntrega() == null) {
       novoPedido.setPrazoEntrega(0);
     }
 
