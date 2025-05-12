@@ -1,6 +1,7 @@
 package tcatelie.microservice.auth.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.security.core.userdetails.UserDetails;
 import tcatelie.microservice.auth.enums.UserRole;
 import tcatelie.microservice.auth.model.Usuario;
@@ -8,7 +9,7 @@ import tcatelie.microservice.auth.model.Usuario;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<Usuario, Integer>{
+public interface UserRepository extends JpaRepository<Usuario, Integer>, JpaSpecificationExecutor<Usuario> {
 
     Optional<UserDetails> findByEmail(String email);
 

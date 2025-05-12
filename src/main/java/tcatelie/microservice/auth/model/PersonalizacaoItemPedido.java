@@ -26,7 +26,7 @@ public class PersonalizacaoItemPedido {
     @Column(name = "id_img_drive")
     private String idImgDrive;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_item_pedido", nullable = false)
     private ItemPedido itemPedido;
 

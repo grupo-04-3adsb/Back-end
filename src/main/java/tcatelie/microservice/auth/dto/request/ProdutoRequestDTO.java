@@ -33,8 +33,6 @@ public class ProdutoRequestDTO {
     private Double margemLucro;
 
     @Schema(description = "Preço de venda do produto", example = "65.00")
-    @Positive(message = "O preço de venda deve ser maior que zero")
-    @NotNull(message = "O preço de venda não pode ser nulo")
     private Double precoVenda;
 
     @Schema(description = "Descrição detalhada do produto", example = "Produto artesanal personalizado com nome do cliente")

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tcatelie.microservice.auth.enums.OrigemPedido;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.util.converters.StatusPedidoConverter;
 
@@ -74,6 +75,13 @@ public class Pedido {
 
     @Column(name = "codigo_rastreio")
     private String codigoRastreio;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origem_pedido")
+    private OrigemPedido origemPedido;
+
+    @Column(name = "telefone_cliente")
+    private String telefoneCliente;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "fk_endereco_entrega")
