@@ -2,13 +2,15 @@ package tcatelie.microservice.auth.util;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.util.StringUtils;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Component
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateImageUrl {
 
   @Value("${azure.blob.storage.url}")

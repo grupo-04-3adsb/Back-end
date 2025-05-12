@@ -1,11 +1,10 @@
-package tcatelie.microservice.auth.dto;
+package tcatelie.microservice.auth.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import tcatelie.microservice.auth.dto.response.CategoriaResponseDTO;
+import tcatelie.microservice.auth.dto.response.PersonalizacaoItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
-import tcatelie.microservice.auth.dto.response.SubcategoriaResponseDTO;
-import tcatelie.microservice.auth.dto.PersonalizacaoItemPedidoResponseDTO;
 
 import java.util.List;
 

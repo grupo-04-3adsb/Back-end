@@ -1,10 +1,10 @@
-package tcatelie.microservice.auth.dto;
+package tcatelie.microservice.auth.dto.response;
 
 import lombok.*;
 
 import java.util.List;
-import tcatelie.microservice.auth.dto.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.EnderecoResponseDTO;
+import tcatelie.microservice.auth.dto.response.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ResponsavelResponseDTO;
 import tcatelie.microservice.auth.dto.response.UsuarioResponseDTO;
 

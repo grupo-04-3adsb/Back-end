@@ -24,10 +24,10 @@ public class Categoria {
     @Column(name = "nome_categoria")
     private String nomeCategoria;
 
-    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Subcategoria> subcategorias;
 
-    @OneToMany(mappedBy = "categoria")
+    @OneToMany(mappedBy = "categoria", fetch = FetchType.LAZY)
     private List<Produto> produtos;
 
     @Column(name = "data_hora_cadastro")
