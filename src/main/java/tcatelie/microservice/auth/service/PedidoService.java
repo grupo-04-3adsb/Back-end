@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.response.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.PersonalizacaoItemPedidoResponseDTO;
-import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
+import tcatelie.microservice.auth.dto.filter. PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.EnderecoRequestDTO;
 import tcatelie.microservice.auth.dto.request.ItemPedidoRequestDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
