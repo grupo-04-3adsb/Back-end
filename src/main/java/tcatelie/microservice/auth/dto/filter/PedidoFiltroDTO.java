@@ -86,7 +86,7 @@ public class PedidoFiltroDTO {
     @Schema(description = "Número da página", example = "0")
     private Integer page = 0;
     @Schema(description = "Tamanho da página", example = "10")
-    private Integer size = 10;
+    private Integer size = 20;
     @Schema(description = "Id dos produtos", example = "[1,2,3]")
     private List<Integer> idsProdutos;
     @Schema(description = "Id das categorias", example = "[1,2,3]")

@@ -15,8 +15,10 @@ public interface EnderecoMapper {
 
 	@Mapping(target = "dthrCadastro", ignore = true)
 	@Mapping(target = "dthrAtualizacao", ignore = true)
+	@Mapping(target = "id", source = "idEndereco")
 	Endereco toEndereco(EnderecoRequestDTO enderecoRequestDTO);
 
 	EnderecoResponseDTO toEnderecoResponseDTO(Endereco endereco);
 
+	EnderecoResponseDTO toEnderecoResponseDTO(EnderecoRequestDTO enderecoRequestDTO);
 }

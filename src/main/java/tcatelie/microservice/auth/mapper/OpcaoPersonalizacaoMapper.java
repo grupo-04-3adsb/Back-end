@@ -13,21 +13,21 @@ import tcatelie.microservice.auth.model.OpcaoPersonalizacao;
 @Component
 public interface OpcaoPersonalizacaoMapper {
 
-    OpcaoPersonalizacaoMapper INSTANCE = Mappers.getMapper(OpcaoPersonalizacaoMapper.class);
+  OpcaoPersonalizacaoMapper INSTANCE = Mappers.getMapper(OpcaoPersonalizacaoMapper.class);
 
-    @Mapping(target = "urlImagemOpcao", source = "urlImagemOpcao", qualifiedByName = "formatImageUrl")
-    @Mapping(target = "acrescimoOpcao", source = "acrescimoOpcao")
-    @Mapping(target = "descricao", source = "descricaoProduto")
-    @Mapping(target = "idImgDrive", source = "idDrive")
-    @Mapping(target = "personalizacao", ignore = true)
-    @Mapping(target = "idOpcaoPersonalizacao", source = "idOpcao")
-    OpcaoPersonalizacao toOpcaoPersonalizacao(OpcaoPersonalizacaoRequestDTO opcaoRequestDTO);
+  @Mapping(target = "acrescimoOpcao", source = "acrescimoOpcao")
+  @Mapping(target = "descricao", source = "descricaoProduto")
+  @Mapping(target = "idImgDrive", source = "idDrive")
+  @Mapping(target = "personalizacao", ignore = true)
+  @Mapping(target = "idOpcaoPersonalizacao", source = "idOpcao")
+  OpcaoPersonalizacao toOpcaoPersonalizacao(OpcaoPersonalizacaoRequestDTO opcaoRequestDTO);
 
-    @Mapping(target = "acrescimo", source = "acrescimoOpcao")
-    @Mapping(target = "descricaoOpcao", source = "descricao")
-    @Mapping(target = "dthrCriacao", source = "dthrCadastro")
-    @Mapping(target = "dthrAtualizacao", source = "dthrAtualizacao")
-    @Mapping(source = "idImgDrive", target = "idImgDrive")
-    @Mapping(source = "idOpcaoPersonalizacao", target = "idOpcao")
-    OpcaoPersonalizacaoResponseDTO toOpcaoPersonalizacaoResponseDTO(OpcaoPersonalizacao opcaoPersonalizacao);
+  @Mapping(target = "acrescimo", source = "acrescimoOpcao")
+  @Mapping(target = "descricaoOpcao", source = "descricao")
+  @Mapping(target = "dthrCriacao", source = "dthrCadastro")
+  @Mapping(target = "dthrAtualizacao", source = "dthrAtualizacao")
+  @Mapping(source = "idImgDrive", target = "idImgDrive")
+  @Mapping(source = "idOpcaoPersonalizacao", target = "idOpcao")
+  @Mapping(source = "urlImagemOpcao", target = "urlImagemOpcao", qualifiedByName = "formatImageUrl")
+  OpcaoPersonalizacaoResponseDTO toOpcaoPersonalizacaoResponseDTO(OpcaoPersonalizacao opcaoPersonalizacao);
 }

@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import tcatelie.microservice.auth.dto.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.request.ItemPedidoRequestDTO;
+import tcatelie.microservice.auth.dto.response.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.service.ItemPedidoService;
 
 @RestController

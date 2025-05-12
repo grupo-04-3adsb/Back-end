@@ -108,4 +108,8 @@ public class CustoOutrosService {
         });
     }
 
+    public Double buscarValorCustosDiluidos(){
+        return calculaPrecoService.valorCustoOutrosDiluido(repository.findAll());
+    }
+
 }

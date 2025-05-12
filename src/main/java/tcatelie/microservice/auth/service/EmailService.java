@@ -26,16 +26,33 @@ public class EmailService {
         helper.setSubject(subject);
         helper.setFrom("clausilvaaraujo11@gmail.com");
 
-        String emailContent = buildEmailContent(variables);
+        String emailContent = buildEmailContent(variables, "email-template");
 
         helper.setText(emailContent, true);
 
         mailSender.send(message);
     }
 
-    private String buildEmailContent(Map<String, Object> variables) {
+    public void sendForgotPasswordEmail(String to, String resetLink) throws MessagingException {
+        Map<String, Object> variables = Map.of("resetLink", resetLink);
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo(to);
+        helper.setSubject("Redefinição de Senha");
+        helper.setFrom("clausilvaaraujo11@gmail.com");
+
+        String emailContent = buildEmailContent(variables, "forgot-password-template");
+
+        helper.setText(emailContent, true);
+
+        mailSender.send(message);
+    }
+
+    private String buildEmailContent(Map<String, Object> variables, String templateName) {
         Context context = new Context();
         context.setVariables(variables);
-        return templateEngine.process("email-template", context);
+        return templateEngine.process(templateName, context);
     }
 }

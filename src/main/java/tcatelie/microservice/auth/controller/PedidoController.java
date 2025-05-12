@@ -12,12 +12,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tcatelie.microservice.auth.dto.PedidoResponseDTO;
+import tcatelie.microservice.auth.dto.response.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
 import tcatelie.microservice.auth.dto.response.PedidoCardInfoResponseDTO;
+import tcatelie.microservice.auth.dto.response.pedido.PedidoDetalhadoResponseDTO;
+import tcatelie.microservice.auth.dto.revison.PedidoRevisaoResponseDTO;
 import tcatelie.microservice.auth.enums.StatusPedido;
 import tcatelie.microservice.auth.mapper.PedidoMapper;
+import tcatelie.microservice.auth.mapper.PedidoMapperManual;
 import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.service.ExcelService;
 import tcatelie.microservice.auth.service.PedidoService;
@@ -50,6 +53,11 @@ public class PedidoController {
     @GetMapping("{idPedido}")
     public ResponseEntity getPedidoById(@PathVariable Integer idPedido) {
         return ResponseEntity.ok(service.transformarPedido(service.getPedidoById(idPedido)));
+    }
+
+    @GetMapping("{idPedido}/detalhado")
+    public ResponseEntity<PedidoDetalhadoResponseDTO> getPedidoDetalhado(@PathVariable Integer idPedido) {
+        return ResponseEntity.ok(PedidoMapperManual.toPedidoDetalhadoResponseDTO(service.getPedidoById(idPedido)));
     }
 
     @Operation(summary = "Busca todos os pedidos",
@@ -167,4 +175,13 @@ public class PedidoController {
         excelService.gerarArquivoPedidosExcel(response, pedidos);
     }
 
+    @PostMapping("/revisao-pedido")
+    public ResponseEntity<PedidoRevisaoResponseDTO> gerarRevisaoPedido(@RequestBody PedidoRequestDTO pedido) {
+        return service.gerarRevisaoPedido(pedido);
+    }
+
+    @PostMapping
+    public ResponseEntity criarPedido(@RequestBody PedidoRequestDTO pedido) {
+        return service.cadastrarPedidoManual(pedido);
+    }
 }
