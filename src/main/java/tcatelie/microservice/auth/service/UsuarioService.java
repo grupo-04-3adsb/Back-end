@@ -1,6 +1,8 @@
 package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -52,6 +54,8 @@ public class UsuarioService implements UserDetailsService {
 
   @Value("${frontend.url}")
   private String URL_FRONTEND;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioService.class);
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -308,9 +312,11 @@ public class UsuarioService implements UserDetailsService {
     String resetLink = URL_FRONTEND + "/resetar-senha?token=" + token;
 
     try {
+      LOGGER.info("Enviando email de recuperação de senha para: {}", email);
       emailService.sendForgotPasswordEmail(email, resetLink);
     } catch (Exception e) {
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar o email de recuperação de senha.");
+      LOGGER.error("Erro ao enviar email de recuperação de senha: {}", e.getMessage());
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar o email de recuperação de senha:" + e.getMessage());
     }
   }
 
