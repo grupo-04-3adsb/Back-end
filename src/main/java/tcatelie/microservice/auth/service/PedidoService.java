@@ -626,4 +626,34 @@ public class PedidoService {
 
     return ResponseEntity.status(201).body(mapper.pedidoToPedidoResponseDTO(pedidoSalvo).getItens());
   }
+
+  public void updateStatus(Integer idPedido){
+
+    Pedido pedidoBanco = repository.findById(idPedido).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+    StatusPedido status = pedidoBanco.getStatus();
+
+    switch (status) {
+      case PENDENTE_PAGAMENTO:
+        status = StatusPedido.PENDENTE;
+        pedidoBanco.setDataPagamento(LocalDateTime.now());
+        break;
+      case PENDENTE:
+        status = StatusPedido.EM_PREPARO;
+        break;
+      case EM_PREPARO:
+        status = StatusPedido.EM_ROTA;
+        break;
+      case EM_ROTA:
+        status = StatusPedido.CONCLUIDO;
+        pedidoBanco.setDataConclusao(LocalDateTime.now());
+        break;
+      default:
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pedido não pode ser atualizado");
+//        break;
+    }
+
+    pedidoBanco.setStatus(status);
+
+    repository.save(pedidoBanco);
+  }
 }

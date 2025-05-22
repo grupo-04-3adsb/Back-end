@@ -131,6 +131,12 @@ public class PedidoController {
         return service.updatePedido(idPedido, pedido);
     }
 
+    @PutMapping("{idPedido}/status/avancar")
+    public ResponseEntity updateStatus(@PathVariable Integer idPedido) {
+        service.updateStatus(idPedido);
+        return ResponseEntity.ok("Status do pedido atualizado com sucesso");
+    }
+
     @GetMapping("/carrinho/{idCliente}")
     public ResponseEntity getPedidoCarrinho(@PathVariable Integer idCliente) {
         return ResponseEntity.ok(service.carregarCarrinhoUsuario(idCliente));
