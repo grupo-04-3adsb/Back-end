@@ -1,15 +1,6 @@
 services:
-  nginx:
-    image: frontend
-    ports:
-      - "5173:5173"
-    networks:
-      - ebuy-network
-    depends_on:
-      - backend
-
   backend:
-    image: backend
+    image: mkikuti/e-buy:backend
     ports:
       - "8080:8080"
     env_file:
