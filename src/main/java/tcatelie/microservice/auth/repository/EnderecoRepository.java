@@ -1,12 +1,13 @@
 package tcatelie.microservice.auth.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import tcatelie.microservice.auth.model.Endereco;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface EnderecoRepository extends JpaRepository<Endereco, Integer> {
+public interface EnderecoRepository extends JpaRepository<Endereco, Integer>, JpaSpecificationExecutor<Endereco> {
 
     Optional<Endereco> findByUsuarioIdUsuarioAndCep(Integer idUsuario, String cep);
 

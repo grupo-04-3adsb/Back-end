@@ -8,9 +8,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import tcatelie.microservice.auth.dto.ItemPedidoResponseDTO;
-import tcatelie.microservice.auth.dto.PedidoResponseDTO;
+import tcatelie.microservice.auth.dto.response.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.MaterialProdutoResponseDTO;
+import tcatelie.microservice.auth.dto.response.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.ProdutoResponseDTO;
 
 import java.io.IOException;

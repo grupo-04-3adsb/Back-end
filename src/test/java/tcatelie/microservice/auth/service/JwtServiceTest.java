@@ -10,6 +10,7 @@ import tcatelie.microservice.auth.enums.Genero;
 import tcatelie.microservice.auth.enums.Status;
 import tcatelie.microservice.auth.enums.UserRole;
 import tcatelie.microservice.auth.model.Usuario;
+import tcatelie.microservice.auth.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,9 +26,11 @@ class JwtServiceTest {
     private long accessExpirationHours = 1;
     private long refreshExpirationDays = 7;
 
+    private UserRepository userRepository;
+
     @BeforeEach
     void setUp() throws Exception {
-        jwtService = new JwtService();
+        jwtService = new JwtService(userRepository);
 
         // Configuração manual dos campos anotados com @Value usando reflexão
         var secretField = JwtService.class.getDeclaredField("secret");

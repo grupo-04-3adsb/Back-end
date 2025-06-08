@@ -4,15 +4,19 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tcatelie.microservice.auth.model.Usuario;
+import tcatelie.microservice.auth.repository.UserRepository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
 	@Value("${api.security.token.secret}")
@@ -24,12 +28,24 @@ public class JwtService {
 	@Value("${api.security.token.refreshExpirationDays}")
 	private long refreshExpirationDays;
 
+	private final UserRepository userRepository;
+
 	public String generateAccessToken(Usuario usuario) {
 		return generateToken(usuario, accessExpirationHours, "access");
 	}
 
 	public String generateRefreshToken(Usuario usuario) {
 		return generateToken(usuario, refreshExpirationDays * 24, "refresh");
+	}
+
+	public String generateForgotPasswordToken(String email) {
+		if(StringUtils.isBlank(email) || !userRepository.existsByEmail(email)) {
+			throw new IllegalArgumentException("Email inválido ou não encontrado.");
+		}
+
+		Usuario usuario = (Usuario) userRepository.findByEmail(email).get();
+
+		return generateToken(usuario, 1, "forgotPassword");
 	}
 
 	private String generateToken(Usuario usuario, long expirationHours, String tokenType) {
@@ -71,6 +87,36 @@ public class JwtService {
 			return decodedJWT.getExpiresAt().toInstant().isAfter(Instant.now());
 		} catch (JWTVerificationException e) {
 			return false;
+		}
+	}
+
+	public boolean validateForgotPasswordToken(String token) {
+		try {
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+			var decodedJWT = JWT.require(algorithm)
+					.withIssuer("auth-api")
+					.withClaim("tokenType", "forgotPassword")
+					.build()
+					.verify(token);
+
+			return decodedJWT.getExpiresAt().toInstant().isAfter(Instant.now());
+		} catch (JWTVerificationException e) {
+			return false;
+		}
+	}
+
+	public String getEmailFromForgotPasswordToken(String token) {
+		try {
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+			var decodedJWT = JWT.require(algorithm)
+					.withIssuer("auth-api")
+					.withClaim("tokenType", "forgotPassword")
+					.build()
+					.verify(token);
+
+			return decodedJWT.getSubject();
+		} catch (JWTVerificationException e) {
+			return "";
 		}
 	}
 

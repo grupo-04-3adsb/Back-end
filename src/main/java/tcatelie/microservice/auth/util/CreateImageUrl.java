@@ -1,6 +1,7 @@
 package tcatelie.microservice.auth.util;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.thymeleaf.util.StringUtils;
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
+@Getter
 public class CreateImageUrl {
 
   @Value("${azure.blob.storage.url}")
@@ -36,5 +38,11 @@ public class CreateImageUrl {
             virtualPath,
             BLOB_STORAGE_TOKEN_SAS
     );
+  }
+
+  public String limparParametrosDaUrl(String url) {
+    if (url == null) return null;
+    int index = url.indexOf('?');
+    return (index >= 0) ? url.substring(0, index) : url;
   }
 }

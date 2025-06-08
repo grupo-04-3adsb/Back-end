@@ -1,15 +1,16 @@
 package tcatelie.microservice.auth.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@Builder
 @Schema(description = "DTO que representa uma opção de personalização.")
 public class OpcaoPersonalizacaoResponseDTO {
 

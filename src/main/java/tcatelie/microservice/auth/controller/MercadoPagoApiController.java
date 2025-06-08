@@ -31,7 +31,7 @@ public class MercadoPagoApiController {
     private final PedidoRepository pedidoRepository;
 
     @Resource
-    private MercadoPagoService mercadoPagoService;
+    private final MercadoPagoService mercadoPagoService;
 
     @Operation(summary = "Criar PIX",
             description = "Cria um PIX no MercadoPago",

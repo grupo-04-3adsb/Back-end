@@ -21,58 +21,58 @@ import java.util.Optional;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-	private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
+  private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 
-	@Autowired
-	private JwtService jwtService;
+  @Autowired
+  private JwtService jwtService;
 
-	@Autowired
-	private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-					throws ServletException, IOException {
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+          throws ServletException, IOException {
 
-		var token = this.recoverToken(request);
+    var token = this.recoverToken(request);
 
-		if (token != null) {
-			logger.info("Token recuperado: {}", token);
+    if (token != null) {
+      logger.info("Token recuperado: {}", token);
 
-			var login = jwtService.validateToken(token);
+      var login = jwtService.validateToken(token);
 
-			if (login != null) {
-				logger.info("Token válido, login: {}", login);
+      if (login != null) {
+        logger.info("Token válido, login: {}", login);
 
-				Optional<UserDetails> user = userRepository.findByEmail(login);
+        Optional<UserDetails> user = userRepository.findByEmail(login);
 
-				if (user.isPresent()) {
-					var authentication = new UsernamePasswordAuthenticationToken(user.get(), null, user.get().getAuthorities());
+        if (user.isPresent()) {
+          var authentication = new UsernamePasswordAuthenticationToken(user.get(), null, user.get().getAuthorities());
 
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-					logger.info("Usuário autenticado: {}", login);
-				} else {
-					logger.warn("Usuário não encontrado: {}", login);
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					filterChain.doFilter(request, response);
-					return;
-				}
-			} else {
-				logger.warn("Token inválido ou expirado");
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				filterChain.doFilter(request, response); 
-				return;
-			}
-		} else {
-			logger.warn("Nenhum token encontrado no cabeçalho Authorization");
-		}
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+          logger.info("Usuário autenticado: {}", login);
+        } else {
+          logger.warn("Usuário não encontrado: {}", login);
+          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+          filterChain.doFilter(request, response);
+          return;
+        }
+      } else {
+        logger.warn("Token inválido ou expirado");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        filterChain.doFilter(request, response);
+        return;
+      }
+    } else {
+      logger.warn("Nenhum token encontrado no cabeçalho Authorization");
+    }
 
-		filterChain.doFilter(request, response);
-	}
+    filterChain.doFilter(request, response);
+  }
 
-	private String recoverToken(HttpServletRequest request) {
-		var authHeader = request.getHeader("Authorization");
-		if (authHeader == null)
-			return null;
-		return authHeader.replace("Bearer ", "");
-	}
+  private String recoverToken(HttpServletRequest request) {
+    var authHeader = request.getHeader("Authorization");
+    if (authHeader == null)
+      return null;
+    return authHeader.replace("Bearer ", "");
+  }
 }

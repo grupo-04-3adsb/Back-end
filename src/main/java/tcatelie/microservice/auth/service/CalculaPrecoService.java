@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import tcatelie.microservice.auth.dto.request.ProdutoRequestDTO;
 import tcatelie.microservice.auth.model.CustoOutros;
 import tcatelie.microservice.auth.model.Material;
 import tcatelie.microservice.auth.model.ParametroGeral;
@@ -11,6 +12,7 @@ import tcatelie.microservice.auth.model.Produto;
 import tcatelie.microservice.auth.repository.CustosOutrosRepository;
 import tcatelie.microservice.auth.repository.ParametroGeralRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -206,4 +208,34 @@ public class CalculaPrecoService {
     double margemLucro = produto.getMargemLucro() != null ? produto.getMargemLucro() : 0.0;
     return totalProducao * (1 + margemLucro / 100);
   }
+
+  public Double calculaPrecoNovoProduto(ProdutoRequestDTO novoProduto) {
+    if (novoProduto == null) {
+      return 0.0;
+    }
+
+    double valorProducao = 0.0;
+    if (novoProduto.getMateriais() != null) {
+      valorProducao = novoProduto.getMateriais().stream()
+              .filter(m -> m != null && m.getPrecoUnitario() != null && m.getQtdMaterialNecessaria() != null)
+              .mapToDouble(m -> m.getPrecoUnitario() * m.getQtdMaterialNecessaria())
+              .sum();
+    }
+
+    List<CustoOutros> custosOutros = Optional.ofNullable(custosOutrosRepository)
+            .map(repo -> repo.findAll())
+            .orElse(Collections.emptyList());
+
+    double valorCustosOutros = valorCustoOutrosDiluido(custosOutros);
+
+    double totalProducao = valorProducao + valorCustosOutros;
+
+    Double margemLucro = novoProduto.getMargemLucro();
+    if (margemLucro == null) {
+      margemLucro = 0.0;
+    }
+
+    return totalProducao * (1 + margemLucro / 100);
+  }
+
 }

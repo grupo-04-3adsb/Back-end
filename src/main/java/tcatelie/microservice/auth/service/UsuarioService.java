@@ -1,6 +1,10 @@
 package tcatelie.microservice.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,10 +15,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.AuthenticationDTO;
 import tcatelie.microservice.auth.dto.RegisterDTO;
+import tcatelie.microservice.auth.dto.filter.UsuarioFiltroDTO;
 import tcatelie.microservice.auth.dto.request.UpdateUserDTO;
 import tcatelie.microservice.auth.dto.request.GoogleAuthDTO;
 import tcatelie.microservice.auth.dto.response.LoginResponseDTO;
@@ -29,6 +34,7 @@ import tcatelie.microservice.auth.model.ResponsavelPedido;
 import tcatelie.microservice.auth.model.Usuario;
 import tcatelie.microservice.auth.repository.PedidoRepository;
 import tcatelie.microservice.auth.repository.UserRepository;
+import tcatelie.microservice.auth.specification.UsuarioSpecification;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,254 +44,297 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UsuarioService implements UserDetailsService {
 
-    private final UserRepository repository;
+  private final UserRepository repository;
 
-    private final UsuarioMapper usuarioMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final PedidoRepository pedidoRepository;
+  private final UsuarioMapper usuarioMapper;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
+  private final PedidoRepository pedidoRepository;
+  private final EmailService emailService;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + username));
+  @Value("${frontend.url}")
+  private String URL_FRONTEND;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioService.class);
+
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    return repository.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + username));
+  }
+
+  public ResponseEntity<String> buscarPorEmailECPF(String email, String cpf) {
+    if (StringUtils.isEmpty(email) || StringUtils.isEmpty(cpf)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ambos os campos devem ser preenchidos.");
     }
 
-    public ResponseEntity<String> buscarPorEmailECPF(String email, String cpf) {
-        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(cpf)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ambos os campos devem ser preenchidos.");
-        }
-
-        if (repository.existsByEmail(email)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
-        }
-
-        if (repository.existsByCpf(cpf)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("Usuário liberado para cadastro");
+    if (repository.existsByEmail(email)) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
     }
 
-    public ResponseEntity<?> cadastrarUsuario(RegisterDTO dto) {
-        if (!dto.isMaiorDeIdade()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário deve ser maior de idade");
-        }
-
-        dto.setStatus(Status.HABILITADO);
-
-        if (repository.existsByEmail(dto.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
-
-        }
-
-        if (repository.existsByCpf(dto.getCpf())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF em uso");
-        }
-
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encryptedPassword = passwordEncoder.encode(dto.getSenha());
-
-        Usuario usuario = usuarioMapper.toUsuario(dto);
-        usuario.setSenha(encryptedPassword);
-
-        usuario = repository.save(usuario);
-
-        String token = jwtService.generateAccessToken(usuario);
-
-        UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
-        LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(loginResponseDTO);
+    if (repository.existsByCpf(cpf)) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
     }
 
-    public ResponseEntity buscarUsuarioEmailSenha(AuthenticationDTO dto) {
-        if (dto == null) {
-            return ResponseEntity.status(400).body("Corpo da requisição inválido.");
-        }
+    return ResponseEntity.status(HttpStatus.OK).body("Usuário liberado para cadastro");
+  }
 
-        Optional<UserDetails> optUsuario = repository.findByEmail(dto.getEmail());
-
-        if (optUsuario.isEmpty()) {
-            return ResponseEntity.status(401).body("Email ou senha incorretos.");
-        }
-
-        Usuario usuario = (Usuario) optUsuario.get();
-
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-        if (!passwordEncoder.matches(dto.getSenha(), usuario.getSenha())) {
-            return ResponseEntity.status(401).body("Email ou senha incorretos.");
-        }
-
-        return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuario));
+  public ResponseEntity<?> cadastrarUsuario(RegisterDTO dto) {
+    if (!dto.isMaiorDeIdade()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário deve ser maior de idade");
     }
 
-    public ResponseEntity<?> atualizarUsuario(Integer id, UpdateUserDTO dto, Authentication authentication) {
-        ResponseEntity<?> response = verificarPermissoes(id, authentication);
+    dto.setStatus(Status.HABILITADO);
 
-        if (response.getStatusCode().value() != 200) {
-            return response;
-        }
+    if (repository.existsByEmail(dto.getEmail())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
 
-        Usuario usuarioAtual = (Usuario) response.getBody();
-
-        usuarioAtual.setNome(dto.getNome());
-        usuarioAtual.setCpf(dto.getCpf());
-        usuarioAtual.setTelefone(dto.getTelefone());
-        usuarioAtual.setDataNascimento(dto.getDataNascimento());
-        usuarioAtual.setGenero(dto.getGenero());
-        if(dto.getImgUrl()!=null){
-            usuarioAtual.setUrlImgUsuario(dto.getImgUrl());
-        }
-
-        if (authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
-            if(dto.getStatus()!=null){
-                usuarioAtual.setStatus(dto.getStatus());
-            }
-            if(dto.getRole()!=null){
-                usuarioAtual.setRole(dto.getRole());
-            }
-        }
-
-        Usuario usuarioSalvo = repository.save(usuarioAtual);
-        return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuarioSalvo));
     }
 
-    public ResponseEntity<?> deletarUsuario(Integer id, Authentication authentication) {
-        ResponseEntity<?> response = verificarPermissoes(id, authentication);
-        if (response.getStatusCode().value() != 200) {
-            return response;
-        }
-
-        Usuario usuarioAtual = (Usuario) response.getBody();
-        repository.deleteById(usuarioAtual.getIdUsuario());
-        return ResponseEntity.status(200).build();
+    if (repository.existsByCpf(dto.getCpf())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF em uso");
     }
 
-    public ResponseEntity<?> verificarPermissoes(Integer id, Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String emailUsuarioAutenticado = userDetails.getUsername();
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    String encryptedPassword = passwordEncoder.encode(dto.getSenha());
 
-        Optional<Usuario> usuarioOptional = repository.findById(id);
-        if (usuarioOptional.isEmpty()) {
-            return ResponseEntity.status(404).body("Usuário não encontrado.");
-        }
+    Usuario usuario = usuarioMapper.toUsuario(dto);
+    usuario.setSenha(encryptedPassword);
 
-        Usuario usuarioAtual = usuarioOptional.get();
-        boolean isAdmin = userDetails.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+    usuario = repository.save(usuario);
 
-        if (!isAdmin && !usuarioAtual.getEmail().equals(emailUsuarioAutenticado)) {
-            return ResponseEntity.status(403).body("Você não tem permissão para realizar esta ação.");
-        }
+    String token = jwtService.generateAccessToken(usuario);
+    String refreshToken = jwtService.generateRefreshToken(usuario);
 
-        return ResponseEntity.status(200).body(usuarioAtual);
+    UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
+    LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token, refreshToken);
+
+    return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(loginResponseDTO);
+  }
+
+  public ResponseEntity buscarUsuarioEmailSenha(AuthenticationDTO dto) {
+    if (dto == null) {
+      return ResponseEntity.status(400).body("Corpo da requisição inválido.");
     }
 
-    public ResponseEntity<?> autenticacaoGoogle(GoogleAuthDTO googleAuthDTO, AuthenticationManager authenticationManager) {
-        Optional<UserDetails> usuarioExistente = repository.findByEmail(googleAuthDTO.getEmail());
-        Usuario usuario;
+    Optional<UserDetails> optUsuario = repository.findByEmail(dto.getEmail());
 
-        if (usuarioExistente.isEmpty()) {
-            usuario = new Usuario();
-            usuario.setNome(googleAuthDTO.getName());
-            usuario.setEmail(googleAuthDTO.getEmail());
-            usuario.setIdGoogle(googleAuthDTO.getSub());
-            usuario.setUrlImgUsuario(googleAuthDTO.getPicture());
-            usuario.setStatus(Status.HABILITADO);
-            usuario.setRole(UserRole.USER);
-            usuario.setDthrCadastro(LocalDateTime.now());
-            usuario.setDthrAtualizacao(LocalDateTime.now());
-
-            String senhaRandomica = passwordEncoder.encode("senhaAleatoriaGoogle");
-            usuario.setSenha(senhaRandomica);
-
-            usuario = repository.save(usuario);
-        } else {
-            usuario = (Usuario) usuarioExistente.get();
-            if (usuario.getIdGoogle() == null) {
-                usuario.setIdGoogle(googleAuthDTO.getSub());
-                usuario.setUrlImgUsuario(googleAuthDTO.getPicture());
-                repository.save(usuario);
-            }
-        }
-
-        String token = jwtService.generateAccessToken(usuario);
-
-        UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
-        LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token);
-
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
+    if (optUsuario.isEmpty()) {
+      return ResponseEntity.status(401).body("Email ou senha incorretos.");
     }
 
-    public List<ResponsavelResponseDTO> buscarAdmins() {
-        return repository
-                .findByRole(UserRole.ADMIN)
-                .stream().map(usuarioMapper::toResponsavelResponseDTO)
-                .toList();
+    Usuario usuario = (Usuario) optUsuario.get();
+
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    if (!passwordEncoder.matches(dto.getSenha(), usuario.getSenha())) {
+      return ResponseEntity.status(401).body("Email ou senha incorretos.");
     }
 
-    public List<ResponsavelResponseDTO> pesquisarAdmins(String nome) {
-        return repository
-                .findByRoleAndNomeContainingIgnoreCase(UserRole.ADMIN, nome)
-                .stream().map(usuarioMapper::toResponsavelResponseDTO)
-                .toList();
+    return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuario));
+  }
+
+  public ResponseEntity<?> atualizarUsuario(Integer id, UpdateUserDTO dto, Authentication authentication) {
+    ResponseEntity<?> response = verificarPermissoes(id, authentication);
+
+    if (response.getStatusCode().value() != 200) {
+      return response;
     }
 
-    public ResponseEntity adicionarResponsavelPedido(Integer idPedido, Integer idUsuario) {
-        Usuario usuario = repository.findById(idUsuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
+    Usuario usuarioAtual = (Usuario) response.getBody();
 
-        if (usuario.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas administradores podem ser responsáveis");
-        }
-
-        Pedido pedido = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
-
-        if (pedido.getResponsaveis()
-                .stream().anyMatch(responsavel -> responsavel
-                        .getResponsavel().getIdUsuario().equals(idUsuario))) {
-
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Responsável já é responsável deste pedido");
-        }
-
-        pedido.getResponsaveis().add(new ResponsavelPedido(
-                usuario, pedido, LocalDateTime.now(), LocalDateTime.now()
-        ));
-
-        pedidoRepository.save(pedido);
-
-        return ResponseEntity.ok().body("Responsável adicionado com sucesso");
+    usuarioAtual.setNome(dto.getNome());
+    usuarioAtual.setCpf(dto.getCpf());
+    usuarioAtual.setTelefone(dto.getTelefone());
+    usuarioAtual.setDataNascimento(dto.getDataNascimento());
+    usuarioAtual.setGenero(dto.getGenero());
+    if (dto.getImgUrl() != null) {
+      usuarioAtual.setUrlImgUsuario(dto.getImgUrl());
     }
 
-    public ResponseEntity removerResponsavelPedido(Integer idPedido, Integer idUsuario) {
-        Usuario usuario = repository.findById(idUsuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
-
-        Pedido pedido = pedidoRepository.findById(idPedido)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
-
-        ResponsavelPedido responsavelPedido = pedido.getResponsaveis()
-                .stream().filter(responsavel -> responsavel
-                        .getResponsavel().getIdUsuario().equals(idUsuario)).findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
-
-        pedido.getResponsaveis().remove(responsavelPedido);
-        pedidoRepository.save(pedido);
-
-        return ResponseEntity.noContent().build();
+    if (authentication.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
+      if (dto.getStatus() != null) {
+        usuarioAtual.setStatus(dto.getStatus());
+      }
+      if (dto.getRole() != null) {
+        usuarioAtual.setRole(dto.getRole());
+      }
     }
-    public ResponseEntity<UsuarioResponseDTO> buscarPorId(Integer id){
-        Optional<Usuario> usuarioBuscado = repository.findById(id);
 
-        if(usuarioBuscado.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(usuarioMapper.toUsuarioResponseDTO(usuarioBuscado.get()));
+    Usuario usuarioSalvo = repository.save(usuarioAtual);
+    return ResponseEntity.status(200).body(usuarioMapper.toUsuarioResponseDTO(usuarioSalvo));
+  }
+
+  public ResponseEntity<?> deletarUsuario(Integer id, Authentication authentication) {
+    ResponseEntity<?> response = verificarPermissoes(id, authentication);
+    if (response.getStatusCode().value() != 200) {
+      return response;
     }
+
+    Usuario usuarioAtual = (Usuario) response.getBody();
+    repository.deleteById(usuarioAtual.getIdUsuario());
+    return ResponseEntity.status(200).build();
+  }
+
+  public ResponseEntity<?> verificarPermissoes(Integer id, Authentication authentication) {
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    String emailUsuarioAutenticado = userDetails.getUsername();
+
+    Optional<Usuario> usuarioOptional = repository.findById(id);
+    if (usuarioOptional.isEmpty()) {
+      return ResponseEntity.status(404).body("Usuário não encontrado.");
+    }
+
+    Usuario usuarioAtual = usuarioOptional.get();
+    boolean isAdmin = userDetails.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+    if (!isAdmin && !usuarioAtual.getEmail().equals(emailUsuarioAutenticado)) {
+      return ResponseEntity.status(403).body("Você não tem permissão para realizar esta ação.");
+    }
+
+    return ResponseEntity.status(200).body(usuarioAtual);
+  }
+
+  public ResponseEntity<?> autenticacaoGoogle(GoogleAuthDTO googleAuthDTO, AuthenticationManager authenticationManager) {
+    Optional<UserDetails> usuarioExistente = repository.findByEmail(googleAuthDTO.getEmail());
+    Usuario usuario;
+
+    if (usuarioExistente.isEmpty()) {
+      usuario = new Usuario();
+      usuario.setNome(googleAuthDTO.getName());
+      usuario.setEmail(googleAuthDTO.getEmail());
+      usuario.setIdGoogle(googleAuthDTO.getSub());
+      usuario.setUrlImgUsuario(googleAuthDTO.getPicture());
+      usuario.setStatus(Status.HABILITADO);
+      usuario.setRole(UserRole.USER);
+      usuario.setDthrCadastro(LocalDateTime.now());
+      usuario.setDthrAtualizacao(LocalDateTime.now());
+
+      String senhaRandomica = passwordEncoder.encode("senhaAleatoriaGoogle");
+      usuario.setSenha(senhaRandomica);
+
+      usuario = repository.save(usuario);
+    } else {
+      usuario = (Usuario) usuarioExistente.get();
+      if (usuario.getIdGoogle() == null) {
+        usuario.setIdGoogle(googleAuthDTO.getSub());
+        usuario.setUrlImgUsuario(googleAuthDTO.getPicture());
+        repository.save(usuario);
+      }
+    }
+
+    String token = jwtService.generateAccessToken(usuario);
+    String refreshToken = jwtService.generateRefreshToken(usuario);
+
+    UsuarioResponseDTO usuarioResponseDTO = usuarioMapper.toUsuarioResponseDTO(usuario);
+    LoginResponseDTO loginResponseDTO = new LoginResponseDTO(usuarioResponseDTO, token, refreshToken);
+
+    return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
+  }
+
+  public List<ResponsavelResponseDTO> buscarAdmins() {
+    return repository
+            .findByRole(UserRole.ADMIN)
+            .stream().map(usuarioMapper::toResponsavelResponseDTO)
+            .toList();
+  }
+
+  public List<ResponsavelResponseDTO> pesquisarAdmins(String nome) {
+    return repository
+            .findByRoleAndNomeContainingIgnoreCase(UserRole.ADMIN, nome)
+            .stream().map(usuarioMapper::toResponsavelResponseDTO)
+            .toList();
+  }
+
+  public ResponseEntity adicionarResponsavelPedido(Integer idPedido, Integer idUsuario) {
+    Usuario usuario = repository.findById(idUsuario)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
+
+    if (usuario.getRole() != UserRole.ADMIN) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas administradores podem ser responsáveis");
+    }
+
+    Pedido pedido = pedidoRepository.findById(idPedido)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+
+    if (pedido.getResponsaveis()
+            .stream().anyMatch(responsavel -> responsavel
+                    .getResponsavel().getIdUsuario().equals(idUsuario))) {
+
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Responsável já é responsável deste pedido");
+    }
+
+    pedido.getResponsaveis().add(new ResponsavelPedido(
+            usuario, pedido, LocalDateTime.now(), LocalDateTime.now()
+    ));
+
+    pedidoRepository.save(pedido);
+
+    return ResponseEntity.ok().body("Responsável adicionado com sucesso");
+  }
+
+  public ResponseEntity removerResponsavelPedido(Integer idPedido, Integer idUsuario) {
+    Usuario usuario = repository.findById(idUsuario)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
+
+    Pedido pedido = pedidoRepository.findById(idPedido)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+
+    ResponsavelPedido responsavelPedido = pedido.getResponsaveis()
+            .stream().filter(responsavel -> responsavel
+                    .getResponsavel().getIdUsuario().equals(idUsuario)).findFirst()
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Responsável não encontrado"));
+
+    pedido.getResponsaveis().remove(responsavelPedido);
+    pedidoRepository.save(pedido);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  public ResponseEntity<UsuarioResponseDTO> buscarPorId(Integer id) {
+    Optional<Usuario> usuarioBuscado = repository.findById(id);
+
+    if (usuarioBuscado.isEmpty()) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+    return ResponseEntity.ok(usuarioMapper.toUsuarioResponseDTO(usuarioBuscado.get()));
+  }
+
+  public void enviarEmailRecuperacaoSenha(String email, String token) {
+    if (StringUtils.isBlank(email) || !repository.existsByEmail(email)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email inválido ou não encontrado.");
+    }
+
+    String resetLink = URL_FRONTEND + "/resetar-senha?token=" + token;
+
+    try {
+      LOGGER.info("Enviando email de recuperação de senha para: {}", email);
+      emailService.sendForgotPasswordEmail(email, resetLink);
+    } catch (Exception e) {
+      LOGGER.error("Erro ao enviar email de recuperação de senha: {}", e.getMessage());
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar o email de recuperação de senha:" + e.getMessage());
+    }
+  }
+
+  public void atualizaSenha(String email, String novaSenha) {
+    if (StringUtils.isEmpty(email) || !repository.existsByEmail(email)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email inválido ou não encontrado.");
+    }
+
+    Usuario usuario = (Usuario) repository.findByEmail(email).get();
+
+    String senhaCriptografada = passwordEncoder.encode(novaSenha);
+    usuario.setSenha(senhaCriptografada);
+    usuario.setDthrAtualizacao(LocalDateTime.now());
+    repository.save(usuario);
+  }
+
+  public Page<UsuarioResponseDTO> getUsuariosPaginados(UsuarioFiltroDTO filtro) {
+    return repository.findAll(UsuarioSpecification.getFilterUser(filtro), filtro.toPageable())
+            .map(usuarioMapper::toUsuarioResponseDTO);
+  }
 }
