@@ -48,6 +48,7 @@ cd Back-end
 spring.datasource.url=jdbc:mysql://localhost:3306/atelie_db
 spring.datasource.username=SEU_USUARIO
 spring.datasource.password=SUA_SENHA
+
 ```
 
 ### 4. Execute o projeto
