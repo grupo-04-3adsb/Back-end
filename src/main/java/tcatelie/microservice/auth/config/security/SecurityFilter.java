@@ -32,41 +32,43 @@ public class SecurityFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
           throws ServletException, IOException {
+    try {
+      var token = this.recoverToken(request);
 
-    var token = this.recoverToken(request);
+      if (token != null) {
+        logger.info("Token recuperado: {}", token);
 
-    if (token != null) {
-      logger.info("Token recuperado: {}", token);
+        var login = jwtService.validateToken(token);
 
-      var login = jwtService.validateToken(token);
+        if (login != null) {
+          logger.info("Token válido, login: {}", login);
 
-      if (login != null) {
-        logger.info("Token válido, login: {}", login);
+          Optional<UserDetails> user = userRepository.findByEmail(login);
 
-        Optional<UserDetails> user = userRepository.findByEmail(login);
+          if (user.isPresent()) {
+            var authentication = new UsernamePasswordAuthenticationToken(user.get(), null, user.get().getAuthorities());
 
-        if (user.isPresent()) {
-          var authentication = new UsernamePasswordAuthenticationToken(user.get(), null, user.get().getAuthorities());
-
-          SecurityContextHolder.getContext().setAuthentication(authentication);
-          logger.info("Usuário autenticado: {}", login);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            logger.info("Usuário autenticado: {}", login);
+          } else {
+            logger.warn("Usuário não encontrado: {}", login);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+          }
         } else {
-          logger.warn("Usuário não encontrado: {}", login);
+          logger.warn("Token inválido ou expirado");
           response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-          filterChain.doFilter(request, response);
           return;
         }
       } else {
-        logger.warn("Token inválido ou expirado");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        filterChain.doFilter(request, response);
-        return;
+        logger.warn("Nenhum token encontrado no cabeçalho Authorization");
       }
-    } else {
-      logger.warn("Nenhum token encontrado no cabeçalho Authorization");
-    }
 
-    filterChain.doFilter(request, response);
+      filterChain.doFilter(request, response);
+    } catch (Exception ex) {
+      logger.error("Erro durante o processamento do filtro de segurança", ex);
+      throw ex;
+    }
   }
 
   private String recoverToken(HttpServletRequest request) {

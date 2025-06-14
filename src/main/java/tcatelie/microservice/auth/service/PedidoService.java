@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import tcatelie.microservice.auth.dto.response.ItemPedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.PedidoResponseDTO;
 import tcatelie.microservice.auth.dto.response.PersonalizacaoItemPedidoResponseDTO;
-import tcatelie.microservice.auth.dto.filter. PedidoFiltroDTO;
+import tcatelie.microservice.auth.dto.filter.PedidoFiltroDTO;
 import tcatelie.microservice.auth.dto.request.EnderecoRequestDTO;
 import tcatelie.microservice.auth.dto.request.ItemPedidoRequestDTO;
 import tcatelie.microservice.auth.dto.request.PedidoRequestDTO;
@@ -82,6 +82,13 @@ public class PedidoService {
       return transformarPedido(repository.save(novoPedido));
     }
 
+  }
+
+  public List<Pedido> getPedidos(PedidoFiltroDTO filtro) {
+
+    return repository.findAll(PedidoSpecification.filterBy(filtro, filtro.getStatusExcluidos() == null ? List.of() : filtro.getStatusExcluidos().stream().map(
+            StatusPedido::valueOf
+    ).toList()));
   }
 
   public Page<Pedido> getPedidos(PedidoFiltroDTO filtro, PageRequest pageRequest) {
@@ -296,6 +303,7 @@ public class PedidoService {
     response.setValorTotal(pedido.getValorTotal());
     response.setEmailCliente(pedido.getUsuario().getEmail());
     response.setNomeUsuario(pedido.getNomeUsuario());
+    response.setTipoCliente(pedido.getUsuario().getRole().toString());
     response.setStatus(pedido.getStatus().name());
     response.setResponsaveis(pedido.getResponsaveis().stream().map(responsavel -> usuarioMapper.toResponsavelResponseDTO(responsavel.getResponsavel())).toList());
     response.setQtdItens(pedido.getItens().stream().mapToInt(ItemPedido::getQuantidade).sum());
@@ -309,7 +317,7 @@ public class PedidoService {
     return pedido.getItens().stream().mapToDouble(item -> {
       ProdutoResponseDTO produto = produtoService.buscarProdutoPorId(item.getFkProduto());
       double precoProduto = produto.getPreco();
-      double descontoProduto = produto.getDesconto() / 100;
+      double descontoProduto = item.getDesconto() == null ? 0.0 : item.getDesconto() / 100;
       double precoComDesconto = precoProduto - (precoProduto * descontoProduto);
 
 
@@ -360,7 +368,7 @@ public class PedidoService {
       ProdutoResponseDTO produto = produtoService.buscarProdutoPorId(item.getFkProduto());
 
       double precoProduto = produto.getPreco();
-      double descontoProduto = produto.getDesconto() / 100;
+      double descontoProduto = item.getValorDesconto()  == null ? 0.0 : item.getValorDesconto() / 100;
       double precoComDesconto = precoProduto - (precoProduto * descontoProduto);
 
       double totalPersonalizacoes = item.getPersonalizacoes()
@@ -627,7 +635,7 @@ public class PedidoService {
     return ResponseEntity.status(201).body(mapper.pedidoToPedidoResponseDTO(pedidoSalvo).getItens());
   }
 
-  public void updateStatus(Integer idPedido){
+  public void updateStatus(Integer idPedido) {
 
     Pedido pedidoBanco = repository.findById(idPedido).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
     StatusPedido status = pedidoBanco.getStatus();

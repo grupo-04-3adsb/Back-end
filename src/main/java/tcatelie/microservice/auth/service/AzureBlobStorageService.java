@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.thymeleaf.util.StringUtils;
 import tcatelie.microservice.auth.model.*;
 import tcatelie.microservice.auth.repository.*;
+import tcatelie.microservice.auth.util.StringUtilsHelp;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -148,6 +149,40 @@ public class AzureBlobStorageService {
       personalizacaoItem.setDescricaoPersonalizacao(urlAcesso);
       personalizacaoItem.setIdImgDrive(blobPath);
       personalizacaoItemPedidoRepository.save(personalizacaoItem);
+    }
+  }
+
+  public String uploadPdf(MultipartFile file, String nomeArquivoDestino) {
+    if (file == null || file.isEmpty()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arquivo inválido");
+    }
+
+    try {
+      BlobContainerClient containerClient = new BlobContainerClientBuilder()
+              .endpoint(BLOB_STORAGE_URL + "/documents?" + BLOB_STORAGE_TOKEN_SAS)
+              .buildClient();
+
+      String extension = getFileExtension(file.getOriginalFilename());
+      if (!extension.equals(".pdf")) {
+        throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Apenas arquivos PDF são permitidos");
+      }
+
+      String nomeFormatado = StringUtils.isEmpty(nomeArquivoDestino) ? StringUtilsHelp.formatarNomeArquivo(nomeArquivoDestino) : UUID.randomUUID().toString();
+
+      String virtualPath = "pdfs/" + nomeFormatado + extension;
+      BlobClient blobClient = containerClient.getBlobClient(virtualPath);
+
+      BlobHttpHeaders headers = new BlobHttpHeaders()
+              .setContentType("application/pdf")
+              .setContentDisposition("attachment; filename=\"" + nomeFormatado + "\"");
+
+      blobClient.upload(file.getInputStream(), file.getSize(), true);
+      blobClient.setHttpHeaders(headers);
+
+      return blobClient.getBlobUrl();
+    } catch (IOException e) {
+      LOGGER.error("Erro ao fazer upload do PDF: {}", e.getMessage());
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao processar o upload");
     }
   }
 

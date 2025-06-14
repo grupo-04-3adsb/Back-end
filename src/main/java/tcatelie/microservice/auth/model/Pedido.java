@@ -83,6 +83,9 @@ public class Pedido {
     @Column(name = "telefone_cliente")
     private String telefoneCliente;
 
+    @Column(name = "nota_fiscal_url")
+    private String notaFiscalUrl;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "fk_endereco_entrega")
     private Endereco enderecoEntrega;

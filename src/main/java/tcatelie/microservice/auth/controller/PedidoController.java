@@ -24,6 +24,7 @@ import tcatelie.microservice.auth.mapper.PedidoMapperManual;
 import tcatelie.microservice.auth.model.Pedido;
 import tcatelie.microservice.auth.service.ExcelService;
 import tcatelie.microservice.auth.service.PedidoService;
+import tcatelie.microservice.auth.util.CreateImageUrl;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -42,6 +43,7 @@ public class PedidoController {
     private final PedidoService service;
     private final PedidoMapper mapper;
     private final ExcelService excelService;
+    private final CreateImageUrl createImageUrl;
     private final Logger LOGGER = LoggerFactory.getLogger(PedidoController.class);
 
     @Operation(summary = "Busca um pedido pelo id",
@@ -57,7 +59,10 @@ public class PedidoController {
 
     @GetMapping("{idPedido}/detalhado")
     public ResponseEntity<PedidoDetalhadoResponseDTO> getPedidoDetalhado(@PathVariable Integer idPedido) {
-        return ResponseEntity.ok(PedidoMapperManual.toPedidoDetalhadoResponseDTO(service.getPedidoById(idPedido)));
+        PedidoDetalhadoResponseDTO pedidoDetalhado = PedidoMapperManual.toPedidoDetalhadoResponseDTO(service.getPedidoById(idPedido));
+        pedidoDetalhado.comprador().setImgUrl(createImageUrl.getCompleteImageUrl(pedidoDetalhado.comprador().getImgUrl()));
+
+        return ResponseEntity.ok(pedidoDetalhado);
     }
 
     @Operation(summary = "Busca todos os pedidos",
@@ -84,8 +89,8 @@ public class PedidoController {
                     @ApiResponse(responseCode = "200", description = "Pedidos encontrados"),
                     @ApiResponse(responseCode = "400", description = "Erro na requisição")
             })
-    @GetMapping("/resumido")
-    public Page<PedidoCardInfoResponseDTO> getCardPedidos(@ModelAttribute PedidoFiltroDTO filtro) {
+    @GetMapping("/resumido-paginado")
+    public Page<PedidoCardInfoResponseDTO> getCardPedidosPaginado(@ModelAttribute PedidoFiltroDTO filtro) {
         PageRequest pageRequest = PageRequest.of(
                 filtro.getPage(),
                 filtro.getSize(),
@@ -96,7 +101,18 @@ public class PedidoController {
         return pedidos.map(p -> service.transformarPedidoCardInfo(p));
     }
 
+    @Operation(summary = "Busca todos os pedidos com informações resumidas",
+            description = "Retorna todos os pedidos",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pedidos encontrados"),
+                    @ApiResponse(responseCode = "400", description = "Erro na requisição")
+            })
+    @GetMapping("/resumido")
+    public List<PedidoCardInfoResponseDTO> getCardPedidos(@ModelAttribute PedidoFiltroDTO filtro) {
 
+        List<Pedido> pedidos = service.getPedidos(filtro);
+        return pedidos.stream().map(p -> service.transformarPedidoCardInfo(p)).toList();
+    }
 
     @Operation(summary = "lista todos os pedidos",
             description = "listao pedido",
