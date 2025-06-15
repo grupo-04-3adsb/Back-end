@@ -78,6 +78,8 @@ public class PedidoService {
       novoPedido.setStatus(StatusPedido.CARRINHO);
       novoPedido.setUsuario(usuario);
       novoPedido.setResponsaveis(new ArrayList<>());
+      novoPedido.setNomeUsuario(usuario.getNome());
+      novoPedido.setTelefoneCliente(usuario.getTelefone());
 
       return transformarPedido(repository.save(novoPedido));
     }
@@ -132,7 +134,7 @@ public class PedidoService {
         pedido.setValorFrete(pedidoRequestDTO.getValorFrete());
         pedido.setValorTotal(calcularValorTotalPedidoAtualizado(pedidoRequestDTO));
         pedido.setValorDesconto(pedido.getItens().stream().mapToDouble(
-                        item -> item.getProduto().getPreco() * (item.getProduto().getDesconto() / 100) * item.getQuantidade()
+                        item -> item.getProduto().getPreco() * (item.getProduto().getDesconto() == null ? 0.0 : item.getProduto().getDesconto() / 100) * item.getQuantidade()
                 ).sum()
         );
         pedido.getItens().stream().forEach(i -> {
@@ -153,6 +155,9 @@ public class PedidoService {
         });
         if (pedidoRequestDTO.getEnderecoEntrega() == null) {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço é obrigatório para o pedido");
+        }
+        if(StringUtils.isBlank(pedido.getNomeUsuario())){
+          pedido.setNomeUsuario(pedido.getUsuario().getNome());
         }
         Endereco endereco = new Endereco();
         EnderecoRequestDTO requestEndereco = pedidoRequestDTO.getEnderecoEntrega();
