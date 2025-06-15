@@ -82,7 +82,9 @@ public class PathUrlConfig {
           new AntPathRequestMatcher("/custos-outros/valor-diluido"),
           new AntPathRequestMatcher("/usuarios/paginado"),
           new AntPathRequestMatcher("/endereco/paginado"),
-          new AntPathRequestMatcher("/pedidos/revisao-pedido")
+          new AntPathRequestMatcher("/pedidos/revisao-pedido"),
+          new AntPathRequestMatcher("/arquivos/**"),
+
   };
 
   public static final AntPathRequestMatcher[] USER_URLS = {

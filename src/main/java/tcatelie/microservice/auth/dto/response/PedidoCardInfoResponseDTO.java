@@ -17,6 +17,8 @@ public class PedidoCardInfoResponseDTO {
 
   private String emailCliente;
 
+  private String tipoCliente;
+
   private Double valorTotal;
 
   private String dataEntrega;
