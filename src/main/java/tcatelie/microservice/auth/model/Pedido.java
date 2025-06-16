@@ -31,7 +31,7 @@ public class Pedido {
     private Double valorTotal;
 
     @Column(name = "valor_desconto")
-    private Double valorDesconto;
+    private Double valorDesconto = 0.0;
 
     @Column(name = "valor_frete")
     private Double valorFrete;

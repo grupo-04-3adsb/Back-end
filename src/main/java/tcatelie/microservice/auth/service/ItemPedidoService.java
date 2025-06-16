@@ -118,6 +118,7 @@ public class ItemPedidoService {
                                             .anyMatch(pe -> personalizacoesIguais(pe, pn)));
 
                     if (listasIguais) {
+                        LOGGER.warn("Item já adicionado ao carrinho com todas as personalizações iguais");
                         throw new ResponseStatusException(HttpStatus.CONFLICT,
                                 "Item já adicionado ao carrinho com todas as personalizações iguais");
                     }
@@ -291,7 +292,9 @@ public class ItemPedidoService {
     }
 
     private double calcularValorDesconto(ItemPedido item) {
-        return item.getProduto().getPreco() * (item.getProduto().getDesconto() / 100) * item.getQuantidade();
+        return item.getProduto().getPreco() *
+                (item.getProduto().getDesconto() != null ? item.getProduto().getDesconto() : 0) / 100 *
+                item.getQuantidade();
     }
 
     private double calcularCustoProducao(ItemPedido item) {
