@@ -14,7 +14,7 @@ public class PageFilter {
   private int page;
   private int size;
   private String sortBy;
-  private Sort.Direction direction;
+  private Sort.Direction direction = Sort.Direction.ASC;
 
   public Pageable toPageable() {
     return PageRequest.of(page, size, Sort.by(direction, sortBy));

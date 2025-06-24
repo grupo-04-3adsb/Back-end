@@ -23,6 +23,7 @@ public record PedidoDetalhadoResponseDTO(
         String observacao,
         LocalDateTime dataPedido,
         String codigoRastreio,
+        String notaFiscal,
         EnderecoResponseDTO enderecoEntrega,
         List<ItemPedidoResumidoResponseDTO> itens,
         UsuarioResponseDTO comprador,

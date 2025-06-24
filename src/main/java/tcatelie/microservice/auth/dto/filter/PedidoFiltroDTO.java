@@ -20,6 +20,8 @@ public class PedidoFiltroDTO {
     private Integer idPedido;
     @Schema(description = "Nome do cliente", example = "João")
     private String nomeCliente;
+    @Schema(description = "E-mail do cliente", example = "teste@gmail")
+    private String emailCliente;
     @Schema(description = "Id do cliente", example = "1")
     private Integer idCliente;
     @Schema(description = "data de pedido início", example = "2021-01-01T00:00:00")
@@ -38,6 +40,8 @@ public class PedidoFiltroDTO {
     private List<Integer> idsResponsaveis;
     @Schema(description = "Status do pedido", example = "[\"PENDENTE_PAGAMENTO\",\"PENDENTE\"]")
     private List<String> statusList;
+    @Schema(description = "Tem nota fiscal", example = "true")
+    private Boolean temNotaFiscal = null;
 
     @Schema(description = "Valor total mínimo", example = "10.0")
     private Double valorTotalMin;
