@@ -18,6 +18,7 @@ public class PedidoMapperManual {
                 .observacao(entity.getObservacao())
                 .dataPedido(entity.getDataPedido())
                 .codigoRastreio(entity.getCodigoRastreio())
+                .notaFiscal(entity.getNotaFiscalUrl())
                 .enderecoEntrega(EnderecoMapper.INSTANCE.toEnderecoResponseDTO(entity.getEnderecoEntrega()))
                 .itens(entity.getItens().stream()
                         .map(ItemPedidoMapperManual::toItemPedidoResumidoResponseDTO)

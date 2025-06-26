@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import tcatelie.microservice.auth.enums.UserRole;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,7 +17,9 @@ public class UsuarioFiltroDTO extends PageFilter {
   private String email;
   private String cpf;
   private String telefone;
+  private LocalDateTime dataCadastroInicial;
+  private LocalDateTime dataCadastroFinal;
   private List<UserRole> roles;
-  private boolean ativo;
+  private Boolean ativo;
 
 }

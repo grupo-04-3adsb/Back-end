@@ -176,6 +176,14 @@ public class PedidoService {
         break;
       case PENDENTE_PAGAMENTO:
         pedido.setDataPedido(LocalDateTime.now());
+        pedido.getItens().forEach(i -> {
+          double custoProducao = i.getProduto().getMateriaisProduto().stream().mapToDouble(m -> {
+            Material material = m.getMaterial();
+            return material.getPrecoUnitario() * m.getQtdMaterialNecessario();
+          }).sum() * i.getQuantidade();
+
+          i.setCustoProducao(custoProducao);
+        });
         break;
       case PENDENTE:
         pedido.getItens().stream().forEach(i -> i.setProdutoFeito(false));
@@ -309,7 +317,10 @@ public class PedidoService {
     response.setEmailCliente(pedido.getUsuario().getEmail());
     response.setNomeUsuario(pedido.getNomeUsuario());
     response.setTipoCliente(pedido.getUsuario().getRole().toString());
-    response.setStatus(pedido.getStatus().name());
+    response.setStatus(pedido.getStatus().getDescricao());
+    response.setValorFrete(pedido.getValorFrete());
+    response.setTemNotaFiscal(StringUtils.isNotBlank(pedido.getNotaFiscalUrl()));
+    response.setValorProducao(pedido.getItens().stream().mapToDouble(i -> Optional.ofNullable(i.getCustoProducao()).orElse(0.0)).sum());
     response.setResponsaveis(pedido.getResponsaveis().stream().map(responsavel -> usuarioMapper.toResponsavelResponseDTO(responsavel.getResponsavel())).toList());
     response.setQtdItens(pedido.getItens().stream().mapToInt(ItemPedido::getQuantidade).sum());
     response.setCategorias(pedido.getItens().stream().map(ItemPedido::getProduto).map(Produto::getCategoria).map(Categoria::getNomeCategoria).toList());

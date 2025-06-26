@@ -10,6 +10,7 @@ import tcatelie.microservice.auth.model.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UsuarioSpecification {
 
@@ -47,10 +48,19 @@ public class UsuarioSpecification {
         ));
       }
 
-      predicates.add(criteriaBuilder.equal(root.get("status"), filtroDTO.isAtivo() ? Status.HABILITADO : Status.BLOQUEADO));
+      if(Objects.nonNull(filtroDTO.getAtivo())){
+        predicates.add(criteriaBuilder.equal(root.get("status"), filtroDTO.getAtivo() ? Status.HABILITADO : Status.BLOQUEADO));
+      }
 
       if (filtroDTO.getRoles() != null && !filtroDTO.getRoles().isEmpty()) {
         predicates.add(root.get("role").in(filtroDTO.getRoles()));
+      }
+
+      if(Objects.nonNull(filtroDTO.getDataCadastroInicial())){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("dthrCadastro"), filtroDTO.getDataCadastroInicial()));
+      }
+      if(Objects.nonNull(filtroDTO.getDataCadastroFinal())){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dthrCadastro"), filtroDTO.getDataCadastroFinal()));
       }
 
       return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

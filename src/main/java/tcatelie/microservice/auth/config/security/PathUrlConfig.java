@@ -52,7 +52,8 @@ public class PathUrlConfig {
           new AntPathRequestMatcher("/pagina-infos"),
           new AntPathRequestMatcher("/valores"),
           new AntPathRequestMatcher("/depoimentos"),
-          new AntPathRequestMatcher("/api/v1/mercadopago/webhook")
+          new AntPathRequestMatcher("/api/v1/mercadopago/webhook"),
+          new AntPathRequestMatcher("/arquivos/nota-fiscal/{idPedido}", "GET"),
   };
 
   public static final AntPathRequestMatcher[] ADMIN_URLS = {

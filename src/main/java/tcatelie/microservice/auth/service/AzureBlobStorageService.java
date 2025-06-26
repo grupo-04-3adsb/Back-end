@@ -1,14 +1,20 @@
 package tcatelie.microservice.auth.service;
 
+import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
+import com.azure.storage.blob.models.BlobDownloadContentResponse;
 import com.azure.storage.blob.models.BlobHttpHeaders;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,6 +24,7 @@ import tcatelie.microservice.auth.repository.*;
 import tcatelie.microservice.auth.util.StringUtilsHelp;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.UUID;
 
 @Service
@@ -83,23 +90,47 @@ public class AzureBlobStorageService {
     return filename.substring(filename.lastIndexOf(".")).toLowerCase();
   }
 
-  private void removeFile(String virtualPath) {
+  public void removeFile(String fileUrl) {
     try {
-      if (StringUtils.isEmpty(virtualPath)) {
-        LOGGER.warn("O caminho virtual está vazio ou nulo, não é possível remover o arquivo.");
+      if (StringUtils.isEmpty(fileUrl)) {
+        LOGGER.warn("A URL do arquivo está vazia ou nula. Não é possível remover o arquivo.");
         return;
       }
 
-      LOGGER.info("Removendo arquivo: {}", virtualPath);
+      LOGGER.info("Removendo arquivo: {}", fileUrl);
+
+      String containerName;
+      String blobPath;
+
+      if (fileUrl.contains("/documents/")) {
+        containerName = "documents";
+        blobPath = extractBlobPath(fileUrl, "/documents/");
+      } else if (fileUrl.contains("/images/")) {
+        containerName = "images";
+        blobPath = extractBlobPath(fileUrl, "/images/");
+      } else {
+        LOGGER.error("URL não contém um container válido (/documents/ ou /images/): {}", fileUrl);
+        return;
+      }
+
+      if (StringUtils.isEmpty(blobPath)) {
+        LOGGER.error("Não foi possível extrair o blobPath da URL: {}", fileUrl);
+        return;
+      }
 
       BlobContainerClient containerClient = new BlobContainerClientBuilder()
-              .endpoint(BLOB_STORAGE_URL + "/images?" + BLOB_STORAGE_TOKEN_SAS)
+              .endpoint(BLOB_STORAGE_URL)
+              .sasToken(BLOB_STORAGE_TOKEN_SAS)
+              .containerName(containerName)
               .buildClient();
 
-      BlobClient blobClient = containerClient.getBlobClient(virtualPath);
+      BlobClient blobClient = containerClient.getBlobClient(blobPath);
       blobClient.delete();
-    }catch (Exception e){
-      LOGGER.error("Erro ao remover o arquivo: {}", e.getMessage());
+
+      LOGGER.info("Arquivo removido com sucesso: container={}, path={}", containerName, blobPath);
+
+    } catch (Exception e) {
+      LOGGER.error("Erro ao remover o arquivo: {}", e.getMessage(), e);
     }
   }
 
@@ -108,7 +139,7 @@ public class AzureBlobStorageService {
       Usuario usuario = userRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-      removeFile(usuario.getIdImgDrive());
+      removeFile(usuario.getUrlImgUsuario());
 
       usuario.setUrlImgUsuario(urlAcesso);
       usuario.setIdImgDrive(blobPath);
@@ -117,7 +148,7 @@ public class AzureBlobStorageService {
       Produto produto = produtoRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
 
-      removeFile(produto.getIdImgDrive());
+      removeFile(produto.getUrlImagemPrincipal());
 
       produto.setUrlImagemPrincipal(urlAcesso);
       produto.setIdImgDrive(blobPath);
@@ -126,7 +157,7 @@ public class AzureBlobStorageService {
       OpcaoPersonalizacao opcao = opcaoPersonalizacaoRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Opção não encontrada"));
 
-      removeFile(opcao.getIdImgDrive());
+      removeFile(opcao.getUrlImagemOpcao());
 
       opcao.setUrlImagemOpcao(urlAcesso);
       opcao.setIdImgDrive(blobPath);
@@ -135,7 +166,7 @@ public class AzureBlobStorageService {
       ImagensProduto imgProduto = imagensProdutoRepository.findById(idEntidade).orElseThrow(
               () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Imagem adicional não encontrada"));
 
-      removeFile(imgProduto.getIdImgDrive());
+      removeFile(imgProduto.getUrlImgAdicional());
 
       imgProduto.setUrlImgAdicional(urlAcesso);
       imgProduto.setIdImgDrive(blobPath);
@@ -186,4 +217,48 @@ public class AzureBlobStorageService {
     }
   }
 
+  private String extractBlobPath(String fileUrl, String containerPrefix) {
+    try {
+      URI uri = new URI(fileUrl);
+      String fullPath = uri.getPath();
+      return fullPath.substring(fullPath.indexOf(containerPrefix) + containerPrefix.length());
+    } catch (Exception e) {
+      LOGGER.error("Erro ao extrair o blobPath da URL: {}", e.getMessage(), e);
+      return null;
+    }
+  }
+
+  public ResponseEntity<ByteArrayResource> downloadPdf(String url) {
+    try {
+      BlobContainerClient containerClient = new BlobContainerClientBuilder()
+              .endpoint(BLOB_STORAGE_URL)
+              .sasToken(BLOB_STORAGE_TOKEN_SAS)
+              .containerName("documents")
+              .buildClient();
+
+      String blobPath = extractBlobPath(url, "/documents/");
+
+      BlobClient blobClient = containerClient.getBlobClient(blobPath);
+
+      if (!blobClient.exists()) {
+        LOGGER.warn("PDF não encontrado no blob path: {}", blobPath);
+        return ResponseEntity.notFound().build();
+      }
+
+      BinaryData response = blobClient.downloadContent();
+      byte[] pdfBytes = response.toBytes();
+
+      ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+      return ResponseEntity.ok()
+              .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + blobClient.getBlobName())
+              .contentType(MediaType.APPLICATION_PDF)
+              .contentLength(pdfBytes.length)
+              .body(resource);
+
+    } catch (Exception e) {
+      LOGGER.error("Erro ao baixar o PDF do Azure Blob Storage: {}", e.getMessage(), e);
+      return ResponseEntity.internalServerError().build();
+    }
+  }
 }

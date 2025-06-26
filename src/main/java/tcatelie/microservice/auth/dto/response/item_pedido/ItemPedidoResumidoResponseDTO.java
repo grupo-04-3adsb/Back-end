@@ -14,6 +14,7 @@ public record ItemPedidoResumidoResponseDTO(
         Double valor,
         Double valorTotal,
         Double frete,
+        Double custoProducao,
         List<PersonalizacaoItemPedidoResponseDTO> personalizacoes,
         ProdutoResumidoResponseDTO produto
 ) {

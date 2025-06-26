@@ -13,6 +13,7 @@ import tcatelie.microservice.auth.model.ResponsavelPedido;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PedidoSpecification {
 
@@ -43,7 +44,7 @@ public class PedidoSpecification {
                 predicates.add(responsaveisJoin.get("responsavel").get("id").in(filtro.getIdsResponsaveis()));
             }
             if (filtro.getStatusList() != null && !filtro.getStatusList().isEmpty()) {
-                predicates.add(root.get("status").in(filtro.getStatusList()));
+                predicates.add(root.get("status").in(filtro.getStatusList().stream().map(StatusPedido::valueOf).toList()));
             }
             if (filtro.getValorTotalMin() != null) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("valorTotal"), filtro.getValorTotalMin()));
@@ -90,11 +91,21 @@ public class PedidoSpecification {
             if (filtro.getDataAtualizacaoInicio() != null && filtro.getDataAtualizacaoFim() != null) {
                 predicates.add(cb.between(root.get("dataAtualizacao"), filtro.getDataAtualizacaoInicio(), filtro.getDataAtualizacaoFim()));
             }
+            if(StringUtils.hasText(filtro.getEmailCliente())){
+                predicates.add(cb.like(cb.lower(root.get("usuario").get("email")), "%" + filtro.getEmailCliente().toLowerCase() + "%"));
+            }
             if (filtro.getDataInicioConclusao() != null && filtro.getDataFimConclusao() != null) {
                 Predicate statusPredicate = cb.equal(root.get("status"), "CONCLUIDO");
                 Predicate dataConclusaoPredicate = cb.between(root.get("dataConclusao"), filtro.getDataInicioConclusao(), filtro.getDataFimConclusao());
 
                 predicates.add(cb.and(statusPredicate, dataConclusaoPredicate));
+            }
+            if(Objects.nonNull(filtro.getTemNotaFiscal())){
+                if (filtro.getTemNotaFiscal()) {
+                    predicates.add(cb.isNotNull(root.get("notaFiscalUrl")));
+                } else {
+                    predicates.add(cb.isNull(root.get("notaFiscalUrl")));
+                }
             }
             if (StringUtils.hasText(filtro.getPaymentId())) {
                 predicates.add(cb.equal(root.get("paymentId"), filtro.getPaymentId()));

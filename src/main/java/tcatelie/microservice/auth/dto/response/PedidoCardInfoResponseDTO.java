@@ -21,6 +21,10 @@ public class PedidoCardInfoResponseDTO {
 
   private Double valorTotal;
 
+  private Double valorFrete;
+
+  private Double valorProducao;
+
   private String dataEntrega;
 
   private String dataPedido;
@@ -28,6 +32,8 @@ public class PedidoCardInfoResponseDTO {
   private Integer qtdItens;
 
   private String status;
+
+  private boolean temNotaFiscal;
 
   private List<ResponsavelResponseDTO> responsaveis;
 
